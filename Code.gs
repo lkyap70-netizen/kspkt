@@ -7,7 +7,7 @@
  * LANGKAH: simpan (Ctrl+S), lalu jalankan fungsi "setup" sekali
  * (pilih "setup" di menu atas, klik Jalankan, lalu izinkan akses).
  */
-var TOKEN = '1945';
+var TOKEN = 'jatirogo2026';
 var FOLDER_ID = '14NzbERuRjDaHzmUKoCEk1tEEAyJJ_2K3';
 var DB_NAME = 'Arsip KSPKT Jatirogo (Database)';
 var SHEET_NAME = 'Arsip';
