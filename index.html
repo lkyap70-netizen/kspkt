@@ -373,6 +373,11 @@ setInterval(function(){if(!document.hidden)syncSoon()},60000);
 if(cfg().url)sync();else setSy("off","Belum tersambung ke Google Drive");
 show("dash");
 render();
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/pwabuilder-sw.js');
+  }
+</script>
 </script>
 </body>
 </html>
