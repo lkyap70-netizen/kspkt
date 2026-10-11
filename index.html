@@ -25,7 +25,10 @@ hr{border:0;border-top:1px solid #ddd;margin:12px 0}
 .logo{position:relative;height:16mm}
 .logo img{position:absolute;left:74.2mm;top:1.9mm;width:15.4mm}
 .jd{text-align:center;margin:0}
-.nm{text-align:center;margin-bottom:12px}
+/* Hilangkan garis bawah pada nomor surat */
+.nm{text-align:center;margin-bottom:12px;text-decoration:none !important}
+.nm u, .nm span{text-decoration:none !important}
+
 #kertas p{margin:0 0 8px;text-align:justify}
 #kertas table.d{margin:0 0 8px 10mm;border-collapse:collapse}
 #kertas table.d td{padding:1px 0;vertical-align:top}
@@ -52,118 +55,4 @@ hr{border:0;border-top:1px solid #ddd;margin:12px 0}
 #msg{font-size:12px;color:#128a3d;margin-top:8px;min-height:16px}
 
 :root{--navy:#0b1f4d;--blue:#1d3a8a;--gold:#f2b705;--ink:#14213d;--mut:#6b7488}
-body{background:linear-gradient(180deg,#e6ecf8 0,#f3f6fb 260px);color:var(--ink)}
-header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:10px 20px;background:linear-gradient(110deg,var(--navy),var(--blue));border-bottom:4px solid var(--gold);color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 3px 12px #0004}
-.brand{display:flex;align-items:center;gap:12px}.brand img{height:46px;width:46px;object-fit:contain;background:#fff;border-radius:50%;padding:5px}
-.b1{font-weight:800;letter-spacing:1.2px;font-size:19px}.b2{font-size:11px;opacity:.85;letter-spacing:.7px;margin-top:2px}
-.tabs button{background:transparent;color:#cfd9f5;border:0;border-radius:9px;padding:9px 15px;margin:0 2px;font-weight:600;box-shadow:none}
-.tabs button:hover{background:#ffffff1f}.tabs button.on{background:#fff;color:var(--blue)}
-.badge{background:var(--gold);color:var(--navy);border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px}
-.panel{border-radius:14px;box-shadow:0 4px 18px #1d3a8a14;border:1px solid #e3e9f5}
-.sec{margin:18px 0 4px;padding-left:9px;border-left:4px solid var(--gold);font-weight:700;color:var(--blue);font-size:12.5px;text-transform:uppercase;letter-spacing:.6px}.sec.first{margin-top:0}
-input,select,textarea{border-radius:8px;border:1px solid #cfd7e8;background:#fbfcff}
-input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 3px #1d3a8a22}
-button{background:linear-gradient(135deg,var(--blue),#2c52c4);box-shadow:0 2px 6px #1d3a8a33;font-weight:600}
-button.o{background:#fff;color:var(--blue);border:1px solid #b9c5e6;box-shadow:none}
-.actions{position:sticky;bottom:0;background:#fff;margin:16px -14px -14px;padding:10px 14px 12px;border-top:1px solid #e3e9f5;border-radius:0 0 14px 14px;z-index:5}
-.actions button{margin-top:4px}
-.dash{max-width:1180px;margin:0 auto;padding:16px;display:grid;gap:16px}
-.hero{background:linear-gradient(120deg,var(--navy),var(--blue) 60%,#2f5bd6);color:#fff;border-radius:16px;padding:22px 26px;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;right:-50px;top:-60px;width:220px;height:220px;border-radius:50%;background:#f2b70530}
-.hero h1{margin:0 0 6px;font-size:23px}.hero p{margin:2px 0;opacity:.92;font-size:13px}
-.hbtn{position:relative;z-index:2}.hbtn button{margin:0 8px 0 0;background:var(--gold);color:var(--navy)}.hbtn .o2{background:#ffffff22;color:#fff;border:1px solid #ffffff77;box-shadow:none}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.st2{background:#fff;border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:center;border:1px solid #e3e9f5;box-shadow:0 3px 12px #1d3a8a10}
-.ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px}
-.st2 b{font-size:27px;display:block;line-height:1;color:var(--ink)}.st2 span{font-size:12px;color:var(--mut)}
-.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}@media(max-width:850px){.grid2{grid-template-columns:1fr}}
-.card{background:#fff;border-radius:14px;padding:16px;border:1px solid #e3e9f5;box-shadow:0 3px 12px #1d3a8a10}.card h3{margin:0 0 12px;font-size:15px;color:var(--blue)}
-.chart{display:flex;align-items:flex-end;gap:6px;height:190px;padding-top:6px}
-.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
-.cb{width:100%;background:linear-gradient(180deg,#2f5bd6,var(--blue));border-radius:6px 6px 0 0;min-height:3px}.cb.cur{background:linear-gradient(180deg,var(--gold),#d99a00)}
-.col i{font-style:normal;font-size:11px;color:var(--mut);margin-top:4px}.col em{font-style:normal;font-size:11px;font-weight:700;margin-bottom:2px}
-.kr{display:grid;grid-template-columns:86px 1fr 26px;gap:8px;align-items:center;margin:9px 0;font-size:13px}
-.kb{height:10px;background:#eef2fb;border-radius:6px;overflow:hidden}.kb div{height:100%;background:linear-gradient(90deg,var(--blue),#2f5bd6);border-radius:6px}
-.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:700}.pill.g{background:#e3f6ea;color:#128a3d}.pill.r{background:#fde8e6;color:#b3261e}
-.todo-i{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eef1f8;font-size:13px}.todo-i button{margin:0;padding:5px 10px;font-size:12px}
-.empty{color:var(--mut);font-size:13px;padding:8px 0}
-.sp0{font-size:11px;padding:4px 10px;border-radius:12px;background:#ffffff22;color:#fff;margin-right:8px;display:inline-block;vertical-align:middle}
-.sp0.ok{background:#1a9a4b}.sp0.err{background:#c0392b}.sp0.busy{background:#c98a00}
-.lnk{display:inline-block;margin:2px 3px;padding:5px 9px;font-size:12px;border-radius:6px;background:#e8f0fe;color:var(--blue);text-decoration:none;font-weight:600}
-@page{size:215.9mm 330mm;margin:0}
-@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
-</style>
-</head>
-<body>
-<header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div>
-<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button></nav></header>
-<div id="vdash" class="dash">
-<div class="hero"><div><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p></div><div class="hbtn"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div>
-<div class="stats" id="stats"></div>
-<div class="grid2"><div class="card"><h3>Surat per Bulan <span id="yr" style="color:#6b7488;font-weight:400"></span></h3><div id="chart" class="chart"></div></div><div class="card"><h3>Jenis Barang / Surat Hilang</h3><div id="kinds"></div></div></div>
-<div class="grid2"><div class="card"><h3>Surat Terbaru</h3><div class="wrap"><table class="at"><thead><tr><th>Nomor</th><th>Pelapor</th><th>Cetak</th><th>PDF</th></tr></thead><tbody id="recent"></tbody></table></div></div><div class="card"><h3>Perlu Tindakan</h3><div id="todo"></div></div></div>
-</div>
-<div class="app" id="vbuat" style="display:none">
-<div class="panel">
-<div class="sec first">Nomor &amp; Waktu</div>
-<div class="row">
-<div><label>Nomor urut</label><input autocomplete="off" id="urut" type="number" min="1"></div>
-<div><label>Kode (sesuai bulan)</label><input autocomplete="off" id="kode" readonly></div>
-</div>
-<label>Tanggal &amp; jam laporan</label><input autocomplete="off" id="waktu" type="datetime-local">
-<div class="sec">Data Pelapor</div>
-<label>Nama pelapor</label><input autocomplete="off" id="nama">
-<div class="row">
-<div><label>Jenis kelamin</label><select autocomplete="off" id="jk"><option>Laki laki</option><option>Perempuan</option></select></div>
-<div><label>NIK</label><input autocomplete="off" id="nik" inputmode="numeric" maxlength="16"></div>
-</div>
-<label>Tempat / tanggal lahir</label><input autocomplete="off" id="ttl" placeholder="Tuban 22-07-2000">
-<div class="row">
-<div><label>Agama</label><input autocomplete="off" id="agama" value="Islam"></div>
-<div><label>Kewarganegaraan</label><input autocomplete="off" id="wn" value="Indonesia"></div>
-</div>
-<div class="row">
-<div><label>Pekerjaan</label><input autocomplete="off" id="kerja" value="Pelajar/Mahasiswa"></div>
-<div><label>No. telepon</label><input autocomplete="off" id="tel" value="-"></div>
-</div>
-<label>Alamat (terisi otomatis)</label>
-<div class="row">
-<div><label>Dusun</label><input autocomplete="off" id="dsn" placeholder="Muruni"></div>
-<div><label>Desa</label><input autocomplete="off" id="desa" placeholder="Sidomulyo"></div>
-</div>
-<div class="row">
-<div><label>RT</label><input autocomplete="off" id="rt" inputmode="numeric" placeholder="02"></div>
-<div><label>RW</label><input autocomplete="off" id="rw" inputmode="numeric" placeholder="01"></div>
-</div>
-<div class="row">
-<div><label>Kecamatan</label><input autocomplete="off" id="kec" value="Jatirogo"></div>
-<div><label>Kabupaten</label><input autocomplete="off" id="kab" value="Tuban"></div>
-</div>
-<div style="font-size:12px;color:#1d3a8a;margin-top:6px">Hasil: <span id="hasilalamat"></span></div>
-<div class="sec">Barang / Surat yang Hilang</div>
-<label>Tambah barang / surat hilang (template)</label>
-<select id="bjenis" autocomplete="off"></select>
-<div id="bfields"></div>
-<label>Hasil template (bisa diedit dulu)</label>
-<textarea id="bhasil" rows="3" autocomplete="off"></textarea>
-<button class="o" id="badd" type="button">+ Tambah ke daftar</button>
-<label>Daftar barang / surat yang hilang (bisa diketik manual, 1 baris = 1 barang)</label>
-<textarea id="barang" rows="4" autocomplete="off" placeholder="KTP dengan Nik.xxxx An.Pelapor."></textarea>
-<div class="row">
-<div><label>Tanggal hilang</label><input autocomplete="off" id="thilang" type="date"></div>
-<div><label>Tempat hilang</label><input autocomplete="off" id="tempat" value="di dalam rumah perlapor"></div>
-</div>
-<div class="sec">Petugas &amp; Pengesahan</div>
-<label>Petugas penerima</label>
-<select autocomplete="off" id="pilih"><option value="bambang">Bambang Himawan</option><option value="priyono">Priyono</option><option value="sukamto">Sukamto</option><option value="wiris">Wiris Ari Wijaya</option><option value="kaswadi">Kaswadi</option><option value="lain">Lainnya (isi manual)</option></select>
-<div class="row">
-<div><label>Nama petugas</label><input autocomplete="off" id="petugas" value="BAMBANG HIMAWAN"></div>
-<div><label>Pangkat &amp; NRP</label><input autocomplete="off" id="nrp" value="AIPDA NRP 84100747"></div>
-</div>
-<label>Gaya nama tanda tangan</label>
-<select id="gaya" autocomplete="off"><option value="tebal">Nama tebal (bold)</option><option value="contoh">Seperti contoh Word (garis bawah, tidak tebal)</option></select>
-<label>Mengetahui (Kapolsek / Kepala SPKT)</label>
-<select autocomplete="off" id="fmt"><option value="kapolsek">Kapolsek - M. Arif Nugroho,S.H.</option><option value="wiris">Kepala SPKT - Wiris Ari Wijaya</option><option value="priyono">Kepala SPKT - Priyono</option><option value="redno">Kepala SPKT - Redno Hartaji</option></select>
-<div class="row">
-<div><label>Yang mengetahui</label><input autocomplete="off" id="kspkt" value="M. ARIF NUGROHO,S.H."></div>
-<div><label>Pangkat &amp; NRP</label><input autocomplete="off" id="knrp" value="INSPEKT
+body{background:linear-gradient(180deg,#e6ecf8 0,#f3f6fb 260px);color:var(--ink
