@@ -26,9 +26,12 @@ hr{border:0;border-top:1px solid #ddd;margin:12px 0}
 .logo{position:relative;height:16mm}
 .logo img{position:absolute;left:74.2mm;top:1.9mm;width:15.4mm}
 .jd{text-align:center;margin:0}
-/* Menghilangkan garis bawah pada nomor surat */
-.nm{text-align:center;margin-bottom:12px;text-decoration:none !important}
-.nm u, .nm span{text-decoration:none !important}
+
+/* ===== CSS PEMBERSIH GARIS BAWAH NOMOR ===== */
+.nm, .nm *, .nm u {
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
 
 #kertas p{margin:0 0 8px;text-align:justify}
 #kertas table.d{margin:0 0 8px 10mm;border-collapse:collapse}
@@ -185,24 +188,5 @@ button.o{background:#fff;color:var(--blue);border:1px solid #b9c5e6;box-shadow:n
 <div id="kertas"></div>
 </div>
 </div>
-
-<script>
-// Fungsi untuk merender tampilan surat di lembar kertas F4
-function updateKertas() {
-  var urut = document.getElementById('urut').value || '1';
-  var kode = document.getElementById('kode').value || 'X';
-  var thn = new Date().getFullYear();
-  
-  // RENDER PERBAIKAN: Tag <u> pada kata Nomor telah dihilangkan total
-  var htmlKertas = `
-    <div class="kop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<br>SEKTOR JATIROGO<br><span class="al">Jalan Raya Barat 277 Jatirogo Tuban 62362</span></div>
-    <div class="logo"><img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Lambang_Polri.png" alt="Logo Polri"></div>
-    <div class="jd"><b><u>SURAT TANDA PENERIMAAN LAPORAN</u></b></div>
-    <div class="nm">Nomor : B/ ${urut} /${kode}/ TUK.7.2.2 / ${thn} / Polsek</div>
-  `;
-  
-  // (Bagian logika script render lanjutan aplikasi Anda berjalan di sini)
-}
-</script>
 </body>
 </html>
