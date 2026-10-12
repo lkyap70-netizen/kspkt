@@ -17,6 +17,8 @@ var SHEET_NAME = 'Arsip';
 var PDF_FOLDER = 'PDF Surat';
 var DOC_SHEET = 'Dokumentasi';
 var DOC_FOLDER = 'Dokumentasi';
+var USER_SHEET = 'Pengguna';
+var USER_HEAD = ['id', 'Nama', 'Username', 'Peran', 'Pangkat / NRP', 'Dibuat', 'Data (JSON)'];
 var HEAD = ['id', 'Nomor Surat', 'Tanggal', 'Pelapor', 'Barang / Surat', 'Petugas', 'Dicetak', 'PDF', 'Link PDF', 'Disimpan', 'Data (JSON)'];
 var DOC_HEAD = ['id', 'Tanggal', 'Judul Kegiatan', 'Kategori', 'Keterangan', 'Jumlah File', 'Disimpan', 'Data (JSON)'];
 
@@ -68,6 +70,16 @@ function docSheet_() {
   return sh;
 }
 
+function userSheet_() {
+  var ss = ss_();
+  var sh = ss.getSheetByName(USER_SHEET) || ss.insertSheet(USER_SHEET);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(USER_HEAD);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
 function sub_(name) {
   var r = root_();
   var it = r.getFoldersByName(name);
@@ -91,6 +103,7 @@ function inDocFolder_(file) {
 function setup() {
   sheet_();
   docSheet_();
+  userSheet_();
   folder_();
   docFolder_();
   Logger.log('Siap. Database dan folder sudah dibuat di folder Drive.');
@@ -118,6 +131,15 @@ function doGet(e) {
       try { docs.push(JSON.parse(drows[j][7])); } catch (x) {}
     }
     return out_({ docs: docs });
+  }
+
+  if (act === 'userlist') {
+    var urows = userSheet_().getDataRange().getValues();
+    var users = [];
+    for (var k = 1; k < urows.length; k++) {
+      try { users.push(JSON.parse(urows[k][6])); } catch (x) {}
+    }
+    return out_({ users: users });
   }
 
   if (act === 'docget') {
@@ -149,6 +171,23 @@ function doPost(e) {
   lock.waitLock(25000);
   try {
     var act = b.action;
+
+    // ----- Akun petugas -----
+    if (act === 'userSave') {
+      var ush = userSheet_();
+      var u = b.record;
+      var uvals = [u.id, u.nama, u.user, u.role, u.nrp || '', new Date(u.created || Date.now()), JSON.stringify(u)];
+      var urow = rowOf_(ush, u.id);
+      if (urow > 1) ush.getRange(urow, 1, 1, uvals.length).setValues([uvals]);
+      else ush.appendRow(uvals);
+      return out_({ ok: true });
+    }
+    if (act === 'userDelete') {
+      var ush2 = userSheet_();
+      var urow2 = rowOf_(ush2, b.id);
+      if (urow2 > 1) ush2.deleteRow(urow2);
+      return out_({ ok: true });
+    }
 
     // ----- Dokumentasi kegiatan -----
     if (act === 'docUpload') {
