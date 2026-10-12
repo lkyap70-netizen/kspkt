@@ -223,6 +223,7 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 <div><label>Nomor urut</label><input autocomplete="off" id="urut" type="number" min="1"></div>
 <div><label>Kode (sesuai bulan)</label><input autocomplete="off" id="kode" readonly></div>
 </div>
+<div id="urutst" style="font-size:12px;margin-top:4px"></div>
 <label>Tanggal &amp; jam laporan</label><input autocomplete="off" id="waktu" type="datetime-local">
 <div class="sec">Data Pelapor</div>
 <label>Nama pelapor</label><input autocomplete="off" id="nama">
@@ -295,6 +296,7 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 </div>
 <div id="varsip" class="panel" style="display:none">
 <h2>Arsip Surat</h2>
+<div id="dupnote"></div>
 <div class="bar"><input id="q" placeholder="Cari nomor / nama / barang..."><button class="o" id="bak">Backup (JSON)</button><label style="display:inline;margin:0"><span class="o" style="padding:9px 14px;border:1px solid #1d3a8a;border-radius:6px;cursor:pointer;color:#1d3a8a;font-size:13px">Pulihkan</span><input type="file" id="rst" accept=".json" style="display:none"></label></div>
 <div class="wrap"><table class="at"><thead><tr><th>Nomor Surat</th><th>Tanggal</th><th>Pelapor</th><th>Barang / surat</th><th>Operator</th><th>Cetak</th><th>PDF</th><th>Aksi</th></tr></thead><tbody id="ab"></tbody></table></div>
 <div style="font-size:11px;color:#777;margin-top:8px">Tanpa sinkronisasi, arsip hanya tersimpan di browser ini. Hubungkan ke Google Drive di bawah supaya sama di semua komputer, dan tetap lakukan Backup (JSON) sesekali.</div>
@@ -425,7 +427,7 @@ try{DB=JSON.parse(store("stpl_arsip")||"[]")}catch(x){DB=[]}
 function saveDB(){try{localStorage.setItem("stpl_arsip",JSON.stringify(DB));return true}catch(x){alert("Arsip gagal disimpan (penyimpanan browser penuh atau diblokir). Segera lakukan Backup.");return false}}
 function msg(t){$("msg").textContent=t;setTimeout(function(){if($("msg").textContent===t)$("msg").textContent=""},4000)}
 function noText(){var n=$("kertas").querySelector(".nm");return n?n.textContent.replace(/^Nomor\s*:\s*/,"").trim():""}
-function ok(){if(!$("nama").value.trim()){alert("Nama pelapor wajib diisi.");return false}
+function ok(){if(_skip)return true;if(!$("nama").value.trim()){alert("Nama pelapor wajib diisi.");return false}
 var n=$("nik").value.trim();
 if(!n){if(!confirm("NIK belum diisi. Tetap lanjutkan?"))return false}
 else{var i=nikInfo(n);if(!i.ok){alert("NIK tidak valid: "+i.msg+". Periksa kembali sesuai KTP.");$("nik").focus();return false}
@@ -749,6 +751,33 @@ st.innerHTML='<span class="ok">'+e(m.join("; "))+'</span>'+(w.length?'<br><span 
 $("nik").addEventListener("input",function(){nikCheck(false)});
 $("ttl").addEventListener("input",function(){nikCheck(true)});
 var _lr=loadRec;loadRec=function(r){_lr(r);nikCheck(true)};
+
+// ===== NOMOR URUT OTOMATIS & ANTI GANDA =====
+var _skip=false;
+function yrOf(){return new Date($("waktu").value||Date.now()).getFullYear()}
+function maxNo(y){var m=0;DB.forEach(function(r){if(rdate(r).y===y&&(+r.urut||0)>m)m=+r.urut});return Math.max(m,+store("stpl_hw_"+y)||0)}
+function takenBy(y,n){var t=null;DB.forEach(function(r){if(r.id!==curId&&rdate(r).y===y&&+r.urut===n)t=r});return t}
+function noCheck(){var y=yrOf(),n=+$("urut").value,t=takenBy(y,n),s=$("urutst");
+s.innerHTML=t?'<span class="no">Nomor '+n+' sudah dipakai surat atas nama '+e(t.nama)+'. Akan diganti otomatis saat disimpan.</span>':'<span style="color:#777">Nomor otomatis, dicek anti ganda saat disimpan.</span>'}
+function suggestNo(){$("urut").value=maxNo(yrOf())+1;render();noCheck()}
+function claimNo(){var y=yrOf(),want=+$("urut").value||1,rec=curId?getRec(curId):null;
+if(rec&&+rec.urut===want&&rdate(rec).y===y)return Promise.resolve();
+var n=want;if(takenBy(y,n))n=maxNo(y)+1;
+var fin=function(n2){if(n2!==want){$("urut").value=n2;render();noCheck();msg("Nomor urut diganti menjadi "+n2+" karena nomor "+want+" sudah dipakai.")}
+store("stpl_hw_"+y,String(Math.max(+store("stpl_hw_"+y)||0,n2)))};
+if(!(cfg().url&&navigator.onLine)){fin(n);return Promise.resolve()}
+return api({action:"claimNo",year:y,urut:n,by:who()}).then(function(j){fin(+j.no||n)},function(){fin(n)})}
+["cetak","pdf","simpan"].forEach(function(id){var f=$(id).onclick;
+$(id).onclick=function(){if(!ok())return;claimNo().then(function(){_skip=true;try{f()}finally{_skip=false}})}});
+var _bn=$("baru").onclick;$("baru").onclick=function(){_bn();suggestNo()};
+var _tb=$("tbuat").onclick;$("tbuat").onclick=function(){_tb();if(!curId){suggestNo();if(cfg().url&&navigator.onLine)sync().then(function(){if(!curId)suggestNo()})}};
+$("urut").addEventListener("input",noCheck);
+$("waktu").addEventListener("change",function(){if(!curId)suggestNo();else noCheck()});
+function dupNote(){var c={},d=[];DB.forEach(function(r){var k=rdate(r).y+"/"+(+r.urut||0);(c[k]=c[k]||[]).push(r)});
+for(var k in c){var a=k.split("/");if(c[k].length>1&&a[1]!=="0")d.push(a[1]+" (tahun "+a[0]+"): "+c[k].map(function(x){return x.nama}).join(", "))}
+$("dupnote").innerHTML=d.length?'<div class="lnote" style="background:#fde8e6">Nomor ganda ditemukan: '+e(d.join(" | "))+'. Buka salah satu surat, ganti nomor urutnya, lalu simpan.</div>':""}
+var _ra=refreshArsip;refreshArsip=function(){_ra();dupNote()};
+suggestNo();refreshArsip();
 
 // ===== MODE OFFLINE =====
 function netUI(){var off=!navigator.onLine,b=$("offbar");b.style.display=off?"block":"none";
