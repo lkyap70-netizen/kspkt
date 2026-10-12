@@ -169,11 +169,22 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 #devfoot{border-top:3px solid #f2b705;margin-top:10px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+#regDoc{width:314mm;background:#fff;padding:6mm 8mm;font:11pt/1.3 Arial,Helvetica,sans-serif;color:#000;margin:0 auto;box-shadow:0 1px 6px #0003}
+.rgkop{text-align:center;font-weight:700;line-height:1.3}
+.rgt{text-align:center;font-weight:700;font-size:13pt;margin:8px 0 4px}
+.rgp{margin:0 0 8px}
+.rgtb{width:100%;border-collapse:collapse;font-size:10pt}
+.rgtb th,.rgtb td{border:1px solid #000;padding:4px 6px;vertical-align:top;text-align:left}
+.rgtb th{background:#e8e8e8;text-align:center}
+.rgtb tr{page-break-inside:avoid}
+.rgn{margin:8px 0}
+.rgsg{width:100%;margin-top:10px;text-align:center;border-collapse:collapse}.rgsg td{width:50%;vertical-align:top}
+@media print{body.printreg>*:not(#vreg){display:none!important}body.printreg #vreg{display:block!important;padding:0}body.printreg #vreg .regctl{display:none!important}body.printreg #vreg .card{border:0;box-shadow:none;padding:0}body.printreg #regDoc{box-shadow:none;margin:0}}
 #devfoot{text-align:center;font-size:12px;color:#6b7488;padding:18px 10px}
 #offbar{display:none;background:#fff4d1;color:#7a5a00;padding:8px 16px;font-size:13px;text-align:center;border-bottom:1px solid #f0d98a}
 .sp0.net{background:#c98a00}
 @page{size:215.9mm 330mm;margin:0}
-@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
+@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
 </style>
 </head>
 <body class="locked">
@@ -197,7 +208,7 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 <div class="lsw" style="margin-top:14px">Dikembangkan oleh <b>MasLuki.id</b></div>
 </div></div>
 <header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div>
-<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="keluar" class="ub">Keluar</button></nav></header>
+<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="treg">Register</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="keluar" class="ub">Keluar</button></nav></header>
 <div id="offbar"></div>
 <div id="vdash" class="dash">
 <div class="hero"><div><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p><p class="clock" id="hclock"></p><p class="motto">Melindungi, Mengayomi, dan Melayani</p></div><div class="hbtn"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div>
@@ -296,6 +307,11 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 </div>
 <div class="card"><div id="rekapDoc"></div></div>
 </div>
+<div id="vreg" class="dash" style="display:none"><div class="card regctl"><h3>Buku Register</h3>
+<div class="rrow"><div><label>Jenis register</label><select id="rgmode" autocomplete="off"><option value="h">Harian</option><option value="b">Bulanan</option></select></div><div id="rgdw"><label>Tanggal</label><input id="rgd" type="date" autocomplete="off"></div><div id="rgmw" style="display:none"><label>Bulan</label><input id="rgm" type="month" autocomplete="off"></div></div>
+<div style="margin-top:8px;font-size:13px"><label style="display:inline;color:#111"><input type="checkbox" id="rgnik" autocomplete="off" style="width:auto"> Sertakan NIK</label></div>
+<button id="rgprint" type="button">Cetak Register</button><button class="o" id="rgpdf" type="button">Unduh PDF</button><button class="o" id="rgxls" type="button">Ekspor Excel</button></div>
+<div class="card"><div class="wrap"><div id="regDoc"></div></div></div></div>
 <div id="vuser" class="dash" style="display:none"><div class="card"><h3>Manajemen Pengguna</h3>
 <div class="wrap"><table class="at"><thead><tr><th>Nama</th><th>NRP (login)</th><th>Peran</th><th>Aksi</th></tr></thead><tbody id="ub"></tbody></table></div>
 <div style="font-size:11.5px;color:#777;margin-top:8px">Akun baru yang mendaftar otomatis berperan Operator. Admin dapat mengubah peran dan menghapus akun. Masuk hanya memakai NRP tanpa PIN.</div></div></div>
@@ -420,7 +436,7 @@ if(!window.html2pdf){alert("Pembuatan PDF otomatis butuh koneksi internet (pusta
 var mh=el.style.minHeight;el.style.minHeight="328mm";
 return html2pdf().set({margin:0,filename:fname(),image:{type:"jpeg",quality:.98},html2canvas:{scale:2,useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:[215.9,330],orientation:"portrait"}}).from(el).toPdf().get("pdf").then(function(pdf){pdf.save(fname());return pdf.output("datauristring")}).then(function(du){el.style.minHeight=mh;upPdf(du);return true},function(e){el.style.minHeight=mh;alert("Gagal membuat PDF: "+e);return false})}
 function nextUrut(){var u=(+$("urut").value||1)+1;store("stpl_urut",String(Math.max(+store("stpl_urut")||1,u)))}
-function show(v){["dash","buat","arsip","rekap","user"].forEach(function(k){$("v"+k).style.display=k===v?"":"none";$("t"+k).className=k===v?"on":""});if(v==="arsip")refreshArsip();if(v==="dash")refreshDash();if(v==="rekap"){rkInit();renderRekap()}if(v==="user")userRender();if(v!=="buat")syncSoon();window.scrollTo(0,0)}
+function show(v){["dash","buat","arsip","rekap","reg","user"].forEach(function(k){$("v"+k).style.display=k===v?"":"none";$("t"+k).className=k===v?"on":""});if(v==="arsip")refreshArsip();if(v==="dash")refreshDash();if(v==="rekap"){rkInit();renderRekap()}if(v==="user")userRender();if(v==="reg"){rgInit();renderReg()}if(v!=="buat")syncSoon();window.scrollTo(0,0)}
 $("tbuat").onclick=function(){show("buat")};$("tarsip").onclick=function(){show("arsip")};
 function loadRec(rec){FL.forEach(function(i){if(rec.d[i]!==undefined)$(i).value=rec.d[i]});CK.forEach(function(i){$(i).checked=!!rec.d[i]});curId=rec.id;show("buat");render()}
 function drv(r){var u=r.pdfUrl;return u&&/^https:\/\/(drive|docs)\.google\.com\//.test(u)?"<a class='lnk' target='_blank' rel='noopener' href='"+u.replace(/'/g,"%27")+"'>Drive</a>":""}
@@ -661,6 +677,42 @@ document.querySelectorAll("#stats b").forEach(function(b){var n=+b.textContent;i
 document.querySelectorAll("#chart .cb").forEach(function(b,i){b.style.animationDelay=(i*50)+"ms"});
 document.querySelectorAll("#kinds .kb div").forEach(function(b,i){b.style.animationDelay=(150+i*80)+"ms"})}
 var _rd=refreshDash;refreshDash=function(){_rd();animDash()};
+
+// ===== BUKU REGISTER =====
+function almOf(d){function g(k){return T((d[k]||"").trim())}function n2(v){return /^\d+$/.test(v)?pad(+v):v}
+var a=[];if(g("dsn"))a.push("Dsn."+g("dsn"));if(g("rt"))a.push("Rt."+n2(g("rt")));if(g("rw"))a.push("Rw."+n2(g("rw")));if(g("desa"))a.push("Ds."+g("desa"));
+a.push("Kec."+(g("kec")||"Jatirogo"));a.push("Kab."+(g("kab")||"Tuban"));return a.join(" ")}
+function rgInit(){if(!$("rgd").value){var n=new Date();$("rgd").value=n.getFullYear()+"-"+pad(n.getMonth()+1)+"-"+pad(n.getDate());$("rgm").value=n.getFullYear()+"-"+pad(n.getMonth()+1)}
+var h=$("rgmode").value==="h";$("rgdw").style.display=h?"":"none";$("rgmw").style.display=h?"none":""}
+function rgData(){var h=$("rgmode").value==="h",key=h?$("rgd").value:$("rgm").value;
+var list=DB.filter(function(r){var d=rdate(r);return(d.y+"-"+pad(d.mo+1)+(h?"-"+pad(d.d):""))===key}).sort(function(a,b){return String(a.waktu||"").localeCompare(String(b.waktu||""))});
+var per="-";if(key){if(h){var dt=new Date(key+"T00:00:00");per=H[dt.getDay()]+", "+tgl(dt)}else{var p=key.split("-");per=B[+p[1]-1]+" "+p[0]}}
+return{h:h,key:key,list:list,per:per}}
+function renderReg(){rgInit();var D=rgData(),nik=$("rgnik").checked,cs=nik?9:8;
+var h='<div class="rgkop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<br>SEKTOR JATIROGO</div><div class="rgt">BUKU REGISTER LAPORAN KEHILANGAN<br>SENTRA PELAYANAN KEPOLISIAN TERPADU (SPKT) POLSEK JATIROGO</div><div class="rgp">'+(D.h?"Hari / Tanggal":"Periode")+' : <b>'+e(D.per)+'</b></div>';
+h+='<table class="rgtb"><thead><tr><th style="width:28px">No</th><th>Nomor Surat</th><th>Tanggal / Jam</th><th>Nama Pelapor</th>'+(nik?'<th>NIK</th>':'')+'<th>Alamat</th><th>Barang / Surat Hilang</th><th>Petugas Penerima</th><th style="width:70px">Paraf</th></tr></thead><tbody>';
+if(!D.list.length)h+='<tr><td colspan="'+cs+'" style="text-align:center">Tidak ada laporan pada periode ini.</td></tr>';
+D.list.forEach(function(r,i){var d=r.d||{},w=String(r.waktu||"").split("T"),dd=w[0]?new Date(w[0]+"T00:00:00"):null;
+var br=(r.barang||"").split("\n").filter(function(x){return x.trim()}).map(function(x){return "- "+e(x.trim())}).join("<br>");
+h+='<tr><td>'+(i+1)+'</td><td>'+e(r.no)+'</td><td>'+(dd?tgl(dd):"")+'<br>'+e((w[1]||"").slice(0,5).replace(":","."))+' WIB</td><td>'+e(r.nama)+'</td>'+(nik?'<td>'+e(d.nik||"")+'</td>':'')+'<td>'+e(almOf(d))+'</td><td>'+br+'</td><td>'+e(d.petugas||r.petugas||"")+'</td><td></td></tr>'});
+h+='</tbody></table><div class="rgn">Jumlah laporan: <b>'+D.list.length+'</b></div>';
+h+='<table class="rgsg"><tr><td><br>PETUGAS SPKT<div style="height:60px"></div>( ................................ )</td><td>Jatirogo, '+tgl(new Date())+'<br>MENGETAHUI<br>KEPALA KEPOLISIAN SEKTOR JATIROGO<div style="height:60px"></div><b><u>M. ARIF NUGROHO,S.H.</u></b><br>INSPEKTUR POLISI SATU NRP 82100416</td></tr></table>';
+$("regDoc").innerHTML=h}
+["rgmode","rgd","rgm","rgnik"].forEach(function(i){$(i).addEventListener("change",renderReg);$(i).addEventListener("input",renderReg)});
+$("treg").onclick=function(){show("reg")};
+$("rgprint").onclick=function(){renderReg();document.body.classList.add("printreg");var st=document.createElement("style");st.textContent="@page{size:330mm 215.9mm;margin:8mm}";document.head.appendChild(st);
+setTimeout(function(){window.print();document.body.classList.remove("printreg");st.remove()},150)};
+$("rgpdf").onclick=function(){if(!window.html2pdf){alert("Pembuatan PDF butuh pustaka PDF (belum termuat). Gunakan Cetak Register lalu pilih Simpan sebagai PDF.");return}
+var D=rgData();renderReg();html2pdf().set({margin:8,filename:"Register_SPKT_Jatirogo_"+D.key+".pdf",image:{type:"jpeg",quality:.98},html2canvas:{scale:2},jsPDF:{unit:"mm",format:[330,215.9],orientation:"landscape"},pagebreak:{mode:["css","legacy"],avoid:"tr"}}).from($("regDoc")).save()};
+$("rgxls").onclick=function(){var D=rgData(),nik=$("rgnik").checked,nm="Register_SPKT_Jatirogo_"+D.key;
+var head=["No","Nomor Surat","Tanggal","Jam","Nama Pelapor"].concat(nik?["NIK"]:[]).concat(["Alamat","Barang / Surat Hilang","Petugas Penerima","Paraf"]);
+var rows=[["BUKU REGISTER LAPORAN KEHILANGAN - SPKT POLSEK JATIROGO"],[D.h?"Hari / Tanggal":"Periode",D.per],[],head];
+D.list.forEach(function(r,i){var d=r.d||{},w=String(r.waktu||"").split("T");
+rows.push([i+1,r.no,w[0]||"",(w[1]||"").slice(0,5),r.nama].concat(nik?[String(d.nik||"")]:[]).concat([almOf(d),(r.barang||"").split("\n").filter(function(x){return x.trim()}).join("; "),d.petugas||r.petugas||"",""]))});
+rows.push([],["Jumlah laporan",D.list.length]);
+if(!window.XLSX){var csv="\ufeff"+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(",")}).join("\n");dlBlob(nm+".csv",new Blob([csv],{type:"text/csv"}));alert("Pustaka Excel belum termuat, jadi diunduh sebagai CSV yang tetap bisa dibuka di Excel.");return}
+var wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=[{wch:5},{wch:36},{wch:12},{wch:7},{wch:24}].concat(nik?[{wch:20}]:[]).concat([{wch:40},{wch:60},{wch:22},{wch:10}]);
+XLSX.utils.book_append_sheet(wb,ws,"Register");XLSX.writeFile(wb,nm+".xlsx")};
 
 // ===== MODE OFFLINE =====
 function netUI(){var off=!navigator.onLine,b=$("offbar");b.style.display=off?"block":"none";
