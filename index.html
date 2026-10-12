@@ -117,8 +117,10 @@ body.locked>*:not(#login):not(script){display:none!important}
 .lnote{background:#fff4d1;border-radius:8px;padding:8px 10px;font-size:12px;margin:8px 0}
 #pinm{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0008;z-index:50;align-items:center;justify-content:center;padding:20px}
 .tabs .ub{font-size:12px}
+#offbar{display:none;background:#fff4d1;color:#7a5a00;padding:8px 16px;font-size:13px;text-align:center;border-bottom:1px solid #f0d98a}
+.sp0.net{background:#c98a00}
 @page{size:215.9mm 330mm;margin:0}
-@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
+@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#offbar{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
 </style>
 </head>
 <body class="locked">
@@ -142,6 +144,7 @@ body.locked>*:not(#login):not(script){display:none!important}
 </div></div>
 <header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div>
 <nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="keluar" class="ub">Keluar</button></nav></header>
+<div id="offbar"></div>
 <div id="vdash" class="dash">
 <div class="hero"><div><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p></div><div class="hbtn"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div>
 <div class="stats" id="stats"></div>
@@ -242,8 +245,11 @@ body.locked>*:not(#login):not(script){display:none!important}
 <div id="vuser" class="dash" style="display:none"><div class="card"><h3>Manajemen Pengguna</h3>
 <div class="wrap"><table class="at"><thead><tr><th>Nama</th><th>NRP (login)</th><th>Peran</th><th>Aksi</th></tr></thead><tbody id="ub"></tbody></table></div>
 <div style="font-size:11.5px;color:#777;margin-top:8px">Akun baru yang mendaftar otomatis berperan Operator. Admin dapat mengubah peran dan menghapus akun. Masuk hanya memakai NRP tanpa PIN.</div></div></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+function loadLib(u){var i=0;(function n(){if(i>=u.length)return;var s=document.createElement("script");s.src=u[i++];s.onerror=n;document.head.appendChild(s)})()}
+loadLib(["lib/html2pdf.bundle.min.js","https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"]);
+loadLib(["lib/xlsx.full.min.js","https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"]);
+</script>
 <script>
 var H=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"],B=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"],RM=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
 var $=function(i){return document.getElementById(i)};
@@ -406,18 +412,19 @@ $("dars").onclick=function(){show("arsip")};
 
 var CFG={url:"",token:""};
 function cfg(){return {url:(store("stpl_gurl")||CFG.url||"").trim(),token:(store("stpl_gtok")||CFG.token||"").trim()}}
-function setSy(c,t){var p=$("syncpill");p.className="sp0 "+c;p.textContent=c==="off"?"Belum tersambung":c==="ok"?"Drive: "+t:c==="busy"?"Sinkron...":"Drive: gagal";$("syncst").textContent=t}
+function setSy(c,t){var p=$("syncpill");p.className="sp0 "+c;p.textContent=c==="net"?"Offline":c==="off"?"Belum tersambung":c==="ok"?"Drive: "+t:c==="busy"?"Sinkron...":"Drive: gagal";$("syncst").textContent=t}
 var Q=Promise.resolve(),lastSync=0;
 function enq(fn){Q=Q.then(fn,fn);return Q}
 function getRec(id){var r=null;DB.forEach(function(x){if(x.id===id)r=x});return r}
 function api(b){var c=cfg();b.token=c.token;return fetch(c.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(function(j){if(j.error)throw new Error(j.error);return j})}
-function pushNow(id){var r=getRec(id);if(!r||!cfg().url)return Promise.resolve();return api({action:"save",record:r}).then(function(){r.sy=true;saveDB();setSy("ok","Tersinkron")},function(x){setSy("err","Gagal sinkron: "+x.message)})}
+function pushNow(id){var r=getRec(id);if(!r||!cfg().url)return Promise.resolve();if(!navigator.onLine){setSy("net","Offline, akan sinkron saat internet kembali");return Promise.resolve()}return api({action:"save",record:r}).then(function(){r.sy=true;saveDB();setSy("ok","Tersinkron")},function(x){setSy("err","Gagal sinkron: "+x.message)})}
 function pushRec(id){if(!cfg().url)return;enq(function(){return pushNow(id)})}
 function delRec(id){DB=DB.filter(function(x){return x.id!==id});saveDB();refreshArsip();if(!cfg().url)return;
 enq(function(){return api({action:"delete",id:id}).then(function(){setSy("ok","Tersinkron")},function(x){var q=[];try{q=JSON.parse(store("stpl_delq")||"[]")}catch(y){}q.push(id);store("stpl_delq",JSON.stringify(q));setSy("err","Gagal sinkron: "+x.message)})})}
 function flushDel(){var q=[];try{q=JSON.parse(store("stpl_delq")||"[]")}catch(x){}
 if(!q.length)return Promise.resolve();return Promise.all(q.map(function(id){return api({action:"delete",id:id})})).then(function(){store("stpl_delq","[]")})}
 function doSync(){var c=cfg();if(!c.url){setSy("off","Belum tersambung ke Google Drive");return Promise.resolve()}
+if(!navigator.onLine){setSy("net","Offline, akan sinkron saat internet kembali");return Promise.resolve()}
 setSy("busy","Menyinkronkan...");
 return flushDel().then(function(){return fetch(c.url+(c.url.indexOf("?")<0?"?":"&")+"token="+encodeURIComponent(c.token)).then(function(r){return r.json()})}).then(function(j){
 if(j.error)throw new Error(j.error);
@@ -428,13 +435,22 @@ DB=out;saveDB();refreshArsip();if($("vdash").style.display!=="none")refreshDash(
 return Promise.all(ps.map(pushNow))}).then(function(){lastSync=Date.now();setSy("ok","Tersinkron "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}))},function(x){setSy("err","Gagal sinkron: "+x.message)})}
 function sync(){return enq(doSync)}
 function syncSoon(){if(cfg().url&&Date.now()-lastSync>15000)sync()}
-function upPdf(du){if(!cfg().url||!curId)return;var id=curId,fn=fname(),b64=du.split("base64,")[1];
-enq(function(){var r=getRec(id);if(!r)return;setSy("busy","Mengunggah PDF ke Drive...");return api({action:"pdf",id:id,filename:fn,data:b64,oldFileId:r.pdfId||""}).then(function(j){var r2=getRec(id);if(r2){r2.pdfUrl=j.url;r2.pdfId=j.fileId;r2.saved=Date.now();saveDB();refreshArsip()}return pushNow(id)},function(x){setSy("err","PDF gagal diunggah ke Drive: "+x.message)})})}
+function idb(){return new Promise(function(res,rej){var q=indexedDB.open("kspkt",1);q.onupgradeneeded=function(){q.result.createObjectStore("pdfq",{keyPath:"id"})};q.onsuccess=function(){res(q.result)};q.onerror=function(){rej(q.error)}})}
+function qTx(mode,fn){return idb().then(function(d){return new Promise(function(res,rej){var t=d.transaction("pdfq",mode),st=t.objectStore("pdfq"),out=fn(st);t.oncomplete=function(){res(out&&out.result!==undefined?out.result:undefined)};t.onerror=function(){rej(t.error)}})})}
+function qPut(o){return qTx("readwrite",function(st){return st.put(o)})}
+function qDel(id){return qTx("readwrite",function(st){return st.delete(id)})}
+function qAll(){return qTx("readonly",function(st){return st.getAll()}).then(function(r){return r||[]})}
+function sendPdf(it){var r=getRec(it.id);if(!r)return Promise.resolve(true);setSy("busy","Mengunggah PDF ke Drive...");
+return api({action:"pdf",id:it.id,filename:it.filename,data:it.data,oldFileId:r.pdfId||""}).then(function(j){var r2=getRec(it.id);if(r2){r2.pdfUrl=j.url;r2.pdfId=j.fileId;r2.saved=Date.now();saveDB();refreshArsip()}return pushNow(it.id).then(function(){return true})},function(x){setSy("err","PDF gagal diunggah ke Drive: "+x.message);return false})}
+function flushPdf(){if(!navigator.onLine||!cfg().url)return Promise.resolve();
+return enq(function(){return qAll().then(function(items){var chain=Promise.resolve();items.forEach(function(it){chain=chain.then(function(){return sendPdf(it).then(function(okk){if(okk)return qDel(it.id)})})});return chain})}).catch(function(){})}
+function upPdf(du){if(!cfg().url||!curId)return;var it={id:curId,filename:fname(),data:du.split("base64,")[1]};
+qPut(it).then(function(){flushPdf()},function(){if(navigator.onLine)enq(function(){return sendPdf(it)})})}
 $("gurl").value=store("stpl_gurl")||CFG.url||"";$("gtok").value=store("stpl_gtok")||CFG.token||"";
 $("gsave").onclick=function(){var u=$("gurl").value.trim(),t=$("gtok").value.trim();if(!/^https:\/\/script\.google\.com\/.+\/exec/.test(u)){alert("URL harus berbentuk https://script.google.com/macros/s/.../exec");return}if(!t){alert("Kode rahasia wajib diisi.");return}store("stpl_gurl",u);store("stpl_gtok",t);lastSync=0;sync()};
 $("gsync").onclick=function(){sync()};
 setInterval(function(){if(!document.hidden)syncSoon()},60000);
-if(cfg().url)sync();else setSy("off","Belum tersambung ke Google Drive");
+if(cfg().url)sync().then(function(){flushPdf()});else setSy("off","Belum tersambung ke Google Drive");
 
 // ===== REKAP BULANAN & EKSPOR EXCEL =====
 var BLNF=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
@@ -539,7 +555,7 @@ if(!/^\d{6,10}$/.test(un)){lmsg("NRP harus berupa 6-10 angka.",1);return}
 var go=function(){if(findU(un)){lmsg("NRP ini sudah terdaftar.",1);return}
 var u={id:"u"+Date.now()+rnd().slice(0,4),nama:nm,user:un,nrp:"NRP "+un,role:US.length?"operator":"admin",created:Date.now(),upd:Date.now()};
 US.push(u);saveUS();pushUser(u);$("rn").value="";$("ru").value="";startSes(u)};
-if(cfg().url){lmsg("Memeriksa akun di Drive...");syncUsers().then(go,function(x){lmsg("Tidak bisa terhubung ke Drive: "+x.message+". Coba lagi.",1)})}else go()}
+if(cfg().url&&!navigator.onLine){if(!US.length){lmsg("Pendaftaran pertama butuh internet agar akun sama dengan di Drive.",1);return}go()}else if(cfg().url){lmsg("Memeriksa akun di Drive...");syncUsers().then(go,function(x){lmsg("Tidak bisa terhubung ke Drive: "+x.message+". Coba lagi.",1)})}else go()}
 $("rgo").onclick=doReg;$("ru").addEventListener("keydown",function(ev){if(ev.key==="Enter")doReg()});
 
 $("lcon").onclick=function(){var u=$("lurl").value.trim(),t=$("ltok").value.trim();
@@ -568,7 +584,16 @@ syncUsers().then(function(){if(!US.length)panel("r")},function(){})}
 var ss=null;try{ss=JSON.parse(store("stpl_ses")||"null")}catch(x){}
 if(ss&&ss.exp>Date.now()){var u=findUid(ss.id);if(u){SES={id:u.id};enter(u);return}}
 panel(US.length?"l":"r")}
-initAuth();
+
+// ===== MODE OFFLINE =====
+function netUI(){var off=!navigator.onLine,b=$("offbar");b.style.display=off?"block":"none";
+if(off){var n=DB.filter(function(x){return !x.sy}).length;
+b.textContent="Mode offline: surat tetap bisa dibuat, disimpan, dan dicetak. Data aman di perangkat ini dan otomatis tersinkron saat internet kembali."+(n?" ("+n+" surat belum tersinkron)":"");
+if(cfg().url)setSy("net","Offline, akan sinkron saat internet kembali")}}
+window.addEventListener("offline",netUI);
+window.addEventListener("online",function(){netUI();if(cfg().url)sync().then(function(){flushPdf()})});
+if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener("load",function(){navigator.serviceWorker.register("pwabuilder-sw.js").catch(function(){})})}
+netUI();initAuth();
 </script>
 </body>
 </html>
