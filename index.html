@@ -215,6 +215,69 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 @page{size:215.9mm 330mm;margin:0}
 @media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
 </style>
+<style id="uiplus">
+/* ===== HEADER ===== */
+header.top{padding:10px 24px 0;gap:6px 16px;align-items:center}
+header.top .brand{order:1}
+header.top .hr{order:2;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;gap:4px;margin:4px -24px 0;padding:6px 24px 8px;background:#00000026;border-top:1px solid #ffffff1a}
+.ni{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:7px;flex:none}
+.tabs button{display:inline-flex;align-items:center;margin:0;padding:8px 16px;font-size:13.5px;letter-spacing:.3px;border-radius:5px;color:#cfd9f5}
+.tabs button.on{background:#f2b705;color:#0b1f4d;box-shadow:0 2px 10px #f2b70555}
+.tabs button.on .badge{background:#0b1f4d;color:#f2b705}
+.hr .sp0{margin:0;display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#ffffff1c;border:1px solid #ffffff2e}
+.hr #syncpill:before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.hr #syncpill.ok{background:#1a9a4b33;border-color:#3ddc8466;color:#b9f6d2}
+.hr #syncpill.err{background:#c0392b33;border-color:#ff7b6d66;color:#ffd0ca}
+.hr #syncpill.busy,.hr #syncpill.net{background:#c98a0033;border-color:#f2b70566;color:#ffe6a6}
+.hr #syncpill.off{color:#cfd9f5}
+.hr #who:before{content:"";width:18px;height:18px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f2b705' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21a8 8 0 0 1 16 0'/%3E%3C/svg%3E") center/contain no-repeat}
+.hr #who:empty{display:none}
+.hr .ub{display:inline-flex;align-items:center;margin:0;padding:7px 13px;font-size:12.5px;background:transparent;color:#fff;border:1px solid #ffffff55;box-shadow:none}
+.hr .ub:hover{background:#d71920;border-color:#d71920;filter:none}
+.hr .ub .ni{margin-right:6px}
+/* ===== DASHBOARD ===== */
+.hero{display:flex;gap:18px;align-items:stretch;padding:28px 32px 34px}
+.hero .hl{flex:1 1 380px}
+.hgreet{display:inline-block;margin:0 0 10px!important;padding:4px 12px;background:#f2b7051f;border:1px solid #f2b70566;color:#f2b705;border-radius:20px;font-size:12px!important;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+.hero h1{font-size:34px;line-height:1.1;margin-bottom:10px}
+.hero .hl p{font-size:13.5px}
+.hbtn{display:flex;flex-direction:column;gap:12px;align-items:stretch;justify-content:center;min-width:240px}
+.ctile{background:#ffffff14;border:1px solid #ffffff2e;border-radius:8px;padding:10px 16px;text-align:center;backdrop-filter:blur(3px)}
+.ctile small{display:block;font-size:10.5px;letter-spacing:1.6px;opacity:.75}
+.ctile .clock{margin:2px 0 0!important;font-size:34px!important;line-height:1.15}
+.hb2{display:flex;gap:8px}.hb2 button{flex:1;margin:0!important;padding:10px 12px;font-size:13px;white-space:nowrap}
+.st2{position:relative;transition:transform .2s,box-shadow .2s}.st2:hover{transform:translateY(-3px);box-shadow:0 12px 22px #0b1f4d24}
+.ic{width:50px;height:50px;flex:none;color:#f2b705;background:linear-gradient(135deg,#0b1f4d,#1d3a8a)!important;border-radius:8px}
+.ic .ni{width:24px;height:24px;margin:0;vertical-align:0}
+.st2 span{display:block;font-weight:600;color:#44506b}
+.st2 small{display:block;margin-top:3px;font-size:11px;color:var(--mut)}
+.st2:nth-child(n+4) .ic{color:#ff8c92}
+.qa{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.qa>div{position:relative;background:#fff;border:1px solid #d3dbee;border-left:5px solid #f2b705;border-radius:6px;padding:14px 16px 14px 58px;cursor:pointer;box-shadow:0 4px 10px #0b1f4d10;transition:transform .15s,box-shadow .15s,background .15s}
+.qa>div:hover{transform:translateY(-2px);box-shadow:0 10px 18px #0b1f4d22;background:#fffbea}
+.qa>div:focus-visible{outline:3px solid #1d3a8a55}
+.qa .ni{position:absolute;left:16px;top:50%;width:28px;height:28px;margin:-14px 0 0;color:#1d3a8a}
+.qa b{display:block;font-size:14.5px;color:#0b1f4d;font-family:var(--fd)}.qa span{display:block;font-size:12px;color:var(--mut);margin-top:2px}
+.chart{background:repeating-linear-gradient(180deg,#e3e9f5 0 1px,transparent 1px 25%);background-size:100% calc(100% - 22px);background-repeat:no-repeat}
+.spk{display:flex;align-items:flex-end;gap:10px;height:150px;padding:6px 4px 0}
+.sc{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px}
+.sc em{font-style:normal;font-size:11px;font-weight:700;color:#0b1f4d;min-height:14px}
+.sb{width:100%;max-width:46px;background:linear-gradient(180deg,#2f5bd6,#1d3a8a);border-radius:5px 5px 0 0;transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+.sb.now{background:linear-gradient(180deg,#f2b705,#d99a00);box-shadow:0 0 12px #f2b70588}
+.sc i{font-style:normal;font-size:11px;color:var(--mut);margin-top:3px}
+.ins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+.ins>div{background:#f4f7fd;border-left:4px solid #1d3a8a;border-radius:4px;padding:9px 12px}
+.ins span{display:block;font-size:11.5px;color:var(--mut)}.ins b{display:block;font-size:15px;color:#0b1f4d;margin-top:2px}
+#ring{min-height:210px;display:grid;align-content:center}
+.rg{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center}
+.rsv{width:150px;height:150px;flex:none}.rn{font:800 28px var(--fd);fill:#0b1f4d}.rl{font:600 11px Arial,sans-serif;fill:#6b7488;letter-spacing:1px;text-transform:uppercase}
+.rr{flex:1 1 160px;min-width:150px}
+.rb{margin:0 0 12px}.rb>div:first-child{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px}.rb b{color:#0b1f4d}
+.rh{font-size:11.5px;color:var(--mut);margin:6px 0 0}
+@media(max-width:900px){header.top{padding:8px 14px 0}header.top .tabs{flex-basis:calc(100% + 28px);margin:4px -14px 0;padding:6px 14px 8px;overflow-x:auto;flex-wrap:nowrap}.tabs button{padding:8px 12px;white-space:nowrap}.hero{padding:22px 20px 28px}.hero h1{font-size:26px}.hbtn{min-width:100%}.ins{grid-template-columns:1fr}}
+@media print{.qa{display:none}}
+</style>
 </head>
 <body class="locked">
 <div id="login"><div class="lbox">
@@ -236,13 +299,14 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 <button id="lcon" type="button" class="o" style="margin-top:8px">Sambungkan &amp; ambil akun</button></details>
 <div class="lsw" style="margin-top:14px">Dikembangkan oleh <b>MasLuki.id</b></div>
 </div></div>
-<header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div>
-<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="treg">Register</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="keluar" class="ub">Keluar</button></nav></header>
+<header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div><div class="hr"><span id="syncpill" class="sp0 off">Belum tersambung</span><span id="who" class="sp0"></span><button id="keluar" class="ub"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Keluar</button></div><nav class="tabs"><button id="tdash"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Dashboard</button><button id="tbuat"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15h6"/></svg>Buat Surat</button><button id="tarsip"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg>Arsip <span class="badge" id="cnt">0</span></button><button id="trekap"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Rekap</button><button id="treg"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>Register</button><button id="tuser" style="display:none"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>Pengguna</button></nav></header>
 <div id="offbar"></div>
 <div id="vdash" class="dash">
-<div class="hero"><div><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p><p class="clock" id="hclock"></p><p class="motto">Melindungi, Mengayomi, dan Melayani</p></div><div class="hbtn"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div>
+<div class="hero"><div class="hl"><p class="hgreet" id="hgreet"></p><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p><p class="motto">Melindungi, Mengayomi, dan Melayani</p></div><div class="hbtn"><div class="ctile"><small>WAKTU SETEMPAT</small><p class="clock" id="hclock"></p></div><div class="hb2"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div></div>
 <div class="stats" id="stats"></div>
+<div class="qa" id="qa"><div role="button" tabindex="0" data-go="buat"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15h6"/></svg><b>Buat Surat</b><span>Terima laporan kehilangan baru</span></div><div role="button" tabindex="0" data-go="arsip"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg><b>Arsip</b><span>Cari, cetak, dan unduh PDF</span></div><div role="button" tabindex="0" data-go="rekap"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><b>Rekap</b><span>Laporan per bulan dan petugas</span></div><div role="button" tabindex="0" data-go="reg"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg><b>Register</b><span>Buku register surat</span></div></div>
 <div class="grid2"><div class="card"><h3>Surat per Bulan <span id="yr" style="color:#6b7488;font-weight:400"></span></h3><div id="chart" class="chart"></div></div><div class="card"><h3>Jenis Barang / Surat Hilang</h3><div id="kinds"></div></div></div>
+<div class="grid2"><div class="card"><h3>Ringkasan &amp; 7 Hari Terakhir</h3><div id="insight"></div></div><div class="card"><h3>Kelengkapan Surat</h3><div id="ring"></div></div></div>
 <div class="grid2"><div class="card"><h3>Surat Terbaru</h3><div class="wrap"><table class="at"><thead><tr><th>Nomor</th><th>Pelapor</th><th>Cetak</th><th>PDF</th></tr></thead><tbody id="recent"></tbody></table></div></div><div class="card"><h3>Perlu Tindakan</h3><div id="todo"></div></div></div>
 </div>
 <div class="app" id="vbuat" style="display:none">
@@ -524,13 +588,18 @@ var BLN=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"
 function rdate(r){var m=(r.waktu||"").match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return{y:+m[1],mo:+m[2]-1,d:+m[3]};var d=new Date(r.saved);return{y:d.getFullYear(),mo:d.getMonth(),d:d.getDate()}}
 function kindOf(l){l=l.trim();if(/^KTP/i.test(l))return"KTP";if(/^KK/i.test(l))return"KK";if(/^Buku Nikah/i.test(l))return"Buku Nikah";if(/^SIM/i.test(l))return"SIM";if(/^STNK/i.test(l))return"STNK";if(/^BPKB/i.test(l))return"BPKB";if(/slip/i.test(l))return"Slip";if(/^Plat/i.test(l))return"Plat Nomor";if(/^KIA/i.test(l))return"KIA";if(/^Akta/i.test(l))return"Akta";if(/^Ijazah/i.test(l))return"Ijazah";if(/^Kartu ATM/i.test(l))return"ATM";if(/^Kartu (BPJS|KIS)/i.test(l))return"BPJS/KIS";if(/^NPWP/i.test(l))return"NPWP";if(/^Paspor/i.test(l))return"Paspor";if(/^Sertifikat/i.test(l))return"Sertifikat";if(/handphone/i.test(l))return"HP";if(/^Surat Bukti Kredit/i.test(l))return"Kredit Bank";return"Lainnya"}
 function pl(ok){return ok?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>'}
+var IC={"file": "<path d=\"M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z\"/><path d=\"M14 3v6h6M8 13h8M8 17h5\"/>", "cal": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18M8 3v4M16 3v4\"/>", "clk": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>", "prn": "<path d=\"M6 9V3h12v6\"/><rect x=\"3\" y=\"9\" width=\"18\" height=\"8\" rx=\"2\"/><path d=\"M7 14h10v7H7z\"/>", "dl": "<path d=\"M12 3v12M7 10l5 5 5-5\"/><path d=\"M4 20h16\"/>"};function icn(k){return '<svg class="ni" viewBox="0 0 24 24" aria-hidden="true">'+IC[k]+'</svg>'}
 function refreshDash(){var n=new Date(),Y=n.getFullYear(),M=n.getMonth(),D=n.getDate();
 $("hdate").textContent=n.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});$("yr").textContent="("+Y+")";
-var tot=DB.length,bln=0,hr=0,bc=0,bp=0,per=[0,0,0,0,0,0,0,0,0,0,0,0],kd={};
-DB.forEach(function(r){var d=rdate(r);if(d.y===Y){per[d.mo]++;if(d.mo===M){bln++;if(d.d===D)hr++}}if(!r.cetak)bc++;if(!r.pdf)bp++;
+var tot=DB.length,bln=0,hr=0,bc=0,bp=0,pv=0,per=[0,0,0,0,0,0,0,0,0,0,0,0],kd={},wd=[0,0,0,0,0,0,0],pm=M===0?{y:Y-1,mo:11}:{y:Y,mo:M-1},l7=[0,0,0,0,0,0,0],both=0;
+DB.forEach(function(r){var d=rdate(r);if(d.y===Y){per[d.mo]++;if(d.mo===M){bln++;if(d.d===D)hr++}}if(d.y===pm.y&&d.mo===pm.mo)pv++;if(!r.cetak)bc++;if(!r.pdf)bp++;if(r.cetak&&r.pdf)both++;
+wd[new Date(d.y,d.mo,d.d).getDay()]++;for(var q=0;q<7;q++){var t=new Date(Y,M,D-q);if(d.y===t.getFullYear()&&d.mo===t.getMonth()&&d.d===t.getDate())l7[6-q]++}
 (r.barang||"").split("\n").forEach(function(l){if(l.trim()){var k=kindOf(l);kd[k]=(kd[k]||0)+1}})});
-var cards=[["Total Surat",tot,"&#128196;","#e8efff"],["Bulan Ini",bln,"&#128197;","#e3f6ea"],["Hari Ini",hr,"&#9200;","#fff4d1"],["Belum Dicetak",bc,"&#128424;","#fde8e6"],["Belum PDF",bp,"&#128229;","#ffeedd"]];
-$("stats").innerHTML=cards.map(function(c){return '<div class="st2"><div class="ic" style="background:'+c[3]+'">'+c[2]+'</div><div><b>'+c[1]+'</b><span>'+c[0]+'</span></div></div>'}).join("");
+var dl=bln-pv,cards=[["Total Surat",tot,"file","seluruh arsip"],["Bulan Ini",bln,"cal",dl===0?"sama dengan bulan lalu":(dl>0?"&#9650; "+dl:"&#9660; "+(-dl))+" dari bulan lalu"],["Hari Ini",hr,"clk","rata-rata "+(D?(bln/D).toFixed(1):"0")+" per hari"],["Belum Dicetak",bc,"prn",bc?"perlu dicetak":"semua sudah dicetak"],["Belum PDF",bp,"dl",bp?"perlu dibuat PDF":"semua sudah di-PDF"]];
+$("stats").innerHTML=cards.map(function(c){return '<div class="st2"><div class="ic">'+icn(c[2])+'</div><div><b data-v="'+c[1]+'">'+c[1]+'</b><span>'+c[0]+'</span><small>'+c[3]+'</small></div></div>'}).join("");
+if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)){var t0=performance.now();var cu=function(now){var k=Math.min(1,(now-t0)/700);document.querySelectorAll("#stats b").forEach(function(el){el.textContent=Math.round(+el.getAttribute("data-v")*(1-Math.pow(1-k,3)))});if(k<1)requestAnimationFrame(cu)};requestAnimationFrame(cu)}
+var h=n.getHours(),nm=($("who").textContent||"").replace(/\s*\(Admin\)\s*$/,"").trim()||"Petugas";
+$("hgreet").textContent="Selamat "+(h<11?"pagi":h<15?"siang":h<18?"sore":"malam")+", "+nm;
 var mx=Math.max.apply(null,per.concat([1]));
 $("chart").innerHTML=per.map(function(v,i){return '<div class="col"><em>'+(v||"")+'</em><div class="cb'+(i===M?" cur":"")+'" style="height:'+Math.round(v/mx*100*0.8)+'%"></div><i>'+BLN[i]+'</i></div>'}).join("");
 var ks=Object.keys(kd).sort(function(a,b){return kd[b]-kd[a]}),km=ks.length?kd[ks[0]]:1;
@@ -538,9 +607,18 @@ $("kinds").innerHTML=ks.length?ks.map(function(k){return '<div class="kr"><span>
 var rc=DB.slice().sort(function(a,b){return b.saved-a.saved}).slice(0,5);
 $("recent").innerHTML=rc.length?rc.map(function(r){return '<tr><td>'+e(r.no)+'</td><td>'+e(r.nama)+'</td><td>'+pl(r.cetak)+'</td><td>'+pl(r.pdf)+'</td></tr>'}).join(""):'<tr><td colspan="4" class="empty">Belum ada surat. Klik "Buat Surat Baru".</td></tr>';
 var td=DB.filter(function(r){return !r.cetak||!r.pdf}).sort(function(a,b){return b.saved-a.saved}).slice(0,6);
-$("todo").innerHTML=td.length?td.map(function(r){return '<div class="todo-i"><div><b>'+e(r.nama)+'</b><br><span style="color:#6b7488;font-size:12px">'+e(r.no)+'</span><br>'+(r.cetak?'':'<span class="pill r">Belum dicetak</span> ')+(r.pdf?'':'<span class="pill r">Belum PDF</span>')+'</div><button data-i="'+r.id+'">Buka</button></div>'}).join(""):'<div class="empty">Semua surat sudah dicetak dan di-PDF-kan.</div>'}
+$("todo").innerHTML=td.length?td.map(function(r){return '<div class="todo-i"><div><b>'+e(r.nama)+'</b><br><span style="color:#6b7488;font-size:12px">'+e(r.no)+'</span><br>'+(r.cetak?'':'<span class="pill r">Belum dicetak</span> ')+(r.pdf?'':'<span class="pill r">Belum PDF</span>')+'</div><button data-i="'+r.id+'">Buka</button></div>'}).join(""):'<div class="empty">Semua surat sudah dicetak dan di-PDF-kan.</div>'
+var HR=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"],HS=["Min","Sen","Sel","Rab","Kam","Jum","Sab"],wm=Math.max.apply(null,wd),bz=wm?HR[wd.indexOf(wm)]:"-",m7=Math.max.apply(null,l7.concat([1]));
+$("insight").innerHTML='<div class="spk">'+l7.map(function(v,q){var t=new Date(Y,M,D-(6-q));return '<div class="sc"><em>'+(v||"")+'</em><div class="sb'+(q===6?" now":"")+'" style="height:'+Math.max(4,Math.round(v/m7*100))+'%"></div><i>'+HS[t.getDay()]+'</i></div>'}).join("")+'</div>'
++'<div class="ins"><div><span>Total 7 hari terakhir</span><b>'+l7.reduce(function(a,b){return a+b},0)+' surat</b></div><div><span>Hari tersibuk</span><b>'+bz+'</b></div><div><span>Jenis terbanyak</span><b>'+(ks.length?e(ks[0])+" ("+kd[ks[0]]+")":"-")+'</b></div><div><span>Bulan lalu</span><b>'+pv+' surat</b></div></div>';
+var pc=tot?Math.round(both/tot*100):0,C=2*Math.PI*52;
+function pb(l,v){return '<div class="rb"><div><span>'+l+'</span><b>'+v+' / '+tot+'</b></div><div class="kb"><div style="width:'+(tot?Math.round(v/tot*100):0)+'%"></div></div></div>'}
+$("ring").innerHTML='<div class="rg"><svg viewBox="0 0 130 130" class="rsv"><circle cx="65" cy="65" r="52" fill="none" stroke="#e6ecf8" stroke-width="13"/><circle cx="65" cy="65" r="52" fill="none" stroke="#f2b705" stroke-width="13" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+(C*(1-pc/100)).toFixed(1)+'" transform="rotate(-90 65 65)"/><text x="65" y="63" text-anchor="middle" class="rn">'+pc+'%</text><text x="65" y="82" text-anchor="middle" class="rl">tuntas</text></svg><div class="rr">'+pb("Sudah dicetak",tot-bc)+pb("Sudah di-PDF",tot-bp)+'<p class="rh">Tuntas = sudah dicetak dan sudah di-PDF-kan.</p></div></div>';
+}
 $("todo").onclick=function(ev){var b=ev.target.closest("button");if(!b)return;DB.forEach(function(x){if(x.id===b.getAttribute("data-i"))loadRec(x)})};
 $("tdash").onclick=function(){show("dash")};
+$("qa").onclick=function(ev){var t=ev.target.closest("[data-go]");if(!t)return;var g=t.getAttribute("data-go");if(g==="buat")$("dnew").click();else show(g)};
+$("qa").onkeydown=function(ev){if(ev.key==="Enter"||ev.key===" "){var t=ev.target.closest("[data-go]");if(t){ev.preventDefault();t.click()}}};
 $("dnew").onclick=function(){$("baru").click();show("buat")};
 $("dars").onclick=function(){show("arsip")};
 
