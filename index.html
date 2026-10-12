@@ -273,6 +273,10 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 </div>
 <label>Alamat (terisi otomatis)</label>
 <div class="row">
+<div><label>Pilih desa (template)</label><select id="seldesa" autocomplete="off"></select></div>
+<div><label>Pilih dusun (template)</label><select id="seldsn" autocomplete="off"></select></div>
+</div>
+<div class="row">
 <div><label>Dusun</label><input autocomplete="off" id="dsn" list="dl-dsn" placeholder="Muruni"><datalist id="dl-dsn"></datalist></div>
 <div><label>Desa</label><input autocomplete="off" id="desa" list="dl-desa" placeholder="Sidomulyo"><datalist id="dl-desa"></datalist></div>
 </div>
@@ -824,7 +828,16 @@ var key=null;DESA_JTR.forEach(function(d){if(d.toLowerCase()===(desa||"").trim()
 if(key){add(DUSUN_AWAL[key]);add(DUSUN_USER[key])}
 else{DESA_JTR.forEach(function(d){add(DUSUN_AWAL[d]);add(DUSUN_USER[d])})}
 return r.sort()}
-function dsRefresh(){var h="";dsList($("desa").value).forEach(function(d){h+='<option value="'+e(d).replace(/"/g,"&quot;")+'">'});$("dl-dsn").innerHTML=h}
+function dsSel(){var d=$("desa").value.trim().toLowerCase(),a='<option value="">-- pilih desa --</option>',b='<option value="">-- pilih dusun --</option>',hit="";
+DESA_JTR.forEach(function(x){var on=x.toLowerCase()===d;if(on)hit=x;a+='<option'+(on?' selected':'')+'>'+x+'</option>'});
+$("seldesa").innerHTML=a;
+var cur=$("dsn").value.trim().toLowerCase();
+dsList(hit).forEach(function(x){b+='<option'+(x.toLowerCase()===cur?' selected':'')+' value="'+e(x).replace(/"/g,"&quot;")+'">'+e(x)+'</option>'});
+$("seldsn").innerHTML=b}
+$("seldesa").onchange=function(){$("desa").value=this.value;$("dsn").value="";dsRefresh();render()};
+$("seldsn").onchange=function(){if(!this.value)return;$("dsn").value=this.value;
+var v=this.value.toLowerCase();if(!$("desa").value.trim()){DESA_JTR.forEach(function(d){if(((DUSUN_AWAL[d]||[]).concat(DUSUN_USER[d]||[])).some(function(x){return x.toLowerCase()===v}))$("desa").value=d})}dsRefresh();render()};
+function dsRefresh(){dsSel();var h="";dsList($("desa").value).forEach(function(d){h+='<option value="'+e(d).replace(/"/g,"&quot;")+'">'});$("dl-dsn").innerHTML=h}
 function dsInit(){var h="";DESA_JTR.forEach(function(d){h+='<option value="'+d+'">'});$("dl-desa").innerHTML=h;dsRefresh()}
 function dsSimpan(){var ds=$("desa").value.trim(),dn=$("dsn").value.trim(),key=null;
 DESA_JTR.forEach(function(d){if(d.toLowerCase()===ds.toLowerCase())key=d});
@@ -840,6 +853,7 @@ $("desa").addEventListener("blur",dsSimpan);
 $("baru").addEventListener("click",dsRefresh);
 var _lr2=loadRec;loadRec=function(r){_lr2(r);dsRefresh()};
 dsInit();
+["desa","dsn"].forEach(function(k){$(k).addEventListener("input",dsSel)});
 ["kec","kab"].forEach(function(k){$(k).addEventListener("input",function(ev){if(ev.isTrusted)this.dataset.man="1"})});
 $("nik").addEventListener("input",function(){nikCheck(false)});
 $("ttl").addEventListener("input",function(){nikCheck(true)});
