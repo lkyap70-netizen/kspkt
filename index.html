@@ -273,12 +273,8 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 </div>
 <label>Alamat (terisi otomatis)</label>
 <div class="row">
-<div><label>Pilih desa (template)</label><select id="seldesa" autocomplete="off"></select></div>
-<div><label>Pilih dusun (template)</label><select id="seldsn" autocomplete="off"></select></div>
-</div>
-<div class="row">
-<div><label>Dusun</label><input autocomplete="off" id="dsn" list="dl-dsn" placeholder="Muruni"><datalist id="dl-dsn"></datalist></div>
-<div><label>Desa</label><input autocomplete="off" id="desa" list="dl-desa" placeholder="Sidomulyo"><datalist id="dl-desa"></datalist></div>
+<div><label>Dusun</label><input autocomplete="off" id="dsn" placeholder="Muruni"></div>
+<div><label>Desa</label><input autocomplete="off" id="desa" placeholder="Sidomulyo"></div>
 </div>
 <div class="row">
 <div><label>RT</label><input autocomplete="off" id="rt" inputmode="numeric" placeholder="02"></div>
@@ -817,43 +813,6 @@ var tv=$("ttl").value.match(/(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{4})/);
 if(tv&&(+tv[1]!==i.dd||+tv[2]!==i.mm||+tv[3]!==i.y))w.push("tanggal lahir pada kolom tempat/tanggal lahir berbeda dari NIK ("+tg+")");
 if($("jk").value!==i.jk)w.push("jenis kelamin berbeda dari NIK");
 st.innerHTML='<span class="ok">'+e(m.join("; "))+'</span>'+(w.length?'<br><span class="no">Periksa: '+e(w.join("; "))+'</span>':'')+'<br><span style="color:#777">Cocok tidaknya dengan data Dukcapil harus dicek lewat sistem dinas, lalu centang kotak di bawah.</span>';render()}
-/* ===== Pilihan Desa & Dusun (Kec. Jatirogo) =====
- Daftar desa di bawah ini 18 desa Kec. Jatirogo. Daftar dusun ISI SENDIRI di DUSUN_AWAL
- (format: "Desa":["Dusun1","Dusun2"]). Dusun yang pernah Anda ketik juga otomatis tersimpan jadi pilihan. */
-var DESA_JTR=["Bader","Besowo","Demit","Dingil","Jatiklabang","Jombok","Karangtengah","Kebonharjo","Kedungmakam","Ketodan","Ngepon","Paseyan","Sadang","Sekaran","Sidomulyo","Sugihan","Wangi","Wotsogo"];
-var DUSUN_AWAL={"Sidomulyo":["Muruni"]};
-var DUSUN_USER={};try{DUSUN_USER=JSON.parse(store("stpl_dusun")||"{}")||{}}catch(x){DUSUN_USER={}}
-function dsList(desa){var o={},r=[];function add(a){(a||[]).forEach(function(d){var k=d.toLowerCase();if(!o[k]){o[k]=1;r.push(d)}})}
-var key=null;DESA_JTR.forEach(function(d){if(d.toLowerCase()===(desa||"").trim().toLowerCase())key=d});
-if(key){add(DUSUN_AWAL[key]);add(DUSUN_USER[key])}
-else{DESA_JTR.forEach(function(d){add(DUSUN_AWAL[d]);add(DUSUN_USER[d])})}
-return r.sort()}
-function dsSel(){var d=$("desa").value.trim().toLowerCase(),a='<option value="">-- pilih desa --</option>',b='<option value="">-- pilih dusun --</option>',hit="";
-DESA_JTR.forEach(function(x){var on=x.toLowerCase()===d;if(on)hit=x;a+='<option'+(on?' selected':'')+'>'+x+'</option>'});
-$("seldesa").innerHTML=a;
-var cur=$("dsn").value.trim().toLowerCase();
-dsList(hit).forEach(function(x){b+='<option'+(x.toLowerCase()===cur?' selected':'')+' value="'+e(x).replace(/"/g,"&quot;")+'">'+e(x)+'</option>'});
-$("seldsn").innerHTML=b}
-$("seldesa").onchange=function(){$("desa").value=this.value;$("dsn").value="";dsRefresh();render()};
-$("seldsn").onchange=function(){if(!this.value)return;$("dsn").value=this.value;
-var v=this.value.toLowerCase();if(!$("desa").value.trim()){DESA_JTR.forEach(function(d){if(((DUSUN_AWAL[d]||[]).concat(DUSUN_USER[d]||[])).some(function(x){return x.toLowerCase()===v}))$("desa").value=d})}dsRefresh();render()};
-function dsRefresh(){dsSel();var h="";dsList($("desa").value).forEach(function(d){h+='<option value="'+e(d).replace(/"/g,"&quot;")+'">'});$("dl-dsn").innerHTML=h}
-function dsInit(){var h="";DESA_JTR.forEach(function(d){h+='<option value="'+d+'">'});$("dl-desa").innerHTML=h;dsRefresh()}
-function dsSimpan(){var ds=$("desa").value.trim(),dn=$("dsn").value.trim(),key=null;
-DESA_JTR.forEach(function(d){if(d.toLowerCase()===ds.toLowerCase())key=d});
-if(!key||!dn||/^jatirogo$/i.test($("kec").value.trim())===false)return;
-if(dsList(key).some(function(x){return x.toLowerCase()===dn.toLowerCase()}))return;
-(DUSUN_USER[key]=DUSUN_USER[key]||[]).push(dn);store("stpl_dusun",JSON.stringify(DUSUN_USER));dsRefresh()}
-$("desa").addEventListener("input",function(){dsRefresh()});
-$("desa").addEventListener("change",function(){var v=this.value.trim();DESA_JTR.forEach(function(d){if(d.toLowerCase()===v.toLowerCase())$("desa").value=d});dsRefresh();render()});
-$("dsn").addEventListener("change",function(){var v=this.value.trim().toLowerCase(),f=[];
-DESA_JTR.forEach(function(d){if(((DUSUN_AWAL[d]||[]).concat(DUSUN_USER[d]||[])).some(function(x){return x.toLowerCase()===v}))f.push(d)});
-if(!$("desa").value.trim()&&f.length===1){$("desa").value=f[0];dsRefresh()}dsSimpan();render()});
-$("desa").addEventListener("blur",dsSimpan);
-$("baru").addEventListener("click",dsRefresh);
-var _lr2=loadRec;loadRec=function(r){_lr2(r);dsRefresh()};
-dsInit();
-["desa","dsn"].forEach(function(k){$(k).addEventListener("input",dsSel)});
 ["kec","kab"].forEach(function(k){$(k).addEventListener("input",function(ev){if(ev.isTrusted)this.dataset.man="1"})});
 $("nik").addEventListener("input",function(){nikCheck(false)});
 $("ttl").addEventListener("input",function(){nikCheck(true)});
