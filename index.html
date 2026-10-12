@@ -271,7 +271,7 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 </div>
 <div class="sec">Petugas &amp; Pengesahan</div>
 <label>Petugas penerima</label>
-<select autocomplete="off" id="pilih"><option value="bambang">Bambang Himawan</option><option value="priyono">Priyono</option><option value="sukamto">Sukamto</option><option value="wiris">Wiris Ari Wijaya</option><option value="kaswadi">Kaswadi</option><option value="lain">Lainnya (isi manual)</option></select>
+<select autocomplete="off" id="pilih"><option value="bambang">Bambang Himawan</option><option value="priyono">Priyono</option><option value="sukamto">Sukamto</option><option value="wiris">Wiris Ari Wijaya</option><option value="kaswadi">Kaswadi</option><option value="arif">M. Arif Nugroho</option><option value="joko">Joko Susanto</option><option value="sugianto">Sugianto</option><option value="ika">Ika Ari P</option><option value="retno">Retno Hartaji</option><option value="suwignyo">Suwignyo</option><option value="rofiqul">Rofiqul Umam Setiana</option><option value="fahrul">Fahrul Nur Cahyo</option><option value="yulis">Yulistiyono</option><option value="karsimin">Karsimin</option><option value="lain">Lainnya (isi manual)</option></select>
 <div class="row">
 <div><label>Nama petugas</label><input autocomplete="off" id="petugas" value="BAMBANG HIMAWAN"></div>
 <div><label>Pangkat &amp; NRP</label><input autocomplete="off" id="nrp" value="AIPDA NRP 84100747"></div>
@@ -376,7 +376,7 @@ h+='<table class="ttd"><tr><td><br>'+L("PELAPOR")+'<div class="sp"></div>'+N(e($
 h+='<div class="mg">MENGETAHUI<br>'+JUD()+'<div class="sa">'+mgImgs()+'</div>'+N(e($("kspkt").value))+'<br>'+e($("knrp").value)+'</div>';
 h+='</div>';
 $("kertas").innerHTML=h}
-var PT={bambang:["BAMBANG HIMAWAN","AIPDA NRP 84100747"],priyono:["PRIYONO","AIPTU NRP 82020343"],sukamto:["SUKAMTO","AIPDA NRP 77010533"],wiris:["WIRIS ARI WIJAYA","AIPTU NRP 78020059"],kaswadi:["KASWADI","AIPDA NRP 76101071"],lain:["",""]};
+var PT={bambang:["BAMBANG HIMAWAN","AIPDA NRP 84100747"],priyono:["PRIYONO","AIPTU NRP 82020343"],sukamto:["SUKAMTO","AIPDA NRP 77010533"],wiris:["WIRIS ARI WIJAYA","AIPTU NRP 78020059"],kaswadi:["KASWADI","AIPDA NRP 76101071"],arif:["M. ARIF NUGROHO,S.H.","IPTU NRP 82100416"],joko:["JOKO SUSANTO, S.H.","IPTU NRP 74030466"],sugianto:["SUGIANTO","AIPTU NRP 71050246"],ika:["IKA ARI.P, S.H.","AIPTU NRP 81030633"],retno:["RETNO HARTAJI","AIPTU NRP 69070407"],suwignyo:["SUWIGNYO","AIPTU NRP 83070036"],rofiqul:["ROFIQUL UMAM SETIANA","BRIG. NRP 94090247"],fahrul:["FAHRUL NUR CAHYO","AIPTU NRP 81051400"],yulis:["YULISTIYONO","AIPTU NRP 69070433"],karsimin:["KARSIMIN","BRIGPOL NRP 93080528"],lain:["",""]};
 $("pilih").onchange=function(){var v=PT[this.value];$("petugas").value=v[0];$("nrp").value=v[1];render()};
 $("waktu").value=nowLocal();
 $("urut").value=store("stpl_urut")||1;
@@ -661,12 +661,15 @@ if(a==="hapus"){if(u.role==="admin"&&admins<2){alert("Admin terakhir tidak dapat
 if(confirm("Hapus akun "+u.nama+" (NRP "+u.user+")? Surat yang pernah dibuatnya tetap ada di arsip."))delUser(u.id)}};
 
 var SEED=[["M. ARIF NUGROHO,S.H.","82100416","admin","INSPEKTUR POLISI SATU NRP 82100416"],["JOKO SUSANTO, S.H.","74030466"],["SUGIANTO","71050246"],["IKA ARI.P, S.H.","81030633"],["RETNO HARTAJI","69070407"],["SUWIGNYO","83070036"],["SUKAMTO","77010533"],["ROFIQUL UMAM SETIANA","94090247"],["WIRIS ARI WIJAYA","78020059"],["KASWADI, S.H.","76101071"],["FAHRUL NUR CAHYO","81051400"],["BAMBANG HIMAWAN","84100747"],["PRIYONO","82020343"],["YULISTIYONO","69070433"],["KARSIMIN","93080528"],["LUCKY ARDIANSYAH PUTRA","1590","operator",0,1]];
+var RANK={"82100416":"IPTU","74030466":"IPTU","71050246":"AIPTU","81030633":"AIPTU","69070407":"AIPTU","83070036":"AIPTU","77010533":"AIPDA","94090247":"BRIG.","78020059":"AIPTU","76101071":"AIPDA","81051400":"AIPTU","84100747":"AIPDA","82020343":"AIPTU","69070433":"AIPTU","93080528":"BRIGPOL"};
+function fixRanks(){var ch=false;US.forEach(function(u){var r=RANK[u.user];if(r){var w=r+" NRP "+u.user;if(u.nrp!==w){u.nrp=w;u.pangkat=r;u.upd=Date.now();u.sy=false;ch=true}}});
+if(ch){saveUS();US.forEach(function(u){if(!u.sy)pushUser(u)})}}
 function seedUsers(){var done=[];try{done=JSON.parse(store("stpl_seeded2")||"[]")}catch(x){}
 if(store("stpl_seeded")&&!done.length)done=SEED.filter(function(r){return !r[4]}).map(function(r){return r[1]});
 var add=false;
 SEED.forEach(function(r){if(done.indexOf(r[1])<0){if(!findU(r[1])){US.push({id:"s"+r[1],nama:r[0],user:r[1],nrp:r[3]||("NRP "+r[1]),role:r[2]||"operator",created:1,upd:1});add=true}done.push(r[1])}});
 store("stpl_seeded2",JSON.stringify(done));store("stpl_seeded","1");
-if(add){saveUS();US.forEach(pushUser)}}
+if(add){saveUS();US.forEach(pushUser)}fixRanks()}
 function initAuth(){$("llogo").src=LOGO;
 if(cfg().url){$("lurl").value=cfg().url;$("ltok").value=cfg().token;
 syncUsers().then(function(){seedUsers();panel(US.length?"l":"r")},function(){seedUsers();panel(US.length?"l":"r")})}
