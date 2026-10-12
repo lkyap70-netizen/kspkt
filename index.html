@@ -37,12 +37,13 @@ hr{border:0;border-top:1px solid #ddd;margin:12px 0}
 .ttd td{width:50%;vertical-align:top;padding:0;text-align:center}
 .sigw{position:relative;left:-7mm}
 .sp{height:78px;position:relative}
-.sa{position:relative;height:28mm}
+.sa{position:relative;height:17mm}
 .sg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-height:30mm;max-width:52mm}
 .sp .sg{max-height:26mm;max-width:46mm}
-.sa .kap{height:28mm;max-height:none}
+.sa .kap{height:22mm;max-height:none}
+.sa .sg{max-height:22mm}
 .st{position:absolute;left:50%;top:50%;width:29mm;transform:translate(-105%,-55%);opacity:.92;mix-blend-mode:multiply}
-.mg{text-align:center;margin-top:14px}
+.mg{text-align:center;margin-top:8px}
 .nav{padding:12px 16px 0}.nav button{margin:0 6px 0 0}
 #varsip{margin:16px;padding:14px}
 .at{width:100%;border-collapse:collapse;font-size:13px}.at th,.at td{border-bottom:1px solid #e1e5ee;padding:7px 6px;text-align:left;vertical-align:top}
@@ -227,7 +228,7 @@ var H=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"],B=["Januari","F
 var $=function(i){return document.getElementById(i)};
 function e(s){return String(s||"").replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})}
 function L(t){return $("gaya").value==="contoh"?t:"<b>"+t+"</b>"}
-function N(t,pl){if($("gaya").value==="contoh")return pl?"<b>"+t+"</b>":"<b><u>"+t+"</u></b>";return $("fmt").value==="kapolsek"?"<b><u>"+t+"</u></b>":"<b>"+t+"</b>"}
+function N(t,pl){return "<b><u>"+t+"</u></b>"}
 function JUD(){return $("fmt").value==="kapolsek"?"KEPALA KEPOLISIAN SEKTOR JATIROGO":"KEPALA SENTRA PELAYANAN KEPOLISIAN TERPADU<br>SEKTOR JATIROGO"}
 function T(v){return v.toLowerCase().replace(/(^|[\s.\-])([a-z])/g,function(m,a,b){return a+b.toUpperCase()})}
 function ALM(){
