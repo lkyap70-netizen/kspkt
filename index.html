@@ -104,13 +104,52 @@ button.o{background:#fff;color:var(--blue);border:1px solid #b9c5e6;box-shadow:n
 .df{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed #e3e9f5;font-size:13px}
 .df i{color:var(--mut);font-style:normal}
 .dcard button,.df button{margin:0 0 0 4px;padding:5px 10px;font-size:12px}
+#login{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#0b1f4d,#1d3a8a 60%,#2f5bd6)}
+body.locked #login{display:flex}
+body.locked>*:not(#login):not(script){display:none!important}
+.lbox{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:400px;box-shadow:0 12px 40px #0006;border-top:5px solid var(--gold)}
+.lbox h3{margin:0 0 6px;color:var(--blue);font-size:18px}
+.lhead{display:flex;align-items:center;gap:12px;margin-bottom:16px}.lhead img{height:54px;width:54px;object-fit:contain}
+.b1l{font-weight:800;letter-spacing:1px;font-size:17px;color:var(--navy)}.b2l{font-size:12px;color:var(--mut)}
+.lsw{font-size:12.5px;margin-top:12px;color:var(--mut);text-align:center}.lsw a{color:var(--blue);font-weight:700;cursor:pointer}
+#lmsg,#pinmsg{font-size:12.5px;min-height:18px;margin-top:10px;text-align:center}
+.ldrv{margin-top:16px;border-top:1px solid #e3e9f5;padding-top:10px;font-size:12.5px}.ldrv summary{cursor:pointer;color:var(--blue);font-weight:600}
+.lnote{background:#fff4d1;border-radius:8px;padding:8px 10px;font-size:12px;margin:8px 0}
+#pinm{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0008;z-index:50;align-items:center;justify-content:center;padding:20px}
+.tabs .ub{font-size:12px}
 @page{size:215.9mm 330mm;margin:0}
 @media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vdoc{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
 </style>
 </head>
-<body>
+<body class="locked">
+<div id="login"><div class="lbox">
+<div class="lhead"><img id="llogo" alt=""><div><div class="b1l">POLSEK JATIROGO</div><div class="b2l">Sistem Administrasi KSPKT</div></div></div>
+<div id="pl"><h3>Masuk</h3>
+<label>Username</label><input id="lu" autocomplete="username" autocapitalize="none">
+<label>PIN</label><input id="lp" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password">
+<button id="lgo" type="button" style="width:100%;margin:14px 0 0">Masuk</button>
+<div class="lsw">Belum punya akun? <a id="toreg">Daftar di sini</a></div></div>
+<div id="pr" style="display:none"><h3>Daftar Akun Operator</h3>
+<div class="lnote" id="lfirst" style="display:none">Belum ada akun. Akun pertama yang dibuat otomatis menjadi <b>Admin</b>.</div>
+<label>Nama lengkap petugas</label><input id="rn" autocomplete="off" placeholder="Contoh: Bambang Himawan">
+<label>Pangkat &amp; NRP</label><input id="rnr" autocomplete="off" placeholder="Contoh: AIPDA NRP 84100747">
+<label>Username (huruf kecil/angka, 3-20 karakter)</label><input id="ru" autocomplete="off" autocapitalize="none" placeholder="bambang">
+<div class="row"><div><label>PIN (4-8 angka)</label><input id="rp1" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></div><div><label>Ulangi PIN</label><input id="rp2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></div></div>
+<button id="rgo" type="button" style="width:100%;margin:14px 0 0">Daftar &amp; Masuk</button>
+<div class="lsw">Sudah punya akun? <a id="tolog">Masuk</a></div></div>
+<div id="lmsg"></div>
+<details class="ldrv"><summary>Komputer baru? Sambungkan Google Drive</summary>
+<label>URL Web App (Apps Script)</label><input id="lurl" autocomplete="off" placeholder="https://script.google.com/macros/s/.../exec">
+<label>Kode rahasia</label><input id="ltok" type="password" autocomplete="off">
+<button id="lcon" type="button" class="o" style="margin-top:8px">Sambungkan &amp; ambil akun</button></details>
+</div></div>
+<div id="pinm"><div class="lbox" style="max-width:340px"><h3>Ganti PIN</h3>
+<label>PIN lama</label><input id="po" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password">
+<label>PIN baru (4-8 angka)</label><input id="pn" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
+<label>Ulangi PIN baru</label><input id="pn2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
+<button id="pins" type="button">Simpan</button><button id="pinc" type="button" class="o">Batal</button><div id="pinmsg"></div></div></div>
 <header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div>
-<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="tdoc">Dokumentasi</button></nav></header>
+<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="tdoc">Dokumentasi</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="pinbtn" class="ub">Ganti PIN</button><button id="keluar" class="ub">Keluar</button></nav></header>
 <div id="vdash" class="dash">
 <div class="hero"><div><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p></div><div class="hbtn"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div>
 <div class="stats" id="stats"></div>
@@ -195,7 +234,7 @@ button.o{background:#fff;color:var(--blue);border:1px solid #b9c5e6;box-shadow:n
 <div id="varsip" class="panel" style="display:none">
 <h2>Arsip Surat</h2>
 <div class="bar"><input id="q" placeholder="Cari nomor / nama / barang..."><button class="o" id="bak">Backup (JSON)</button><label style="display:inline;margin:0"><span class="o" style="padding:9px 14px;border:1px solid #1d3a8a;border-radius:6px;cursor:pointer;color:#1d3a8a;font-size:13px">Pulihkan</span><input type="file" id="rst" accept=".json" style="display:none"></label></div>
-<div class="wrap"><table class="at"><thead><tr><th>Nomor Surat</th><th>Tanggal</th><th>Pelapor</th><th>Barang / surat</th><th>Cetak</th><th>PDF</th><th>Aksi</th></tr></thead><tbody id="ab"></tbody></table></div>
+<div class="wrap"><table class="at"><thead><tr><th>Nomor Surat</th><th>Tanggal</th><th>Pelapor</th><th>Barang / surat</th><th>Operator</th><th>Cetak</th><th>PDF</th><th>Aksi</th></tr></thead><tbody id="ab"></tbody></table></div>
 <div style="font-size:11px;color:#777;margin-top:8px">Tanpa sinkronisasi, arsip hanya tersimpan di browser ini. Hubungkan ke Google Drive di bawah supaya sama di semua komputer, dan tetap lakukan Backup (JSON) sesekali.</div>
 <div class="sec" style="margin-top:20px">Sinkronisasi Google Drive</div>
 <div class="row"><div><label>URL Web App (Apps Script)</label><input id="gurl" autocomplete="off" placeholder="https://script.google.com/macros/s/.../exec"></div><div><label>Kode rahasia</label><input id="gtok" type="password" autocomplete="off"></div></div>
@@ -221,6 +260,9 @@ button.o{background:#fff;color:var(--blue);border:1px solid #b9c5e6;box-shadow:n
 <div class="bar"><input id="dq" placeholder="Cari judul atau keterangan..." autocomplete="off"><select id="dkf" autocomplete="off" style="width:200px"></select></div>
 <div id="dlist"></div></div>
 </div>
+<div id="vuser" class="dash" style="display:none"><div class="card"><h3>Manajemen Pengguna</h3>
+<div class="wrap"><table class="at"><thead><tr><th>Nama</th><th>Username</th><th>Pangkat / NRP</th><th>Peran</th><th>Aksi</th></tr></thead><tbody id="ub"></tbody></table></div>
+<div style="font-size:11.5px;color:#777;margin-top:8px">Akun baru yang mendaftar otomatis berperan Operator. Admin dapat mereset PIN, mengubah peran, dan menghapus akun. Sebaiknya ada minimal dua Admin supaya tidak terkunci jika satu lupa PIN.</div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -327,7 +369,7 @@ function ok(){if(!$("nama").value.trim()){alert("Nama pelapor wajib diisi.");ret
 function upsert(fl){render();var d={};FL.forEach(function(i){d[i]=$(i).value});CK.forEach(function(i){d[i]=$(i).checked});
 var rec=null;DB.forEach(function(x){if(x.id===curId)rec=x});
 if(!rec){rec={id:"r"+Date.now(),cetak:false,pdf:false};DB.push(rec);curId=rec.id}
-rec.no=noText();rec.urut=+d.urut||0;rec.waktu=d.waktu;rec.nama=d.nama;rec.barang=d.barang;rec.petugas=d.petugas;rec.saved=Date.now();rec.d=d;
+if(!rec.oleh)rec.oleh=who();rec.edit=who();rec.no=noText();rec.urut=+d.urut||0;rec.waktu=d.waktu;rec.nama=d.nama;rec.barang=d.barang;rec.petugas=d.petugas;rec.saved=Date.now();rec.d=d;
 if(fl.cetak)rec.cetak=true;if(fl.pdf)rec.pdf=true;
 saveDB();refreshArsip();pushRec(rec.id);return rec}
 function fname(){return "STPL_"+($("urut").value||"0")+"-"+$("kode").value+"-"+new Date($("waktu").value||Date.now()).getFullYear()+"_"+$("nama").value.trim().toUpperCase().replace(/[^A-Z0-9]+/g,"_")+".pdf"}
@@ -336,18 +378,18 @@ if(!window.html2pdf){alert("Pembuatan PDF otomatis butuh koneksi internet (pusta
 var mh=el.style.minHeight;el.style.minHeight="328mm";
 return html2pdf().set({margin:0,filename:fname(),image:{type:"jpeg",quality:.98},html2canvas:{scale:2,useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:[215.9,330],orientation:"portrait"}}).from(el).toPdf().get("pdf").then(function(pdf){pdf.save(fname());return pdf.output("datauristring")}).then(function(du){el.style.minHeight=mh;upPdf(du);return true},function(e){el.style.minHeight=mh;alert("Gagal membuat PDF: "+e);return false})}
 function nextUrut(){var u=(+$("urut").value||1)+1;store("stpl_urut",String(Math.max(+store("stpl_urut")||1,u)))}
-function show(v){["dash","buat","arsip","rekap","doc"].forEach(function(k){$("v"+k).style.display=k===v?"":"none";$("t"+k).className=k===v?"on":""});if(v==="arsip")refreshArsip();if(v==="dash")refreshDash();if(v==="rekap"){rkInit();renderRekap()}if(v==="doc")docsLoad();if(v!=="buat")syncSoon();window.scrollTo(0,0)}
+function show(v){["dash","buat","arsip","rekap","doc","user"].forEach(function(k){$("v"+k).style.display=k===v?"":"none";$("t"+k).className=k===v?"on":""});if(v==="arsip")refreshArsip();if(v==="dash")refreshDash();if(v==="rekap"){rkInit();renderRekap()}if(v==="doc")docsLoad();if(v==="user")userRender();if(v!=="buat")syncSoon();window.scrollTo(0,0)}
 $("tbuat").onclick=function(){show("buat")};$("tarsip").onclick=function(){show("arsip")};
 function loadRec(rec){FL.forEach(function(i){if(rec.d[i]!==undefined)$(i).value=rec.d[i]});CK.forEach(function(i){$(i).checked=!!rec.d[i]});curId=rec.id;show("buat");render()}
 function drv(r){var u=r.pdfUrl;return u&&/^https:\/\/(drive|docs)\.google\.com\//.test(u)?"<a class='lnk' target='_blank' rel='noopener' href='"+u.replace(/'/g,"%27")+"'>Drive</a>":""}
 function refreshArsip(){$("cnt").textContent=DB.length;var q=($("q").value||"").toLowerCase(),h="";
 DB.slice().sort(function(a,b){return b.saved-a.saved}).forEach(function(r){
 var t=(r.no+" "+r.nama+" "+r.barang).toLowerCase();if(q&&t.indexOf(q)<0)return;
-h+="<tr><td>"+e(r.no)+"</td><td>"+e((r.waktu||"").replace("T"," "))+"</td><td>"+e(r.nama)+"</td><td>"+e((r.barang||"").split("\n")[0].slice(0,70))+"</td><td>"+(r.cetak?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>')+"</td><td>"+(r.pdf?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>')+"</td><td><button data-a='buka' data-i='"+r.id+"'>Buka</button><button class='o' data-a='cetak' data-i='"+r.id+"'>Cetak</button><button class='o' data-a='pdf' data-i='"+r.id+"'>PDF</button><button class='o' data-a='hapus' data-i='"+r.id+"'>Hapus</button>"+drv(r)+"</td></tr>"});
-$("ab").innerHTML=h||"<tr><td colspan='7'>Belum ada surat di arsip.</td></tr>"}
+h+="<tr><td>"+e(r.no)+"</td><td>"+e((r.waktu||"").replace("T"," "))+"</td><td>"+e(r.nama)+"</td><td>"+e((r.barang||"").split("\n")[0].slice(0,70))+"</td><td>"+e(r.oleh||"-")+"</td><td>"+(r.cetak?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>')+"</td><td>"+(r.pdf?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>')+"</td><td><button data-a='buka' data-i='"+r.id+"'>Buka</button><button class='o' data-a='cetak' data-i='"+r.id+"'>Cetak</button><button class='o' data-a='pdf' data-i='"+r.id+"'>PDF</button><button class='o' data-a='hapus' data-i='"+r.id+"'>Hapus</button>"+drv(r)+"</td></tr>"});
+$("ab").innerHTML=h||"<tr><td colspan='8'>Belum ada surat di arsip.</td></tr>"}
 $("q").addEventListener("input",refreshArsip);
 $("ab").onclick=function(ev){var b=ev.target.closest("button");if(!b)return;var id=b.getAttribute("data-i"),a=b.getAttribute("data-a"),rec=null;DB.forEach(function(x){if(x.id===id)rec=x});if(!rec)return;
-if(a==="hapus"){if(confirm("Hapus surat "+rec.no+" ("+rec.nama+") dari arsip?")){delRec(id)}return}
+if(a==="hapus"){if(!canDel(rec)){alert("Surat hanya dapat dihapus oleh Admin atau operator yang membuatnya.");return}if(confirm("Hapus surat "+rec.no+" ("+rec.nama+") dari arsip?")){delRec(id)}return}
 loadRec(rec);
 if(a==="cetak"){setTimeout(function(){window.print();upsert({cetak:true})},200)}
 if(a==="pdf"){makePDF().then(function(o){if(o){upsert({pdf:true});msg("PDF diunduh.")}})}}
@@ -500,6 +542,111 @@ $("dq").addEventListener("input",renderDocs);$("dkf").addEventListener("change",
 $("trekap").onclick=function(){show("rekap")};$("tdoc").onclick=function(){show("doc")};
 show("dash");
 render();
+
+// ===== LOGIN & AKUN PETUGAS =====
+var US=[],SES=null;
+try{US=JSON.parse(store("stpl_users")||"[]")}catch(x){US=[]}
+function saveUS(){try{localStorage.setItem("stpl_users",JSON.stringify(US))}catch(x){}}
+function sha(t){
+if(window.crypto&&crypto.subtle&&window.TextEncoder){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return("0"+x.toString(16)).slice(-2)}).join("")})}
+var h=5381,i;for(i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return Promise.resolve("f"+(h>>>0).toString(16))}
+function hp(salt,user,pin){return sha(salt+":"+user+":"+pin)}
+function rnd(){var a="",i;if(window.crypto&&crypto.getRandomValues){var u=new Uint8Array(8);crypto.getRandomValues(u);for(i=0;i<8;i++)a+=("0"+u[i].toString(16)).slice(-2);return a}
+for(i=0;i<16;i++)a+=Math.floor(Math.random()*16).toString(16);return a}
+function findU(un){var r=null;US.forEach(function(x){if(x.user===un)r=x});return r}
+function findUid(id){var r=null;US.forEach(function(x){if(x.id===id)r=x});return r}
+function curU(){return SES?findUid(SES.id):null}
+function who(){var u=curU();return u?u.nama:""}
+function canDel(rec){var u=curU();return !!u&&(u.role==="admin"||(!!rec.oleh&&rec.oleh===u.nama))}
+function isAdmin(){var u=curU();return !!u&&u.role==="admin"}
+function lmsg(t,er){var m=$("lmsg");m.textContent=t;m.style.color=er?"#b3261e":"#128a3d"}
+function getLk(){try{return JSON.parse(store("stpl_lk")||"{}")}catch(x){return{}}}
+function setLk(n,u){store("stpl_lk",JSON.stringify({n:n,until:u}))}
+
+function pushUser(u){if(!cfg().url)return;enq(function(){return api({action:"userSave",record:u}).then(function(){u.sy=true;saveUS()},function(){})})}
+function delUser(id){US=US.filter(function(x){return x.id!==id});saveUS();userRender();if(!cfg().url)return;
+enq(function(){return api({action:"userDelete",id:id}).then(function(){},function(){var q=[];try{q=JSON.parse(store("stpl_udelq")||"[]")}catch(y){}q.push(id);store("stpl_udelq",JSON.stringify(q))})})}
+function flushUDel(){var q=[];try{q=JSON.parse(store("stpl_udelq")||"[]")}catch(x){}
+if(!q.length)return Promise.resolve();return Promise.all(q.map(function(id){return api({action:"userDelete",id:id})})).then(function(){store("stpl_udelq","[]")})}
+function syncUsers(){if(!cfg().url)return Promise.resolve(false);
+return flushUDel().then(function(){return fetch(curl("&action=userlist")).then(function(r){return r.json()})}).then(function(j){
+if(j.error)throw new Error(j.error);
+var S={},L={},out=[],ps=[],srv=j.users||[];srv.forEach(function(u){S[u.id]=u});US.forEach(function(u){L[u.id]=1});
+US.forEach(function(u){var s=S[u.id];if(!s){if(!u.sy){out.push(u);ps.push(u)}}else if((u.upd||0)>(s.upd||0)){out.push(u);ps.push(u)}else{s.sy=true;out.push(s)}});
+srv.forEach(function(s){if(!L[s.id]){s.sy=true;out.push(s)}});
+US=out;saveUS();
+return Promise.all(ps.map(function(u){return api({action:"userSave",record:u}).then(function(){u.sy=true})})).then(function(){saveUS();return true})})}
+
+function panel(w){$("pl").style.display=w==="l"?"":"none";$("pr").style.display=w==="r"?"":"none";$("lmsg").textContent="";
+$("lfirst").style.display=(w==="r"&&!US.length)?"block":"none"}
+$("toreg").onclick=function(){panel("r")};$("tolog").onclick=function(){panel("l")};
+
+function enter(u){document.body.classList.remove("locked");$("who").textContent=u.nama+(u.role==="admin"?" (Admin)":"");
+$("tuser").style.display=u.role==="admin"?"":"none";
+var nm=u.nama.toUpperCase(),m="lain";for(var k in PT){if(k!=="lain"&&PT[k][0]===nm)m=k}
+$("pilih").value=m;$("petugas").value=nm;$("nrp").value=u.nrp||"";
+if(cfg().url)sync();show("dash");render()}
+function startSes(u){SES={id:u.id};store("stpl_ses",JSON.stringify({id:u.id,exp:Date.now()+12*3600*1000}));$("lu").value="";$("lp").value="";enter(u)}
+
+function failLogin(){var lk=getLk(),n=(lk.n||0)+1;
+if(n>=5){setLk(0,Date.now()+60000);lmsg("Terlalu banyak percobaan salah. Coba lagi dalam 60 detik.",1)}else{setLk(n,0);lmsg("Username atau PIN salah.",1)}}
+function doLogin(){var un=$("lu").value.trim().toLowerCase(),pin=$("lp").value,lk=getLk();
+if(lk.until&&Date.now()<lk.until){lmsg("Terlalu banyak percobaan. Coba lagi dalam "+Math.ceil((lk.until-Date.now())/1000)+" detik.",1);return}
+if(!un||!pin){lmsg("Isi username dan PIN.",1);return}
+var go=function(){var u=findU(un);if(!u){failLogin();return}
+hp(u.salt,u.user,pin).then(function(h){if(h===u.hash){setLk(0,0);startSes(u)}else failLogin()})};
+if(findU(un)||!cfg().url)go();else syncUsers().then(go,go)}
+$("lgo").onclick=doLogin;$("lp").addEventListener("keydown",function(ev){if(ev.key==="Enter")doLogin()});$("lu").addEventListener("keydown",function(ev){if(ev.key==="Enter")$("lp").focus()});
+
+function doReg(){var nm=$("rn").value.trim(),nr=$("rnr").value.trim(),un=$("ru").value.trim().toLowerCase(),p1=$("rp1").value,p2=$("rp2").value;
+if(!nm){lmsg("Nama lengkap wajib diisi.",1);return}
+if(!/^[a-z0-9._-]{3,20}$/.test(un)){lmsg("Username 3-20 karakter: huruf kecil, angka, titik, strip, atau garis bawah.",1);return}
+if(!/^\d{4,8}$/.test(p1)){lmsg("PIN harus 4-8 angka.",1);return}
+if(p1!==p2){lmsg("Ulangi PIN tidak sama.",1);return}
+var go=function(){if(findU(un)){lmsg("Username sudah dipakai.",1);return}
+var salt=rnd();hp(salt,un,p1).then(function(h){var u={id:"u"+Date.now()+rnd().slice(0,4),nama:nm,user:un,nrp:nr,salt:salt,hash:h,role:US.length?"operator":"admin",created:Date.now(),upd:Date.now()};
+US.push(u);saveUS();pushUser(u);$("rn").value="";$("rnr").value="";$("ru").value="";$("rp1").value="";$("rp2").value="";startSes(u)})};
+if(cfg().url){lmsg("Memeriksa akun di Drive...");syncUsers().then(go,function(x){lmsg("Tidak bisa terhubung ke Drive: "+x.message+". Coba lagi.",1)})}else go()}
+$("rgo").onclick=doReg;$("rp2").addEventListener("keydown",function(ev){if(ev.key==="Enter")doReg()});
+
+$("lcon").onclick=function(){var u=$("lurl").value.trim(),t=$("ltok").value.trim();
+if(!/^https:\/\/script\.google\.com\/.+\/exec/.test(u)){lmsg("URL harus berbentuk https://script.google.com/macros/s/.../exec",1);return}
+if(!t){lmsg("Kode rahasia wajib diisi.",1);return}
+store("stpl_gurl",u);store("stpl_gtok",t);$("gurl").value=u;$("gtok").value=t;lmsg("Menghubungkan...");
+syncUsers().then(function(){lmsg("Tersambung. "+US.length+" akun ditemukan.");panel(US.length?"l":"r")},function(x){lmsg("Gagal: "+x.message,1)})};
+
+$("keluar").onclick=function(){store("stpl_ses","");location.reload()};
+$("tuser").onclick=function(){show("user")};
+$("pinbtn").onclick=function(){["po","pn","pn2"].forEach(function(i){$(i).value=""});$("pinmsg").textContent="";$("pinm").style.display="flex"};
+$("pinc").onclick=function(){$("pinm").style.display="none"};
+function pm(t,er){var m=$("pinmsg");m.textContent=t;m.style.color=er?"#b3261e":"#128a3d"}
+$("pins").onclick=function(){var u=curU();if(!u)return;var o=$("po").value,n=$("pn").value,n2=$("pn2").value;
+if(!/^\d{4,8}$/.test(n)){pm("PIN baru harus 4-8 angka.",1);return}
+if(n!==n2){pm("Ulangi PIN baru tidak sama.",1);return}
+hp(u.salt,u.user,o).then(function(h){if(h!==u.hash){pm("PIN lama salah.",1);return}
+var salt=rnd();return hp(salt,u.user,n).then(function(h2){u.salt=salt;u.hash=h2;u.upd=Date.now();u.sy=false;saveUS();pushUser(u);$("pinm").style.display="none";alert("PIN berhasil diganti.")})})};
+
+function userRender(){var me=curU(),h="";
+US.slice().sort(function(a,b){return a.nama.localeCompare(b.nama)}).forEach(function(u){var self=me&&me.id===u.id;
+h+="<tr><td>"+e(u.nama)+(self?" <i style='color:#6b7488'>(Anda)</i>":"")+"</td><td>"+e(u.user)+"</td><td>"+e(u.nrp||"")+"</td><td>"+(u.role==="admin"?'<span class="pill g">Admin</span>':'<span class="pill" style="background:#e8efff;color:#1d3a8a">Operator</span>')+"</td><td><button class='o' data-a='reset' data-i='"+u.id+"'>Reset PIN</button>"+(self?"":"<button class='o' data-a='role' data-i='"+u.id+"'>"+(u.role==="admin"?"Jadikan Operator":"Jadikan Admin")+"</button><button class='o' data-a='hapus' data-i='"+u.id+"'>Hapus</button>")+"</td></tr>"});
+$("ub").innerHTML=h||"<tr><td colspan='5'>Belum ada akun.</td></tr>"}
+$("ub").onclick=function(ev){var b=ev.target.closest("button");if(!b||!isAdmin())return;var u=findUid(b.getAttribute("data-i")),a=b.getAttribute("data-a");if(!u)return;
+var admins=US.filter(function(x){return x.role==="admin"}).length;
+if(a==="reset"){var p=prompt("PIN sementara baru untuk "+u.nama+" (4-8 angka):");if(p===null)return;
+if(!/^\d{4,8}$/.test(p)){alert("PIN harus 4-8 angka.");return}
+var salt=rnd();hp(salt,u.user,p).then(function(h){u.salt=salt;u.hash=h;u.upd=Date.now();u.sy=false;saveUS();pushUser(u);alert("PIN diganti. Minta "+u.nama+" menggantinya lewat tombol Ganti PIN setelah masuk.")})}
+if(a==="role"){if(u.role==="admin"&&admins<2){alert("Harus ada minimal satu Admin.");return}
+u.role=u.role==="admin"?"operator":"admin";u.upd=Date.now();u.sy=false;saveUS();pushUser(u);userRender()}
+if(a==="hapus"){if(u.role==="admin"&&admins<2){alert("Admin terakhir tidak dapat dihapus.");return}
+if(confirm("Hapus akun "+u.nama+" ("+u.user+")? Surat yang pernah dibuatnya tetap ada di arsip."))delUser(u.id)}};
+
+function initAuth(){$("llogo").src=LOGO;
+if(cfg().url){$("lurl").value=cfg().url;$("ltok").value=cfg().token;
+syncUsers().then(function(){if(!US.length)panel("r")},function(){})}
+var ss=null;try{ss=JSON.parse(store("stpl_ses")||"null")}catch(x){}
+if(ss&&ss.exp>Date.now()){var u=findUid(ss.id);if(u){SES={id:u.id};enter(u);return}}
+panel(US.length?"l":"r")}
+initAuth();
 </script>
 </body>
 </html>
