@@ -581,9 +581,14 @@ u.role=u.role==="admin"?"operator":"admin";u.upd=Date.now();u.sy=false;saveUS();
 if(a==="hapus"){if(u.role==="admin"&&admins<2){alert("Admin terakhir tidak dapat dihapus.");return}
 if(confirm("Hapus akun "+u.nama+" (NRP "+u.user+")? Surat yang pernah dibuatnya tetap ada di arsip."))delUser(u.id)}};
 
+var SEED=[["M. ARIF NUGROHO,S.H.","82100416","admin","INSPEKTUR POLISI SATU NRP 82100416"],["JOKO SUSANTO, S.H.","74030466"],["SUGIANTO","71050246"],["IKA ARI.P, S.H.","81030633"],["RETNO HARTAJI","69070407"],["SUWIGNYO","83070036"],["SUKAMTO","77010533"],["ROFIQUL UMAM SETIANA","94090247"],["WIRIS ARI WIJAYA","78020059"],["KASWADI, S.H.","76101071"],["FAHRUL NUR CAHYO","81051400"],["BAMBANG HIMAWAN","84100747"],["PRIYONO","82020343"],["YULISTIYONO","69070433"],["KARSIMIN","93080528"]];
+function seedUsers(){if(store("stpl_seeded"))return;
+SEED.forEach(function(r){if(!findU(r[1]))US.push({id:"s"+r[1],nama:r[0],user:r[1],nrp:r[3]||("NRP "+r[1]),role:r[2]||"operator",created:1,upd:1})});
+saveUS();store("stpl_seeded","1");US.forEach(pushUser)}
 function initAuth(){$("llogo").src=LOGO;
 if(cfg().url){$("lurl").value=cfg().url;$("ltok").value=cfg().token;
-syncUsers().then(function(){if(!US.length)panel("r")},function(){})}
+syncUsers().then(function(){seedUsers();panel(US.length?"l":"r")},function(){seedUsers();panel(US.length?"l":"r")})}
+else seedUsers();
 var ss=null;try{ss=JSON.parse(store("stpl_ses")||"null")}catch(x){}
 if(ss&&ss.exp>Date.now()){var u=findUid(ss.id);if(u){SES={id:u.id};enter(u);return}}
 panel(US.length?"l":"r")}
