@@ -294,7 +294,17 @@ jalan:["Slip Surat Jalan",[["Tanggal","tgl","date"],["No.","no",null],["Nopol","
 timbang:["Slip Timbang",[["Tanggal","tgl","date"],["No.","no",null],["Berat (Kg)","berat",null],["Nopol","nopol",null],["Nama sopir","sopir",null],["Dari (perusahaan)","pt",null]],function(){return "1(satu) lembar slip timbang tanggal "+FT("tgl")+" No."+V("no")+" dengan berat "+V("berat")+" Kg dengan kendaraan Nopol "+V("nopol")+" Sopir an."+V("sopir")+" Dari "+V("pt")+"."}],
 sim:["SIM",[["Golongan","gol",null],["No. SIM","no",null],["Atas nama","an",plp]],function(){return "SIM "+V("gol")+" dengan No."+V("no")+" An."+V("an")+"."}],
 stnk:["STNK",[["Nopol","nopol",null],["Merk/Type","type",null],["Atas nama","an",plp]],function(){return "STNK dengan Nopol "+V("nopol")+" ("+V("type")+") An."+V("an")+"."}],
-bpkb:["BPKB",[["Nopol","nopol",null],["No. BPKB","no",null],["Atas nama","an",plp]],function(){return "BPKB dengan Nopol "+V("nopol")+" No."+V("no")+" An."+V("an")+"."}]
+bpkb:["BPKB",[["Nopol","nopol",null],["No. BPKB","no",null],["Atas nama","an",plp]],function(){return "BPKB dengan Nopol "+V("nopol")+" No."+V("no")+" An."+V("an")+"."}],
+platno:["Plat Nomor Kendaraan",[["Nopol","nopol",null],["Merk/Type","type",null],["Atas nama","an",plp]],function(){return "1(satu) buah plat nomor kendaraan Nopol "+V("nopol")+" ("+V("type")+") An."+V("an")+"."}],
+kia:["KIA (Kartu Identitas Anak)",[["Nik","nik",null],["Atas nama","an",null]],function(){return "KIA (Kartu Identitas Anak) dengan Nik."+V("nik")+" An."+V("an")+"."}],
+akta:["Akta Kelahiran",[["No. akta","no",null],["Atas nama","an",plp]],function(){return "Akta Kelahiran dengan No."+V("no")+" An."+V("an")+"."}],
+ijazah:["Ijazah",[["Jenjang (SD/SMP/SMA/D3/S1)","jenjang",null],["No. ijazah","no",null],["Nama sekolah / kampus","sek",null],["Tahun lulus","thn",null],["Atas nama","an",plp]],function(){return "Ijazah "+V("jenjang")+" dengan No."+V("no")+" dari "+V("sek")+" tahun "+V("thn")+" An."+V("an")+"."}],
+atm:["Kartu ATM / Debit",[["Nama bank","bank",null],["No. kartu / rekening","no",null],["Atas nama","an",plp]],function(){return "Kartu ATM / Debit Bank "+V("bank")+" dengan No."+V("no")+" An."+V("an")+"."}],
+bpjs:["BPJS / KIS",[["Jenis (BPJS Kesehatan / KIS / BPJS Ketenagakerjaan)","jenis",null],["No. kartu","no",null],["Atas nama","an",plp]],function(){return "Kartu "+V("jenis")+" dengan No."+V("no")+" An."+V("an")+"."}],
+npwp:["NPWP",[["No. NPWP","no",null],["Atas nama","an",plp]],function(){return "NPWP dengan No."+V("no")+" An."+V("an")+"."}],
+paspor:["Paspor",[["No. paspor","no",null],["Atas nama","an",plp]],function(){return "Paspor dengan No."+V("no")+" An."+V("an")+"."}],
+sertif:["Sertifikat Tanah",[["Jenis (SHM/HGB)","jenis",null],["No. sertifikat","no",null],["Atas nama","an",plp],["Letak tanah","lt",null]],function(){return "Sertifikat Tanah "+V("jenis")+" No."+V("no")+" An."+V("an")+" terletak di "+V("lt")+"."}],
+hp:["Handphone",[["Merk/Type","type",null],["Warna","warna",null],["IMEI","imei",null],["No. HP","nohp",null]],function(){return "1(satu) unit handphone merk/type "+V("type")+" warna "+V("warna")+" IMEI "+V("imei")+" No."+V("nohp")+"."}]
 };
 for(var bk in BT){$("bjenis").innerHTML+='<option value="'+bk+'">'+BT[bk][0]+'</option>'}
 function bbuild(){var t=BT[$("bjenis").value],h="";
@@ -351,7 +361,7 @@ refreshArsip();
 $("hlogo").src=LOGO;
 var BLN=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
 function rdate(r){var m=(r.waktu||"").match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return{y:+m[1],mo:+m[2]-1,d:+m[3]};var d=new Date(r.saved);return{y:d.getFullYear(),mo:d.getMonth(),d:d.getDate()}}
-function kindOf(l){l=l.trim();if(/^KTP/i.test(l))return"KTP";if(/^KK/i.test(l))return"KK";if(/^Buku Nikah/i.test(l))return"Buku Nikah";if(/^SIM/i.test(l))return"SIM";if(/^STNK/i.test(l))return"STNK";if(/^BPKB/i.test(l))return"BPKB";if(/slip/i.test(l))return"Slip";return"Lainnya"}
+function kindOf(l){l=l.trim();if(/^KTP/i.test(l))return"KTP";if(/^KK/i.test(l))return"KK";if(/^Buku Nikah/i.test(l))return"Buku Nikah";if(/^SIM/i.test(l))return"SIM";if(/^STNK/i.test(l))return"STNK";if(/^BPKB/i.test(l))return"BPKB";if(/slip/i.test(l))return"Slip";if(/^Plat/i.test(l))return"Plat Nomor";if(/^KIA/i.test(l))return"KIA";if(/^Akta/i.test(l))return"Akta";if(/^Ijazah/i.test(l))return"Ijazah";if(/^Kartu ATM/i.test(l))return"ATM";if(/^Kartu (BPJS|KIS)/i.test(l))return"BPJS/KIS";if(/^NPWP/i.test(l))return"NPWP";if(/^Paspor/i.test(l))return"Paspor";if(/^Sertifikat/i.test(l))return"Sertifikat";if(/handphone/i.test(l))return"HP";return"Lainnya"}
 function pl(ok){return ok?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>'}
 function refreshDash(){var n=new Date(),Y=n.getFullYear(),M=n.getMonth(),D=n.getDate();
 $("hdate").textContent=n.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});$("yr").textContent="("+Y+")";
