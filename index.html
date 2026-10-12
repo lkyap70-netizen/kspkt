@@ -356,7 +356,7 @@ h+='<table class="ttd"><tr><td><br>'+L("PELAPOR")+'<div class="sp"></div>'+N(e($
 h+='<div class="mg">MENGETAHUI<br>'+JUD()+'<div class="sa">'+mgImgs()+'</div>'+N(e($("kspkt").value))+'<br>'+e($("knrp").value)+'</div>';
 h+='</div>';
 $("kertas").innerHTML=h}
-var PT={bambang:["BAMBANG HIMAWAN","AIPDA NRP 84100747"],priyono:["PRIYONO","AIPTU NRP 82020343"],sukamto:["SUKAMTO","AIPDA NRP 77010533"],wiris:["WIRIS ARI WIJAYA","AIPTU NRP 78020059"],kaswadi:["KASWADI","AIPTU NRP 76101071"],lain:["",""]};
+var PT={bambang:["BAMBANG HIMAWAN","AIPDA NRP 84100747"],priyono:["PRIYONO","AIPTU NRP 82020343"],sukamto:["SUKAMTO","AIPDA NRP 77010533"],wiris:["WIRIS ARI WIJAYA","AIPTU NRP 78020059"],kaswadi:["KASWADI","AIPDA NRP 76101071"],lain:["",""]};
 $("pilih").onchange=function(){var v=PT[this.value];$("petugas").value=v[0];$("nrp").value=v[1];render()};
 $("waktu").value=nowLocal();
 $("urut").value=store("stpl_urut")||1;
@@ -386,7 +386,9 @@ bpjs:["BPJS / KIS",[["Jenis (BPJS Kesehatan / KIS / BPJS Ketenagakerjaan)","jeni
 npwp:["NPWP",[["No. NPWP","no",null],["Atas nama","an",plp]],function(){return "NPWP dengan No."+V("no")+" An."+V("an")+"."}],
 paspor:["Paspor",[["No. paspor","no",null],["Atas nama","an",plp]],function(){return "Paspor dengan No."+V("no")+" An."+V("an")+"."}],
 sertif:["Sertifikat Tanah",[["Jenis (SHM/HGB)","jenis",null],["No. sertifikat","no",null],["Atas nama","an",plp],["Letak tanah","lt",null]],function(){return "Sertifikat Tanah "+V("jenis")+" No."+V("no")+" An."+V("an")+" terletak di "+V("lt")+"."}],
-hp:["Handphone",[["Merk/Type","type",null],["Warna","warna",null],["IMEI","imei",null],["No. HP","nohp",null]],function(){return "1(satu) unit handphone merk/type "+V("type")+" warna "+V("warna")+" IMEI "+V("imei")+" No."+V("nohp")+"."}]
+hp:["Handphone",[["Merk/Type","type",null],["Warna","warna",null],["IMEI","imei",null],["No. HP","nohp",null]],function(){return "1(satu) unit handphone merk/type "+V("type")+" warna "+V("warna")+" IMEI "+V("imei")+" No."+V("nohp")+"."}],
+kredit:["Surat Bukti Kredit Bank",[["Nama bank / leasing","bank",null],["Jenis surat (Perjanjian Kredit / Bukti Angsuran / Slip Pinjaman)","jenis",null],["No. kontrak / kredit","no",null],["Atas nama","an",plp]],function(){return "Surat Bukti Kredit Bank "+V("bank")+" ("+V("jenis")+") dengan No."+V("no")+" An."+V("an")+"."}],
+lain:["Surat Bukti Lainnya",[["Nama surat / bukti","nm",null],["Nomor (boleh kosong)","no",null],["Diterbitkan oleh (boleh kosong)","ins",null],["Atas nama","an",plp]],function(){var n=$("b_no").value.trim(),i=$("b_ins").value.trim();return V("nm")+(n?" dengan No."+n:"")+(i?" dari "+i:"")+" An."+V("an")+"."}]
 };
 for(var bk in BT){$("bjenis").innerHTML+='<option value="'+bk+'">'+BT[bk][0]+'</option>'}
 function bbuild(){var t=BT[$("bjenis").value],h="";
@@ -443,7 +445,7 @@ refreshArsip();
 $("hlogo").src=LOGO;
 var BLN=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
 function rdate(r){var m=(r.waktu||"").match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return{y:+m[1],mo:+m[2]-1,d:+m[3]};var d=new Date(r.saved);return{y:d.getFullYear(),mo:d.getMonth(),d:d.getDate()}}
-function kindOf(l){l=l.trim();if(/^KTP/i.test(l))return"KTP";if(/^KK/i.test(l))return"KK";if(/^Buku Nikah/i.test(l))return"Buku Nikah";if(/^SIM/i.test(l))return"SIM";if(/^STNK/i.test(l))return"STNK";if(/^BPKB/i.test(l))return"BPKB";if(/slip/i.test(l))return"Slip";if(/^Plat/i.test(l))return"Plat Nomor";if(/^KIA/i.test(l))return"KIA";if(/^Akta/i.test(l))return"Akta";if(/^Ijazah/i.test(l))return"Ijazah";if(/^Kartu ATM/i.test(l))return"ATM";if(/^Kartu (BPJS|KIS)/i.test(l))return"BPJS/KIS";if(/^NPWP/i.test(l))return"NPWP";if(/^Paspor/i.test(l))return"Paspor";if(/^Sertifikat/i.test(l))return"Sertifikat";if(/handphone/i.test(l))return"HP";return"Lainnya"}
+function kindOf(l){l=l.trim();if(/^KTP/i.test(l))return"KTP";if(/^KK/i.test(l))return"KK";if(/^Buku Nikah/i.test(l))return"Buku Nikah";if(/^SIM/i.test(l))return"SIM";if(/^STNK/i.test(l))return"STNK";if(/^BPKB/i.test(l))return"BPKB";if(/slip/i.test(l))return"Slip";if(/^Plat/i.test(l))return"Plat Nomor";if(/^KIA/i.test(l))return"KIA";if(/^Akta/i.test(l))return"Akta";if(/^Ijazah/i.test(l))return"Ijazah";if(/^Kartu ATM/i.test(l))return"ATM";if(/^Kartu (BPJS|KIS)/i.test(l))return"BPJS/KIS";if(/^NPWP/i.test(l))return"NPWP";if(/^Paspor/i.test(l))return"Paspor";if(/^Sertifikat/i.test(l))return"Sertifikat";if(/handphone/i.test(l))return"HP";if(/^Surat Bukti Kredit/i.test(l))return"Kredit Bank";return"Lainnya"}
 function pl(ok){return ok?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>'}
 function refreshDash(){var n=new Date(),Y=n.getFullYear(),M=n.getMonth(),D=n.getDate();
 $("hdate").textContent=n.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});$("yr").textContent="("+Y+")";
