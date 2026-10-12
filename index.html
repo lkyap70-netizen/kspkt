@@ -370,8 +370,9 @@ if(g("dsn"))a.push("Dsn."+g("dsn"));
 if(g("rt"))a.push("Rt."+n2(g("rt")));
 if(g("rw"))a.push("Rw."+n2(g("rw")));
 if(g("desa"))a.push("Ds."+g("desa"));
-a.push("Kec."+(g("kec")||"Jatirogo"));
-a.push("Kab."+(g("kab")||"Tuban"));
+var kb=g("kab"),kc=g("kec")||(!kb||/tuban/i.test(kb)?"Jatirogo":"");
+if(kc)a.push("Kec."+kc);
+a.push(/^kota /i.test(kb)?kb:"Kab."+(kb||"Tuban"));
 return a.length?a.join(" ")+".":""}
 function SGN(){return $("cttd").checked}
 function pnImg(){var k=$("pilih").value;return $("cttd2").checked&&SG[k]&&k!=="kap"?'<img class="sg" src="'+SG[k]+'" alt="">':""}
@@ -415,7 +416,7 @@ $("pilih").onchange=function(){var v=PT[this.value];$("petugas").value=v[0];$("n
 $("waktu").value=nowLocal();
 $("urut").value=store("stpl_urut")||1;
 document.querySelectorAll("input,select,textarea").forEach(function(i){i.addEventListener("input",render)});
-$("baru").onclick=function(){["nama","nik","ttl","dsn","rt","rw","desa","barang","thilang"].forEach(function(i){$(i).value=""});$("nikcek").checked=false;$("nikst").innerHTML="";$("waktu").value=nowLocal();render()};
+$("baru").onclick=function(){["nama","nik","ttl","dsn","rt","rw","desa","barang","thilang"].forEach(function(i){$(i).value=""});$("nikcek").checked=false;$("nikst").innerHTML="";["kec","kab"].forEach(function(k){delete $(k).dataset.man;$(k).value=k==="kec"?"Jatirogo":"Tuban"});$("waktu").value=nowLocal();render()};
 var KP={kapolsek:["M. ARIF NUGROHO,S.H.","INSPEKTUR POLISI SATU NRP 82100416"],wiris:["WIRIS ARI WIJAYA","AIPTU NRP 78020059"],priyono:PT.priyono,redno:["REDNO HARTADI","AIPTU NRP 69070407"]};
 $("fmt").onchange=function(){var v=KP[this.value];$("kspkt").value=v[0];$("knrp").value=v[1];render()};
 
@@ -762,6 +763,10 @@ XLSX.utils.book_append_sheet(wb,ws,"Register");XLSX.writeFile(wb,nm+".xlsx")};
 
 // ===== VALIDASI NIK & ISI OTOMATIS PELAPOR =====
 var PROV={11:1,12:1,13:1,14:1,15:1,16:1,17:1,18:1,19:1,21:1,31:1,32:1,33:1,34:1,35:1,36:1,51:1,52:1,53:1,61:1,62:1,63:1,64:1,65:1,71:1,72:1,73:1,74:1,75:1,76:1,81:1,82:1,91:1,92:1,93:1,94:1,95:1,96:1};
+var KABJT={"01":"Pacitan","02":"Ponorogo","03":"Trenggalek","04":"Tulungagung","05":"Blitar","06":"Kediri","07":"Malang","08":"Lumajang","09":"Jember","10":"Banyuwangi","11":"Bondowoso","12":"Situbondo","13":"Probolinggo","14":"Pasuruan","15":"Sidoarjo","16":"Mojokerto","17":"Jombang","18":"Nganjuk","19":"Madiun","20":"Magetan","21":"Ngawi","22":"Bojonegoro","23":"Tuban","24":"Lamongan","25":"Gresik","26":"Bangkalan","27":"Sampang","28":"Pamekasan","29":"Sumenep","71":"Kota Kediri","72":"Kota Blitar","73":"Kota Malang","74":"Kota Probolinggo","75":"Kota Pasuruan","76":"Kota Mojokerto","77":"Kota Madiun","78":"Kota Surabaya","79":"Kota Batu"};
+var KECTUBAN={"01":"Kenduruan","02":"Bangilan","03":"Senori","04":"Singgahan","05":"Montong","06":"Parengan","07":"Soko","08":"Rengel","09":"Plumpang","10":"Widang","11":"Palang","12":"Semanding","13":"Tuban","14":"Jenu","15":"Merakurak","16":"Kerek","17":"Tambakboyo","18":"Jatirogo","19":"Bancar","20":"Grabagan"};
+function nikWil(n){if(n.slice(0,2)!=="35")return null;var kb=KABJT[n.slice(2,4)];if(!kb)return null;
+var kc=n.slice(2,4)==="23"?(KECTUBAN[n.slice(4,6)]||""):"";return{kab:kb,kec:kc}}
 function nikInfo(n){
 if(!/^\d{16}$/.test(n))return{ok:false,msg:"NIK harus 16 angka (baru "+n.length+")"};
 if(/^(\d)\1{15}$/.test(n))return{ok:false,msg:"NIK tidak wajar"};
@@ -777,14 +782,21 @@ function nikCheck(nf){var n=$("nik").value.replace(/\D/g,"");if(n!==$("nik").val
 if(!n){st.innerHTML="";return}
 var i=nikInfo(n);if(!i.ok){st.innerHTML='<span class="no">'+e(i.msg)+'</span>';return}
 var tg=pad(i.dd)+"-"+pad(i.mm)+"-"+i.y,m=["Format NIK valid: "+i.jk+", lahir "+tg],w=[],pr=nikPrev(n);
-if(!nf){$("jk").value=i.jk;
+if(!nf){var fp=!!(pr&&!$("nama").value.trim());$("jk").value=i.jk;
 if(pr&&!$("nama").value.trim()){var d=pr.d;["nama","jk","ttl","agama","wn","kerja","tel","dsn","desa","rt","rw","kec","kab"].forEach(function(k){if(d[k]!==undefined)$(k).value=d[k]});m.push("data pelapor diisi dari laporan sebelumnya ("+pr.no+")")}
-else if(!$("ttl").value.trim()){$("ttl").value=tg;w.push("tambahkan tempat lahir di depan tanggal")}}
+else if(!$("ttl").value.trim()){var w0=nikWil(n);$("ttl").value=(w0?w0.kab.replace(/^Kota /,"")+" ":"")+tg;w.push(w0?"tempat lahir ("+w0.kab.replace(/^Kota /,"")+") hanya perkiraan dari kode NIK, sesuaikan dengan KTP":"tambahkan tempat lahir di depan tanggal")}
+if(!fp){var wl=nikWil(n);
+if(wl&&!$("kec").dataset.man&&!$("kab").dataset.man){$("kab").value=wl.kab;$("kec").value=wl.kec;
+m.push("kecamatan/kabupaten diisi dari kode NIK ("+(wl.kec?"Kec. "+wl.kec+", ":"")+(/^Kota /.test(wl.kab)?"":"Kab. ")+wl.kab+")");
+w.push(wl.kec?"kecamatan/kabupaten dari kode NIK adalah tempat NIK diterbitkan, sesuaikan dengan alamat di KTP jika berbeda":"kecamatan belum bisa diisi otomatis (di luar Kab. Tuban), isi manual");
+w.push("dusun, desa, RT, RW tidak ada di dalam NIK, isi manual dari KTP")}
+else if(!wl&&!$("kec").dataset.man&&!$("kab").dataset.man){$("kec").value="Jatirogo";$("kab").value="Tuban";w.push("NIK bukan dari Jawa Timur, kecamatan/kabupaten tidak bisa diisi otomatis, isi manual sesuai KTP")}}}
 if(pr&&pr.nama&&$("nama").value.trim()&&pr.nama.trim().toUpperCase()!==$("nama").value.trim().toUpperCase())w.push("NIK ini pernah dipakai atas nama "+pr.nama+" ("+pr.no+")");
 var tv=$("ttl").value.match(/(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{4})/);
 if(tv&&(+tv[1]!==i.dd||+tv[2]!==i.mm||+tv[3]!==i.y))w.push("tanggal lahir pada kolom tempat/tanggal lahir berbeda dari NIK ("+tg+")");
 if($("jk").value!==i.jk)w.push("jenis kelamin berbeda dari NIK");
 st.innerHTML='<span class="ok">'+e(m.join("; "))+'</span>'+(w.length?'<br><span class="no">Periksa: '+e(w.join("; "))+'</span>':'')+'<br><span style="color:#777">Cocok tidaknya dengan data Dukcapil harus dicek lewat sistem dinas, lalu centang kotak di bawah.</span>';render()}
+["kec","kab"].forEach(function(k){$(k).addEventListener("input",function(ev){if(ev.isTrusted)this.dataset.man="1"})});
 $("nik").addEventListener("input",function(){nikCheck(false)});
 $("ttl").addEventListener("input",function(){nikCheck(true)});
 var _lr=loadRec;loadRec=function(r){_lr(r);nikCheck(true)};
