@@ -80,6 +80,16 @@ function userSheet_() {
   return sh;
 }
 
+function numSheet_() {
+  var ss = ss_();
+  var sh = ss.getSheetByName('Nomor') || ss.insertSheet('Nomor');
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['Tahun', 'Nomor', 'Diklaim', 'Oleh']);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
 function sub_(name) {
   var r = root_();
   var it = r.getFoldersByName(name);
@@ -104,6 +114,7 @@ function setup() {
   sheet_();
   docSheet_();
   userSheet_();
+  numSheet_();
   folder_();
   docFolder_();
   Logger.log('Siap. Database dan folder sudah dibuat di folder Drive.');
@@ -171,6 +182,28 @@ function doPost(e) {
   lock.waitLock(25000);
   try {
     var act = b.action;
+
+    // ----- Nomor urut surat (anti ganda) -----
+    if (act === 'claimNo') {
+      var nsh = numSheet_();
+      var yr = +b.year;
+      var want = +b.urut || 1;
+      var used = {};
+      var mx = 0;
+      var nrows = nsh.getLastRow() > 1 ? nsh.getRange(2, 1, nsh.getLastRow() - 1, 2).getValues() : [];
+      nrows.forEach(function (r) {
+        if (+r[0] === yr) { used[+r[1]] = 1; if (+r[1] > mx) mx = +r[1]; }
+      });
+      var ash = sheet_();
+      var arows = ash.getLastRow() > 1 ? ash.getRange(2, 2, ash.getLastRow() - 1, 1).getValues() : [];
+      arows.forEach(function (r) {
+        var m = String(r[0]).match(/B\/\s*(\d+)\s*\/.*?\/\s*(\d{4})\s*\/\s*Polsek/);
+        if (m && +m[2] === yr) { used[+m[1]] = 1; if (+m[1] > mx) mx = +m[1]; }
+      });
+      var nn = (want > 0 && !used[want]) ? want : mx + 1;
+      nsh.appendRow([yr, nn, new Date(), b.by || '']);
+      return out_({ ok: true, no: nn, changed: nn !== want });
+    }
 
     // ----- Akun petugas -----
     if (act === 'userSave') {
