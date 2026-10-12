@@ -19,7 +19,7 @@ button.o{background:#fff;color:#1d3a8a;border:1px solid #1d3a8a}
 hr{border:0;border-top:1px solid #ddd;margin:12px 0}
 .wrap{overflow-x:auto}
 /* ===== KERTAS F4 ===== */
-#kertas{background:#fff;width:215.9mm;min-height:330mm;padding:15mm 16mm 20mm 30mm;margin:0 auto;font-size:11pt;line-height:1.35;box-shadow:0 1px 6px #0003}
+#kertas,#ohkertas{background:#fff;width:215.9mm;min-height:330mm;padding:15mm 16mm 20mm 30mm;margin:0 auto;font-size:11pt;line-height:1.35;box-shadow:0 1px 6px #0003}
 .kop{width:81.5mm;text-align:center;line-height:1.3}
 .kop .al{text-decoration:underline}
 .logo{position:relative;height:16mm}
@@ -27,11 +27,11 @@ hr{border:0;border-top:1px solid #ddd;margin:12px 0}
 .jd{text-align:center;margin:0}
 .nm,.nm *,.nm u{text-decoration:none!important;border-bottom:none!important}
 .nm{text-align:center;margin-bottom:12px}
-#kertas p{margin:0 0 8px;text-align:justify}
-#kertas table.d{margin:0 0 8px 10mm;border-collapse:collapse}
-#kertas table.d td{padding:1px 0;vertical-align:top}
-#kertas ul{margin:0 0 8px;padding-left:5mm;list-style:none}
-#kertas li{padding-left:3mm;text-indent:-3mm}
+#kertas p,#ohkertas p{margin:0 0 8px;text-align:justify}
+#kertas table.d,#ohkertas table.d{margin:0 0 8px 10mm;border-collapse:collapse}
+#kertas table.d td,#ohkertas table.d td{padding:1px 0;vertical-align:top}
+#kertas ul,#ohkertas ul{margin:0 0 8px;padding-left:5mm;list-style:none}
+#kertas li,#ohkertas li{padding-left:3mm;text-indent:-3mm}
 .ket p{margin-bottom:4px}
 .ttd{width:100%;border-collapse:collapse;margin-top:6px}
 .ttd td{width:50%;vertical-align:top;padding:0;text-align:center}
@@ -120,7 +120,7 @@ body.locked>*:not(#login):not(script){display:none!important}
 /* ===== TEMA BHAYANGKARA ===== */
 :root{--red:#d71920;--blue2:#1d4ed8;--fd:Bahnschrift,"DIN Alternate","Arial Narrow",Arial,sans-serif}
 body{background:#eaeff8 repeating-linear-gradient(135deg,#0b1f4d08 0 2px,transparent 2px 16px)}
-#kertas{font-family:Arial,Helvetica,sans-serif}
+#kertas,#ohkertas{font-family:Arial,Helvetica,sans-serif}
 .b1,.b1l,.hero h1,.st2 b,.card h3,.sec,.lbox h3{font-family:var(--fd)}
 header.top{border-bottom:0;background:linear-gradient(110deg,#07163a,#0f2c78 70%,#15399b);overflow:visible}
 header.top:after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:4px;background:repeating-linear-gradient(90deg,var(--red) 0 70px,#fff 70px 74px,var(--blue2) 74px 144px,#fff 144px 148px);background-size:296px 4px;animation:bar 5s linear infinite;box-shadow:0 0 14px #d7192066,0 0 14px #1d4ed866}
@@ -185,35 +185,35 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 .sp0.net{background:#c98a00}
 /* --- Auto-fit: kalau barang hilang banyak, surat dipadatkan agar tetap 1 lembar F4 --- */
 .sigw,.ttd,.mg{break-inside:avoid;page-break-inside:avoid}
-#kertas li,#kertas table.d tr{break-inside:avoid;page-break-inside:avoid}
-#kertas.c1{font-size:10.5pt;line-height:1.3}
-#kertas.c1 p{margin-bottom:6px}
-#kertas.c1 .sp{height:70px}
-#kertas.c2{font-size:10pt;line-height:1.24;padding:13mm 14mm 14mm 30mm}
-#kertas.c2 p{margin-bottom:5px}
-#kertas.c2 .nm{margin-bottom:8px}
-#kertas.c2 .sp{height:60px}#kertas.c2 .sa{height:15mm}
-#kertas.c2 .sp .sg{max-height:21mm}#kertas.c2 .sa .sg{max-height:17mm}#kertas.c2 .sa .kap{height:17mm}
-#kertas.c3{font-size:9.5pt;line-height:1.2;padding:11mm 12mm 12mm 28mm}
-#kertas.c3 p{margin-bottom:4px}#kertas.c3 .ket p{margin-bottom:2px}
-#kertas.c3 .nm{margin-bottom:6px}#kertas.c3 table.d{margin-bottom:5px}
-#kertas.c3 .sp{height:50px}#kertas.c3 .sa{height:12mm}
-#kertas.c3 .sp .sg{max-height:17mm}#kertas.c3 .sa .sg{max-height:13mm}#kertas.c3 .sa .kap{height:13mm}
-#kertas.c4{font-size:9pt;line-height:1.15;padding:9mm 10mm 10mm 26mm}
-#kertas.c4 p{margin-bottom:3px}#kertas.c4 .ket p{margin-bottom:2px}
-#kertas.c4 .nm{margin-bottom:4px}#kertas.c4 table.d{margin-bottom:4px}
-#kertas.c4 .sp{height:42px}#kertas.c4 .sa{height:10mm}
-#kertas.c4 .sp .sg{max-height:14mm}#kertas.c4 .sa .sg{max-height:11mm}#kertas.c4 .sa .kap{height:11mm}
-#kertas.c5{font-size:8.5pt;line-height:1.1;padding:8mm 9mm 9mm 24mm}
-#kertas.c5 p{margin-bottom:2px}#kertas.c5 .ket p{margin-bottom:1px}
-#kertas.c5 .nm{margin-bottom:3px}#kertas.c5 table.d{margin-bottom:3px}#kertas.c5 table.d td{padding:0}
-#kertas.c5 .logo{height:14mm}#kertas.c5 .logo img{width:13mm}
-#kertas.c5 .sp{height:36px}#kertas.c5 .sa{height:9mm}
-#kertas.c5 .sp .sg{max-height:12mm}#kertas.c5 .sa .sg{max-height:9mm}#kertas.c5 .sa .kap{height:9mm}
+#kertas li,#kertas table.d tr,#ohkertas li,#ohkertas table.d tr{break-inside:avoid;page-break-inside:avoid}
+#kertas.c1,#ohkertas.c1{font-size:10.5pt;line-height:1.3}
+#kertas.c1 p,#ohkertas.c1 p{margin-bottom:6px}
+#kertas.c1 .sp,#ohkertas.c1 .sp{height:70px}
+#kertas.c2,#ohkertas.c2{font-size:10pt;line-height:1.24;padding:13mm 14mm 14mm 30mm}
+#kertas.c2 p,#ohkertas.c2 p{margin-bottom:5px}
+#kertas.c2 .nm,#ohkertas.c2 .nm{margin-bottom:8px}
+#kertas.c2 .sp,#ohkertas.c2 .sp{height:60px}#kertas.c2 .sa,#ohkertas.c2 .sa{height:15mm}
+#kertas.c2 .sp .sg,#ohkertas.c2 .sp .sg{max-height:21mm}#kertas.c2 .sa .sg,#ohkertas.c2 .sa .sg{max-height:17mm}#kertas.c2 .sa .kap,#ohkertas.c2 .sa .kap{height:17mm}
+#kertas.c3,#ohkertas.c3{font-size:9.5pt;line-height:1.2;padding:11mm 12mm 12mm 28mm}
+#kertas.c3 p,#ohkertas.c3 p{margin-bottom:4px}#kertas.c3 .ket p,#ohkertas.c3 .ket p{margin-bottom:2px}
+#kertas.c3 .nm,#ohkertas.c3 .nm{margin-bottom:6px}#kertas.c3 table.d,#ohkertas.c3 table.d{margin-bottom:5px}
+#kertas.c3 .sp,#ohkertas.c3 .sp{height:50px}#kertas.c3 .sa,#ohkertas.c3 .sa{height:12mm}
+#kertas.c3 .sp .sg,#ohkertas.c3 .sp .sg{max-height:17mm}#kertas.c3 .sa .sg,#ohkertas.c3 .sa .sg{max-height:13mm}#kertas.c3 .sa .kap,#ohkertas.c3 .sa .kap{height:13mm}
+#kertas.c4,#ohkertas.c4{font-size:9pt;line-height:1.15;padding:9mm 10mm 10mm 26mm}
+#kertas.c4 p,#ohkertas.c4 p{margin-bottom:3px}#kertas.c4 .ket p,#ohkertas.c4 .ket p{margin-bottom:2px}
+#kertas.c4 .nm,#ohkertas.c4 .nm{margin-bottom:4px}#kertas.c4 table.d,#ohkertas.c4 table.d{margin-bottom:4px}
+#kertas.c4 .sp,#ohkertas.c4 .sp{height:42px}#kertas.c4 .sa,#ohkertas.c4 .sa{height:10mm}
+#kertas.c4 .sp .sg,#ohkertas.c4 .sp .sg{max-height:14mm}#kertas.c4 .sa .sg,#ohkertas.c4 .sa .sg{max-height:11mm}#kertas.c4 .sa .kap,#ohkertas.c4 .sa .kap{height:11mm}
+#kertas.c5,#ohkertas.c5{font-size:8.5pt;line-height:1.1;padding:8mm 9mm 9mm 24mm}
+#kertas.c5 p,#ohkertas.c5 p{margin-bottom:2px}#kertas.c5 .ket p,#ohkertas.c5 .ket p{margin-bottom:1px}
+#kertas.c5 .nm,#ohkertas.c5 .nm{margin-bottom:3px}#kertas.c5 table.d,#ohkertas.c5 table.d{margin-bottom:3px}#kertas.c5 table.d td,#ohkertas.c5 table.d td{padding:0}
+#kertas.c5 .logo,#ohkertas.c5 .logo{height:14mm}#kertas.c5 .logo img,#ohkertas.c5 .logo img{width:13mm}
+#kertas.c5 .sp,#ohkertas.c5 .sp{height:36px}#kertas.c5 .sa,#ohkertas.c5 .sa{height:9mm}
+#kertas.c5 .sp .sg,#ohkertas.c5 .sp .sg{max-height:12mm}#kertas.c5 .sa .sg,#ohkertas.c5 .sa .sg{max-height:9mm}#kertas.c5 .sa .kap,#ohkertas.c5 .sa .kap{height:9mm}
 /* sangat banyak (>~25 barang): boleh 2 lembar, tapi blok tanda tangan tidak pernah terpotong/terpisah */
-#kertas.mp{-webkit-box-decoration-break:clone;box-decoration-break:clone}
+#kertas.mp,#ohkertas.mp{-webkit-box-decoration-break:clone;box-decoration-break:clone}
 @page{size:215.9mm 330mm;margin:0}
-@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
+@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas,#ohkertas{box-shadow:none;margin:0}}
 </style>
 <style id="uiplus">
 /* ===== HEADER ===== */
@@ -278,6 +278,26 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 @media(max-width:900px){header.top{padding:8px 14px 0}header.top .tabs{flex-basis:calc(100% + 28px);margin:4px -14px 0;padding:6px 14px 8px;overflow-x:auto;flex-wrap:nowrap}.tabs button{padding:8px 12px;white-space:nowrap}.hero{padding:22px 20px 28px}.hero h1{font-size:26px}.hbtn{min-width:100%}.ins{grid-template-columns:1fr}}
 @media print{.qa{display:none}}
 </style>
+<style id="ohcss">
+/* ===== ORANG HILANG ===== */
+.ohtop{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.ohtop input,.ohtop select{width:auto;min-width:200px}
+.ohtop button{margin:0}
+.pill.y{background:#fff4d1;color:#8a6200}
+.pill.k{background:#eceff4;color:#44506b}
+.pill.b{background:#e3ecff;color:#1d3a8a}
+.ohph{display:flex;gap:12px;align-items:center;margin:4px 0 6px}
+.ohph img{display:block;width:75px;height:100px;object-fit:cover;border:1px solid #cfd7e8;border-radius:4px;background:#f2f5fb}
+.ohph .noimg{width:75px;height:100px;border:1px dashed #b9c5e6;border-radius:4px;display:grid;place-items:center;font-size:11px;color:#6b7488;text-align:center;padding:4px}
+.ohhist{font-size:12px;color:#44506b;margin-top:6px;line-height:1.5}
+.ohwarn{background:#fff4d1;border-left:4px solid #f2b705;padding:7px 10px;border-radius:4px}
+/* foto di kertas surat */
+#ohkertas .ohrow{display:flex;gap:6mm;align-items:flex-start;margin:0 0 8px 10mm}
+#ohkertas .ohrow table.d{margin:0;flex:1}
+#ohkertas .ohfoto{flex:none;width:30mm;height:40mm;object-fit:cover;border:1px solid #000}
+#ohkertas.c3 .ohfoto,#ohkertas.c4 .ohfoto,#ohkertas.c5 .ohfoto{width:24mm;height:32mm}
+#ohkertas .jd{line-height:1.3}
+</style>
 </head>
 <body class="locked">
 <div id="login"><div class="lbox">
@@ -299,7 +319,7 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <button id="lcon" type="button" class="o" style="margin-top:8px">Sambungkan &amp; ambil akun</button></details>
 <div class="lsw" style="margin-top:14px">Dikembangkan oleh <b>MasLuki.id</b></div>
 </div></div>
-<header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div><div class="hr"><span id="syncpill" class="sp0 off">Belum tersambung</span><span id="who" class="sp0"></span><button id="keluar" class="ub"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Keluar</button></div><nav class="tabs"><button id="tdash"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Dashboard</button><button id="tbuat"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15h6"/></svg>Buat Surat</button><button id="tarsip"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg>Arsip <span class="badge" id="cnt">0</span></button><button id="trekap"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Rekap</button><button id="treg"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>Register</button><button id="tuser" style="display:none"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>Pengguna</button></nav></header>
+<header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div><div class="hr"><span id="syncpill" class="sp0 off">Belum tersambung</span><span id="who" class="sp0"></span><button id="keluar" class="ub"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Keluar</button></div><nav class="tabs"><button id="tdash"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Dashboard</button><button id="tbuat"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15h6"/></svg>Buat Surat</button><button id="tarsip"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg>Arsip <span class="badge" id="cnt">0</span></button><button id="trekap"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Rekap</button><button id="treg"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>Register</button><button id="toh"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7.5" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 11-4.6"/><circle cx="17" cy="16" r="3"/><path d="M19.2 18.2l2.3 2.3"/></svg>Orang Hilang <span class="badge" id="ohcnt">0</span></button><button id="tuser" style="display:none"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>Pengguna</button></nav></header>
 <div id="offbar"></div>
 <div id="vdash" class="dash">
 <div class="hero"><div class="hl"><p class="hgreet" id="hgreet"></p><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p><p class="motto">Melindungi, Mengayomi, dan Melayani</p></div><div class="hbtn"><div class="ctile"><small>WAKTU SETEMPAT</small><p class="clock" id="hclock"></p></div><div class="hb2"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div></div>
@@ -413,6 +433,137 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <div class="wrap"><table class="at"><thead><tr><th>Nama</th><th>NRP (login)</th><th>Peran</th><th>Aksi</th></tr></thead><tbody id="ub"></tbody></table></div>
 <div style="font-size:11.5px;color:#777;margin-top:8px">Akun baru yang mendaftar otomatis berperan Operator. Admin dapat mengubah peran dan menghapus akun. Masuk hanya memakai NRP tanpa PIN.</div></div></div>
 <footer id="devfoot">Sistem Administrasi KSPKT Polsek Jatirogo &middot; Dikembangkan oleh <b>MasLuki.id</b></footer>
+<!-- ===== ORANG HILANG: markup (disuntikkan oleh script #ohjs saat halaman dimuat) ===== -->
+<template id="ohtpl">
+<div id="voh" style="display:none">
+
+<!-- Daftar laporan -->
+<div id="ohlist" class="panel" style="margin:16px;padding:14px">
+<h2>Laporan Orang Hilang</h2>
+<div id="ohdup"></div>
+<div class="ohtop">
+<button id="ohnew" type="button">+ Laporan baru</button>
+<input id="ohq" placeholder="Cari nomor / nama / pelapor / tempat...">
+<select id="ohfs"><option value="">Semua status</option><option value="cari">Dalam pencarian</option><option value="selamat">Ditemukan selamat</option><option value="wafat">Ditemukan meninggal dunia</option><option value="cabut">Laporan dicabut</option></select>
+<button class="o" id="ohxls" type="button">Ekspor Excel</button>
+<button class="o" id="ohbak" type="button">Backup (JSON)</button>
+<label style="display:inline;margin:0"><span class="o" style="padding:9px 14px;border:1px solid #1d3a8a;border-radius:6px;cursor:pointer;color:#1d3a8a;font-size:13px">Pulihkan</span><input type="file" id="ohrst" accept=".json" style="display:none"></label>
+</div>
+<div class="wrap"><table class="at"><thead><tr><th>Nomor Surat</th><th>Dilaporkan</th><th>Orang hilang</th><th>Pelapor</th><th>Terakhir terlihat</th><th>Status</th><th>Cetak</th><th>PDF</th><th>Aksi</th></tr></thead><tbody id="ohb"></tbody></table></div>
+<div id="ohnote" style="font-size:12px;margin-top:8px"></div>
+<div style="font-size:11px;color:#777;margin-top:8px">Laporan tersimpan di browser ini dan ikut tersinkron ke Google Drive (sheet &quot;Orang Hilang&quot;) bila sudah tersambung. Lakukan Backup (JSON) sesekali. Status &quot;Dalam pencarian&quot; dihitung sejak tanggal terakhir terlihat.</div>
+</div>
+
+<!-- Form + pratinjau surat -->
+<div class="app" id="ohform" style="display:none">
+<div class="panel">
+<div class="sec first">Nomor &amp; Waktu</div>
+<div class="row">
+<div><label>Nomor urut</label><input autocomplete="off" id="oh_urut" type="number" min="1"></div>
+<div><label>Kode (sesuai bulan)</label><input autocomplete="off" id="oh_kode" readonly></div>
+</div>
+<div id="oh_urutst" style="font-size:12px;margin-top:4px"></div>
+<label>Kode klasifikasi arsip (bagian tengah nomor surat)</label><input autocomplete="off" id="oh_klas" placeholder="TUK.7.2.2">
+<label>Tanggal &amp; jam laporan</label><input autocomplete="off" id="oh_waktu" type="datetime-local">
+
+<div class="sec">Data Pelapor</div>
+<label>Nama pelapor</label><input autocomplete="off" id="oh_pnama">
+<div class="row">
+<div><label>Jenis kelamin</label><select autocomplete="off" id="oh_pjk"><option>Laki laki</option><option>Perempuan</option></select></div>
+<div><label>NIK</label><input autocomplete="off" id="oh_pnik" inputmode="numeric" maxlength="16"></div>
+</div>
+<div id="oh_nikst" style="font-size:12px;margin-top:6px;line-height:1.5"></div>
+<div style="font-size:13px;margin-top:6px"><label style="display:inline;color:#111"><input type="checkbox" id="oh_nikcek" autocomplete="off" style="width:auto"> NIK sudah dicek ke KTP asli / sistem dinas (Dukcapil)</label></div>
+<label>Tempat / tanggal lahir</label><input autocomplete="off" id="oh_pttl" placeholder="Tuban 22-07-1980">
+<div class="row">
+<div><label>Agama</label><input autocomplete="off" id="oh_pagama"></div>
+<div><label>Pekerjaan</label><input autocomplete="off" id="oh_pkerja"></div>
+</div>
+<div class="row">
+<div><label>No. telepon / WhatsApp</label><input autocomplete="off" id="oh_ptel" inputmode="tel"></div>
+<div><label>Hubungan dengan yang hilang</label><input autocomplete="off" id="oh_hub" list="oh_hubl" placeholder="Orang tua, suami, anak..."></div>
+</div>
+<datalist id="oh_hubl"><option value="Orang tua"><option value="Anak"><option value="Suami"><option value="Istri"><option value="Saudara kandung"><option value="Kerabat / keluarga"><option value="Teman"><option value="Tetangga"><option value="Majikan / pemberi kerja"></datalist>
+<label>Alamat pelapor (lengkap)</label><input autocomplete="off" id="oh_palamat" placeholder="Dsn. ... Rt.01 Rw.02 Ds. ... Kec. Jatirogo Kab. Tuban.">
+
+<div class="sec">Data Orang yang Hilang</div>
+<label>Foto (opsional, untuk surat dan pencarian)</label>
+<div class="ohph"><div id="oh_phbox"></div><div>
+<input type="file" id="oh_foto" accept="image/*" style="display:none">
+<button class="o" type="button" id="oh_fpick" style="margin-top:0">Pilih / ambil foto</button><button class="o" type="button" id="oh_fdel" style="margin-top:0">Hapus foto</button>
+<div style="font-size:11px;color:#777;margin-top:4px">Foto dikecilkan otomatis agar ringan disimpan dan disinkronkan.</div></div></div>
+<label>Nama lengkap</label><input autocomplete="off" id="oh_nama">
+<label>Nama panggilan / alias</label><input autocomplete="off" id="oh_alias">
+<div class="row">
+<div><label>Jenis kelamin</label><select autocomplete="off" id="oh_jk"><option>Laki laki</option><option>Perempuan</option></select></div>
+<div><label>Kategori</label><select autocomplete="off" id="oh_kat"><option>Dewasa</option><option>Anak (di bawah 18 tahun)</option><option>Lansia</option><option>Penyandang disabilitas</option><option>Gangguan jiwa / ingatan</option></select></div>
+</div>
+<div id="oh_katst" style="font-size:12px;margin-top:4px"></div>
+<div class="row">
+<div><label>Tempat / tanggal lahir</label><input autocomplete="off" id="oh_ttl" placeholder="Tuban 22-07-2008"></div>
+<div><label>Umur (tahun)</label><input autocomplete="off" id="oh_umur" inputmode="numeric" maxlength="3"></div>
+</div>
+<div class="row">
+<div><label>Agama</label><input autocomplete="off" id="oh_agama"></div>
+<div><label>Pekerjaan / sekolah</label><input autocomplete="off" id="oh_kerja"></div>
+</div>
+<label>Alamat terakhir</label><input autocomplete="off" id="oh_alamat">
+
+<div class="sec">Ciri-ciri Fisik</div>
+<div class="row">
+<div><label>Tinggi badan (cm)</label><input autocomplete="off" id="oh_tinggi" inputmode="numeric"></div>
+<div><label>Berat badan (kg)</label><input autocomplete="off" id="oh_berat" inputmode="numeric"></div>
+</div>
+<div class="row">
+<div><label>Warna kulit</label><input autocomplete="off" id="oh_kulit" placeholder="Sawo matang"></div>
+<div><label>Rambut</label><input autocomplete="off" id="oh_rambut" placeholder="Hitam, lurus, pendek"></div>
+</div>
+<label>Ciri khusus (tato, tahi lalat, bekas luka, cacat, kacamata, dll.)</label><textarea id="oh_ciri" rows="2" autocomplete="off"></textarea>
+<label>Pakaian terakhir dikenakan</label><textarea id="oh_pakaian" rows="2" autocomplete="off"></textarea>
+<label>Membawa (HP, tas, kendaraan, dokumen, dll.)</label><input autocomplete="off" id="oh_bawa">
+<label>Kondisi kesehatan / kejiwaan (obat rutin, penyakit, dll.)</label><input autocomplete="off" id="oh_kes">
+
+<div class="sec">Kronologi</div>
+<label>Terakhir terlihat (tanggal &amp; jam)</label><input autocomplete="off" id="oh_tlihat" type="datetime-local">
+<label>Tempat terakhir terlihat</label><input autocomplete="off" id="oh_tmp">
+<label>Kronologi singkat</label><textarea id="oh_kron" rows="4" autocomplete="off"></textarea>
+<label>Dugaan sementara pelapor (opsional)</label><textarea id="oh_dugaan" rows="2" autocomplete="off"></textarea>
+<label>Upaya pencarian yang sudah dilakukan</label><textarea id="oh_upaya" rows="2" autocomplete="off"></textarea>
+
+<div class="sec">Petugas &amp; Pengesahan</div>
+<label>Petugas penerima</label>
+<select autocomplete="off" id="oh_pilih"></select>
+<div class="row">
+<div><label>Nama petugas</label><input autocomplete="off" id="oh_petugas"></div>
+<div><label>Pangkat &amp; NRP</label><input autocomplete="off" id="oh_nrp"></div>
+</div>
+<label>Mengetahui (Kapolsek / Kepala SPKT)</label>
+<select autocomplete="off" id="oh_fmt"></select>
+<div class="row">
+<div><label>Yang mengetahui</label><input autocomplete="off" id="oh_kspkt"></div>
+<div><label>Pangkat &amp; NRP</label><input autocomplete="off" id="oh_knrp"></div>
+</div>
+<label>Stempel &amp; tanda tangan</label>
+<div style="font-size:13px"><label style="display:inline;color:#111;margin-right:14px"><input type="checkbox" id="oh_cstempel" autocomplete="off" style="width:auto"> Beri stempel</label><label style="display:inline;color:#111"><input type="checkbox" id="oh_cttd" autocomplete="off" style="width:auto"> TTD mengetahui</label></div>
+<div style="font-size:13px;margin-top:4px"><label style="display:inline;color:#111"><input type="checkbox" id="oh_cttd2" autocomplete="off" style="width:auto"> TTD penerima (otomatis sesuai nama yang dipilih)</label></div>
+
+<div class="sec" id="oh_stsec">Tindak Lanjut (tidak ikut tercetak)</div>
+<div class="row">
+<div><label>Status pencarian</label><select autocomplete="off" id="oh_status"><option value="cari">Dalam pencarian</option><option value="selamat">Ditemukan selamat</option><option value="wafat">Ditemukan meninggal dunia</option><option value="cabut">Laporan dicabut</option></select></div>
+<div><label>Tanggal status</label><input autocomplete="off" id="oh_sdate" type="date"></div>
+</div>
+<label>Catatan tindak lanjut</label><textarea id="oh_snote" rows="2" autocomplete="off" placeholder="Contoh: ditemukan di rumah saudara di Bojonegoro, sudah dijemput keluarga."></textarea>
+<div class="ohhist" id="oh_hist"></div>
+
+<div class="actions"><button id="oh_cetak" type="button">Cetak + PDF + Arsip</button><button class="o" id="oh_pdf" type="button">Unduh PDF</button><button class="o" id="oh_simpan" type="button">Simpan</button><button class="o" id="oh_baru" type="button">Laporan baru</button><button class="o" id="oh_back" type="button">&larr; Daftar</button>
+<div id="ohmsg" style="font-size:12px;color:#128a3d;margin-top:8px;min-height:16px"></div></div>
+</div>
+<div class="wrap"><div id="ohkertas"></div></div>
+</div>
+
+</div>
+</template>
+
 <script>
 function loadLib(u){var i=0;(function n(){if(i>=u.length)return;var s=document.createElement("script");s.src=u[i++];s.onerror=n;document.head.appendChild(s)})()}
 loadLib(["lib/html2pdf.bundle.min.js","https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"]);
@@ -932,6 +1083,474 @@ window.addEventListener("offline",netUI);
 window.addEventListener("online",function(){netUI();if(cfg().url)sync().then(function(){flushPdf()})});
 if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener("load",function(){navigator.serviceWorker.register("pwabuilder-sw.js").catch(function(){})})}
 netUI();initAuth();
+</script>
+<script id="ohjs">
+// ===== LAPORAN ORANG HILANG =====
+// Berdiri di atas script utama: memakai $, e, T, H, RM, tgl, pad, store, nowLocal, rdate, LOGO, SG, ST, PT, KP,
+// cfg, api, curl, enq, setSy, who, canDel, drv, nikInfo, dlBlob, icn, IC, show, refreshDash, doSync.
+(function () {
+var tpl = $("ohtpl");
+if (!tpl) return;
+document.body.insertBefore(tpl.content.cloneNode(true), $("devfoot"));
+
+var FLO = ["urut", "klas", "waktu", "pnama", "pjk", "pnik", "pttl", "pagama", "pkerja", "ptel", "hub", "palamat",
+  "nama", "alias", "jk", "kat", "ttl", "umur", "agama", "kerja", "alamat",
+  "tinggi", "berat", "kulit", "rambut", "ciri", "pakaian", "bawa", "kes",
+  "tlihat", "tmp", "kron", "dugaan", "upaya",
+  "pilih", "petugas", "nrp", "fmt", "kspkt", "knrp", "status", "sdate", "snote"];
+var CKO = ["cstempel", "cttd", "cttd2", "nikcek"];
+var OHS = {
+  cari: ["Dalam pencarian", "r"],
+  selamat: ["Ditemukan selamat", "g"],
+  wafat: ["Ditemukan meninggal dunia", "k"],
+  cabut: ["Laporan dicabut", "y"]
+};
+var OH = [], ohCur = null, ohPhoto = "", ohMode = "list";
+try { OH = JSON.parse(store("stpl_oh") || "[]"); } catch (x) { OH = []; }
+if (!Array.isArray(OH)) OH = [];
+
+function ohG(i) { return $("oh_" + i); }
+function ohV(i) { return ohG(i).value.trim(); }
+function ohSaveLS() {
+  try { localStorage.setItem("stpl_oh", JSON.stringify(OH)); return true; }
+  catch (x) { alert("Laporan gagal disimpan (penyimpanan browser penuh atau diblokir). Segera lakukan Backup."); return false; }
+}
+function ohGet(id) { var r = null; OH.forEach(function (x) { if (x.id === id) r = x; }); return r; }
+function ohNote(t, er) { var n = $("ohnote"); n.textContent = t || ""; n.style.color = er ? "#b3261e" : "#128a3d"; }
+function ohMsg(t) { var m = $("ohmsg"); m.textContent = t; setTimeout(function () { if (m.textContent === t) m.textContent = ""; }, 4000); }
+function ohIso() { var n = new Date(); return n.getFullYear() + "-" + pad(n.getMonth() + 1) + "-" + pad(n.getDate()); }
+function ohDt(s) { var d = s ? new Date(s) : null; return d && !isNaN(d) ? d : null; }
+function ohHari(d) { return H[d.getDay()] + " tanggal " + tgl(d); }
+function ohJam(d) { return "pukul " + pad(d.getHours()) + "." + pad(d.getMinutes()) + " WIB"; }
+function ohBr(s) { return e(s).replace(/\n/g, "<br>"); }
+
+// ---------- Nomor surat ----------
+function ohYr() { return new Date(ohG("waktu").value || Date.now()).getFullYear(); }
+function ohNoText() {
+  var w = new Date(ohG("waktu").value || nowLocal());
+  return "B/ " + (ohG("urut").value || "...") + " /" + RM[w.getMonth()] + "/ " + (ohV("klas") || "...") + " / " + w.getFullYear() + " / Polsek";
+}
+function ohMax(y) { var m = 0; OH.forEach(function (r) { if (rdate(r).y === y && (+r.urut || 0) > m) m = +r.urut; }); return m; }
+function ohTaken(y, n) { var t = null; OH.forEach(function (r) { if (r.id !== ohCur && rdate(r).y === y && +r.urut === n) t = r; }); return t; }
+function ohNoSt() {
+  var t = ohTaken(ohYr(), +ohG("urut").value), s = $("oh_urutst");
+  s.innerHTML = t ? '<span class="no">Nomor ' + (+ohG("urut").value) + ' sudah dipakai laporan atas nama ' + e(t.nama) + '. Akan diganti otomatis saat disimpan.</span>'
+    : '<span style="color:#777">Nomor urut laporan orang hilang berdiri sendiri (terpisah dari surat kehilangan barang).</span>';
+}
+function ohSuggest() { ohG("urut").value = ohMax(ohYr()) + 1; ohRender(); ohNoSt(); }
+function ohClaim() {
+  var y = ohYr(), want = +ohG("urut").value || 1;
+  if (ohTaken(y, want)) {
+    var n = ohMax(y) + 1;
+    ohG("urut").value = n; ohRender(); ohNoSt();
+    ohMsg("Nomor urut diganti menjadi " + n + " karena nomor " + want + " sudah dipakai.");
+  }
+}
+
+// ---------- Kertas surat ----------
+function ohRows(a) {
+  var h = "";
+  a.forEach(function (r) { h += '<tr><td style="width:150px">' + r[0] + '</td><td style="width:14px">:</td><td>' + ohBr(r[1]) + '</td></tr>'; });
+  return h;
+}
+function ohJud() { return ohG("fmt").value === "kapolsek" ? "KEPALA KEPOLISIAN SEKTOR JATIROGO" : "KEPALA SENTRA PELAYANAN KEPOLISIAN TERPADU<br>SEKTOR JATIROGO"; }
+function ohPn() { var k = ohG("pilih").value; return ohG("cttd2").checked && SG[k] && k !== "kap" ? '<img class="sg" src="' + SG[k] + '" alt="">' : ""; }
+function ohMg() {
+  var f = ohG("fmt").value, k = f === "kapolsek" ? "kap" : f === "wiris" ? "wiris" : "", h = "";
+  if (ohG("cttd").checked && k) h += '<img class="sg ' + (k === "kap" ? "kap" : "") + '" src="' + SG[k] + '" alt="">';
+  if (ohG("cstempel").checked) h += '<img class="st" src="' + ST + '" alt="">';
+  return h;
+}
+function ohFit() {
+  var el = $("ohkertas"); if (!el || !el.offsetWidth) return;
+  var lim = (arguments[0] || 322) * 96 / 25.4, mh = el.style.minHeight;
+  el.className = ""; el.style.minHeight = "0";
+  var lv = 0; while (el.scrollHeight > lim && lv < 5) { lv++; el.className = "c" + lv; }
+  if (el.scrollHeight > lim) el.className = "c5 mp";
+  el.style.minHeight = mh;
+}
+function ohRender() {
+  var w = ohDt(ohG("waktu").value) || new Date();
+  ohG("kode").value = RM[w.getMonth()];
+  var tl = ohDt(ohG("tlihat").value);
+  var h = '<div class="kop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<br>SEKTOR JATIROGO<br><span class="al">Jalan Raya Barat 277 Jatirogo Tuban 62362</span></div><div class="logo"><img src="' + LOGO + '" alt=""></div>';
+  h += '<div class="jd"><u>SURAT TANDA PENERIMAAN LAPORAN<br>ORANG HILANG</u></div><div class="nm">Nomor : ' + e(ohNoText()) + '</div>';
+  h += '<p style="text-indent:10mm">Pada hari ini ' + ohHari(w) + ' ' + ohJam(w) + ', telah datang ke Polsek Jatirogo seorang ' + e(ohG("pjk").value) + ' yang bernama dibawah ini :</p>';
+  h += '<table class="d">' + ohRows([
+    ["N a m a", ohV("pnama").toUpperCase()], ["N I K", ohV("pnik")], ["Tempat/ Tanggal lahir", ohV("pttl")],
+    ["Agama", ohV("pagama")], ["Pekerjaan", ohV("pkerja")], ["Alamat", ohV("palamat")], ["No. telepon", ohV("ptel")]
+  ]) + '</table>';
+  h += '<p>Melaporkan bahwa ' + (ohV("hub") ? 'seorang yang berhubungan dengan pelapor sebagai <b>' + e(ohV("hub")) + '</b>' : 'seseorang') + ' dinyatakan hilang / tidak diketahui keberadaannya, dengan identitas sebagai berikut :</p>';
+  var o = [["N a m a", ohV("nama").toUpperCase() + (ohV("alias") ? " (alias " + ohV("alias") + ")" : "")], ["Jenis kelamin", ohG("jk").value]];
+  if (ohV("ttl")) o.push(["Tempat/ Tanggal lahir", ohV("ttl")]);
+  if (ohV("umur")) o.push(["Umur", ohV("umur") + " tahun"]);
+  if (ohV("agama")) o.push(["Agama", ohV("agama")]);
+  if (ohV("kerja")) o.push(["Pekerjaan", ohV("kerja")]);
+  o.push(["Alamat", ohV("alamat")]);
+  if (ohV("tinggi") || ohV("berat")) o.push(["Tinggi / Berat badan", (ohV("tinggi") ? ohV("tinggi") + " cm" : "-") + " / " + (ohV("berat") ? ohV("berat") + " kg" : "-")]);
+  if (ohV("kulit")) o.push(["Warna kulit", ohV("kulit")]);
+  if (ohV("rambut")) o.push(["Rambut", ohV("rambut")]);
+  if (ohV("ciri")) o.push(["Ciri khusus", ohV("ciri")]);
+  if (ohV("pakaian")) o.push(["Pakaian terakhir", ohV("pakaian")]);
+  if (ohV("bawa")) o.push(["Membawa", ohV("bawa")]);
+  if (ohV("kes")) o.push(["Kondisi kesehatan", ohV("kes")]);
+  var tb = '<table class="d">' + ohRows(o) + '</table>';
+  h += ohPhoto ? '<div class="ohrow">' + tb + '<img class="ohfoto" src="' + ohPhoto + '" alt=""></div>' : tb;
+  h += '<p>Yang bersangkutan terakhir terlihat pada ' + (tl ? ohHari(tl) + ' ' + ohJam(tl) : 'hari ... tanggal ...') + ' di ' + (ohV("tmp") ? e(ohV("tmp")) : '...') + '.</p>';
+  if (ohV("kron")) h += '<p><b>Kronologi singkat :</b><br>' + ohBr(ohV("kron")) + '</p>';
+  if (ohV("dugaan")) h += '<p><b>Dugaan sementara pelapor :</b><br>' + ohBr(ohV("dugaan")) + '</p>';
+  if (ohV("upaya")) h += '<p><b>Upaya pencarian yang telah dilakukan :</b><br>' + ohBr(ohV("upaya")) + '</p>';
+  h += '<div class="ket"><p><b>KETERANGAN :</b></p>'
+    + '<p>- Surat Tanda Penerimaan Laporan ini merupakan bukti bahwa laporan telah diterima oleh Polsek Jatirogo dan bukan keterangan mengenai keberadaan atau keadaan orang yang dilaporkan.</p>'
+    + '<p>- Apabila orang yang dilaporkan telah ditemukan atau telah kembali, pelapor wajib segera memberitahukan kepada Polsek Jatirogo.</p>'
+    + '<p>- Pelapor bertanggung jawab atas kebenaran keterangan yang disampaikan. Laporan atau keterangan yang tidak benar dapat dikenai sanksi sesuai ketentuan hukum yang berlaku.</p></div>';
+  h += '<p>Demikian Surat Tanda Penerimaan Laporan Orang Hilang ini dibuat untuk dapat dipergunakan seperlunya</p>';
+  h += '<div class="sigw"><table class="ttd"><tr><td><br>' + L("PELAPOR") + '<div class="sp"></div>' + N(e(ohV("pnama").toUpperCase()), 1) + '</td><td>Jatirogo, ' + tgl(w) + '<br>' + L("YANG MENERIMA") + '<div class="sp">' + ohPn() + '</div>' + N(e(ohV("petugas"))) + '<br>' + e(ohV("nrp")) + '</td></tr></table>';
+  h += '<div class="mg">MENGETAHUI<br>' + ohJud() + '<div class="sa">' + ohMg() + '</div>' + N(e(ohV("kspkt"))) + '<br>' + e(ohV("knrp")) + '</div></div>';
+  $("ohkertas").innerHTML = h;
+  ohKatSt();
+  ohFit();
+}
+function ohKatSt() {
+  var k = ohG("kat").value, s = $("oh_katst");
+  s.innerHTML = k !== "Dewasa" ? '<div class="ohwarn">Kategori rentan (' + e(k.toLowerCase()) + '): tandai sebagai <b>prioritas</b> dan perbarui status secepatnya.</div>' : "";
+}
+
+// ---------- Foto ----------
+function ohPhotoUI() {
+  $("oh_phbox").innerHTML = ohPhoto ? '<img src="' + ohPhoto + '" alt="Foto">' : '<div class="noimg">Belum ada foto</div>';
+}
+function ohShrink(file) {
+  return new Promise(function (res, rej) {
+    var rd = new FileReader();
+    rd.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        var sc = Math.min(1, 260 / Math.max(im.width, im.height)), q = 0.72, out = "";
+        for (var t = 0; t < 6; t++) {
+          var c = document.createElement("canvas");
+          c.width = Math.max(1, Math.round(im.width * sc)); c.height = Math.max(1, Math.round(im.height * sc));
+          var cx = c.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, c.width, c.height); cx.drawImage(im, 0, 0, c.width, c.height);
+          out = c.toDataURL("image/jpeg", q);
+          if (out.length <= 22000) break;
+          q = Math.max(0.35, q - 0.1); sc *= 0.85;
+        }
+        out.length <= 26000 ? res(out) : rej(new Error("Foto terlalu besar"));
+      };
+      im.onerror = function () { rej(new Error("File bukan gambar")); };
+      im.src = rd.result;
+    };
+    rd.onerror = function () { rej(new Error("Gagal membaca file")); };
+    rd.readAsDataURL(file);
+  });
+}
+
+// ---------- NIK pelapor, umur otomatis ----------
+function ohNik() {
+  var el = ohG("pnik"), n = el.value.replace(/\D/g, ""); if (n !== el.value) el.value = n;
+  var st = $("oh_nikst"); if (!n) { st.innerHTML = ""; return; }
+  var i = nikInfo(n);
+  if (!i.ok) { st.innerHTML = '<span class="no">' + e(i.msg) + '</span>'; return; }
+  st.innerHTML = '<span class="ok">Format NIK valid: ' + i.jk + ', lahir ' + pad(i.dd) + '-' + pad(i.mm) + '-' + i.y + '</span><br><span style="color:#777">Cocokkan dengan KTP asli / sistem dinas, lalu centang kotak di bawah.</span>';
+  ohG("pjk").value = i.jk;
+}
+function ohAge() {
+  var m = ohV("ttl").match(/(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{4})/); if (!m) return;
+  var b = new Date(+m[3], +m[2] - 1, +m[1]), n = new Date(), a = n.getFullYear() - b.getFullYear();
+  if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--;
+  if (isNaN(a) || a < 0 || a > 120) return;
+  var u = ohG("umur"), k = ohG("kat");
+  if (!u.dataset.man) u.value = a;
+  if (!k.dataset.man) {
+    if (a < 18) k.value = "Anak (di bawah 18 tahun)";
+    else if (a >= 60) k.value = "Lansia";
+    else if (k.value.indexOf("Anak") === 0 || k.value === "Lansia") k.value = "Dewasa";
+  }
+}
+
+// ---------- Simpan / buka / baru ----------
+function ohHistUI(rec) {
+  var a = (rec && rec.hist) || [], h = "";
+  a.slice(-5).reverse().forEach(function (x) {
+    var d = new Date(x.t), S = OHS[x.s] || OHS.cari;
+    h += "&bull; " + pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + d.getFullYear() + " " + pad(d.getHours()) + "." + pad(d.getMinutes()) + " &ndash; " + S[0] + (x.by ? " (" + e(x.by) + ")" : "") + (x.n ? ": " + e(x.n) : "") + "<br>";
+  });
+  $("oh_hist").innerHTML = h ? "<b>Riwayat status</b><br>" + h : "";
+}
+function ohOk() {
+  if (!ohV("pnama")) { alert("Nama pelapor wajib diisi."); return false; }
+  if (!ohV("nama")) { alert("Nama orang yang hilang wajib diisi."); return false; }
+  if (!ohG("tlihat").value) { alert("Isi tanggal & jam terakhir terlihat."); return false; }
+  var n = ohV("pnik");
+  if (!n) { if (!confirm("NIK pelapor belum diisi. Tetap lanjutkan?")) return false; }
+  else {
+    var i = nikInfo(n);
+    if (!i.ok) { alert("NIK pelapor tidak valid: " + i.msg + ". Periksa kembali sesuai KTP."); ohG("pnik").focus(); return false; }
+    if (!ohG("nikcek").checked && !confirm("NIK belum ditandai sudah dicek ke KTP asli / sistem dinas. Tetap simpan?")) return false;
+  }
+  return true;
+}
+function ohUpsert(fl) {
+  ohRender();
+  var d = {}; FLO.forEach(function (i) { d[i] = ohG(i).value; }); CKO.forEach(function (i) { d[i] = ohG(i).checked; });
+  var rec = ohGet(ohCur);
+  if (!rec) { rec = { id: "oh" + Date.now(), cetak: false, pdf: false, hist: [] }; OH.push(rec); ohCur = rec.id; }
+  if (!rec.oleh) rec.oleh = who(); rec.edit = who();
+  rec.no = ohNoText(); rec.urut = +d.urut || 0; rec.waktu = d.waktu; rec.nama = d.nama; rec.pelapor = d.pnama;
+  rec.kat = d.kat; rec.tlihat = d.tlihat; rec.tmp = d.tmp; rec.petugas = d.petugas; rec.foto = ohPhoto; rec.d = d;
+  var st = d.status || "cari"; rec.hist = rec.hist || [];
+  if (rec.status !== st || !rec.hist.length) rec.hist.push({ t: Date.now(), s: st, by: who(), n: d.snote || "" });
+  rec.status = st; rec.sdate = d.sdate || ""; rec.snote = d.snote || "";
+  rec.saved = Date.now(); rec.sy = false;
+  if (fl && fl.cetak) rec.cetak = true; if (fl && fl.pdf) rec.pdf = true;
+  store("stpl_oh_klas", d.klas || "");
+  ohSaveLS(); ohList(); ohHistUI(rec); ohPush(rec.id);
+  return rec;
+}
+function ohShowForm() { ohMode = "form"; $("ohlist").style.display = "none"; $("ohform").style.display = ""; ohRender(); window.scrollTo(0, 0); }
+function ohShowList() { ohMode = "list"; $("ohform").style.display = "none"; $("ohlist").style.display = ""; ohList(); }
+function ohNew() {
+  ohCur = null; ohPhoto = "";
+  FLO.forEach(function (i) { var el = ohG(i); if (el.tagName === "SELECT") el.selectedIndex = 0; else el.value = ""; });
+  CKO.forEach(function (i) { ohG(i).checked = false; });
+  delete ohG("umur").dataset.man; delete ohG("kat").dataset.man;
+  ohG("pagama").value = "Islam"; ohG("agama").value = "Islam"; ohG("ptel").value = "-";
+  ohG("klas").value = store("stpl_oh_klas") || "TUK.7.2.2";
+  ohG("waktu").value = nowLocal();
+  ["pilih", "petugas", "nrp", "fmt", "kspkt", "knrp"].forEach(function (i) { ohG(i).value = $(i).value; });
+  ["cstempel", "cttd", "cttd2"].forEach(function (i) { ohG(i).checked = $(i).checked; });
+  $("oh_nikst").innerHTML = ""; ohPhotoUI(); ohHistUI(null); ohSuggest();
+}
+function ohOpen(rec, toStatus) {
+  FLO.forEach(function (i) { if (rec.d && rec.d[i] !== undefined) ohG(i).value = rec.d[i]; });
+  CKO.forEach(function (i) { ohG(i).checked = !!(rec.d && rec.d[i]); });
+  ohG("umur").dataset.man = "1"; ohG("kat").dataset.man = "1";
+  ohCur = rec.id; ohPhoto = rec.foto || "";
+  ohPhotoUI(); ohHistUI(rec); ohNik(); ohShowForm(); ohNoSt();
+  if (toStatus) setTimeout(function () { $("oh_stsec").scrollIntoView({ behavior: "smooth", block: "start" }); }, 80);
+}
+
+// ---------- PDF ----------
+function ohFname() {
+  return "STPL-OH_" + (ohG("urut").value || "0") + "-" + ohG("kode").value + "-" + ohYr() + "_" + ohV("nama").toUpperCase().replace(/[^A-Z0-9]+/g, "_") + ".pdf";
+}
+function ohMakePDF() {
+  ohRender(); var el = $("ohkertas");
+  if (!window.html2pdf) { alert("Pembuatan PDF otomatis butuh koneksi internet (pustaka PDF gagal dimuat). Alternatif: klik Cetak, lalu pilih 'Simpan sebagai PDF'."); return Promise.resolve(false); }
+  ohFit(318); var mh = el.style.minHeight; el.style.minHeight = "328mm";
+  var mp = el.classList.contains("mp");
+  return html2pdf().set({ margin: mp ? [8, 0, 10, 0] : 0, filename: ohFname(), image: { type: "jpeg", quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 }, pagebreak: { mode: ["css", "legacy"], avoid: [".sigw", "li"] }, jsPDF: { unit: "mm", format: [215.9, 330], orientation: "portrait" } })
+    .from(el).toPdf().get("pdf")
+    .then(function (pdf) { pdf.save(ohFname()); return pdf.output("datauristring"); })
+    .then(function (du) { el.style.minHeight = mh; ohUpPdf(du); return true; }, function (er) { el.style.minHeight = mh; alert("Gagal membuat PDF: " + er); return false; });
+}
+function ohUpPdf(du) {
+  if (!cfg().url || !ohCur || !navigator.onLine) return;
+  var id = ohCur, fn = ohFname(), data = du.split("base64,")[1];
+  enq(function () {
+    var r = ohGet(id); if (!r) return;
+    setSy("busy", "Mengunggah PDF ke Drive...");
+    return api({ action: "pdf", id: id, filename: fn, data: data, oldFileId: r.pdfId || "" }).then(function (j) {
+      var r2 = ohGet(id); if (r2) { r2.pdfUrl = j.url; r2.pdfId = j.fileId; r2.saved = Date.now(); ohSaveLS(); ohList(); }
+      return ohPushNow(id);
+    }).then(function () { setSy("ok", "Tersinkron"); }, function (x) { setSy("err", "PDF gagal diunggah ke Drive: " + x.message); });
+  });
+}
+
+// ---------- Daftar ----------
+function ohDays(r) {
+  var a = ohDt(r.tlihat); if (!a) return "";
+  var b = (r.status && r.status !== "cari" && r.sdate) ? new Date(r.sdate + "T00:00:00") : new Date();
+  var n = Math.floor((b - a) / 864e5); return n < 0 ? "" : n;
+}
+function ohList() {
+  var act = OH.filter(function (r) { return (r.status || "cari") === "cari"; }).length;
+  $("ohcnt").textContent = act;
+  var q = ($("ohq").value || "").toLowerCase(), fs = $("ohfs").value, h = "";
+  OH.slice().sort(function (a, b) { return b.saved - a.saved; }).forEach(function (r) {
+    var st = r.status || "cari"; if (fs && st !== fs) return;
+    var t = (r.no + " " + r.nama + " " + (r.pelapor || "") + " " + (r.tmp || "")).toLowerCase(); if (q && t.indexOf(q) < 0) return;
+    var S = OHS[st] || OHS.cari, dd = ohDays(r), d = r.d || {};
+    var prio = r.kat && r.kat !== "Dewasa" ? ' <span class="pill y">Prioritas</span>' : "";
+    var tlh = r.tlihat ? String(r.tlihat).replace("T", " ") : "-";
+    h += "<tr><td>" + e(r.no) + "</td><td>" + e((r.waktu || "").replace("T", " ")) + "</td>"
+      + "<td><b>" + e(r.nama) + "</b>" + (d.umur ? ", " + e(d.umur) + " th" : "") + prio + "</td>"
+      + "<td>" + e(r.pelapor || "-") + "</td>"
+      + "<td>" + e(tlh) + (r.tmp ? "<br><span style='color:#6b7488;font-size:12px'>" + e(String(r.tmp).slice(0, 50)) + "</span>" : "") + "</td>"
+      + "<td><span class='pill " + S[1] + "'>" + S[0] + "</span>" + (dd !== "" ? "<br><span style='color:#6b7488;font-size:12px'>" + (st === "cari" ? "hilang " : "setelah ") + dd + " hari</span>" : "") + "</td>"
+      + "<td>" + pl(r.cetak) + "</td><td>" + pl(r.pdf) + "</td>"
+      + "<td><button data-a='buka' data-i='" + r.id + "'>Buka</button><button class='o' data-a='status' data-i='" + r.id + "'>Tindak lanjut</button><button class='o' data-a='cetak' data-i='" + r.id + "'>Cetak</button><button class='o' data-a='pdf' data-i='" + r.id + "'>PDF</button><button class='o' data-a='hapus' data-i='" + r.id + "'>Hapus</button>" + drv(r) + "</td></tr>";
+  });
+  $("ohb").innerHTML = h || "<tr><td colspan='9'>Belum ada laporan orang hilang.</td></tr>";
+  var c = {}, dup = [];
+  OH.forEach(function (r) { var k = rdate(r).y + "/" + (+r.urut || 0); (c[k] = c[k] || []).push(r); });
+  for (var k in c) { var a = k.split("/"); if (c[k].length > 1 && a[1] !== "0") dup.push(a[1] + " (tahun " + a[0] + "): " + c[k].map(function (x) { return x.nama; }).join(", ")); }
+  $("ohdup").innerHTML = dup.length ? '<div class="lnote" style="background:#fde8e6">Nomor ganda ditemukan: ' + e(dup.join(" | ")) + '. Buka salah satu laporan, ganti nomor urutnya, lalu simpan.</div>' : "";
+}
+
+// ---------- Sinkron ke Google Drive ----------
+function ohPushNow(id) {
+  var r = ohGet(id); if (!r || !cfg().url || !navigator.onLine) return Promise.resolve();
+  if (JSON.stringify(r).length > 48000) { ohNote("Laporan " + r.no + " terlalu besar untuk disinkronkan (perkecil foto atau teks).", 1); return Promise.resolve(); }
+  return api({ action: "ohSave", record: r }).then(function () { r.sy = true; ohSaveLS(); ohNote(""); }, function (x) {
+    ohNote(/tidak dikenal/i.test(x.message) ? "Google Apps Script belum diperbarui: tempel Code.gs terbaru, jalankan setup, lalu terapkan versi baru. Laporan tetap aman di perangkat ini." : "Gagal sinkron laporan orang hilang: " + x.message, 1);
+  });
+}
+function ohPush(id) { if (!cfg().url) return; enq(function () { return ohPushNow(id); }); }
+function ohDel(id) {
+  OH = OH.filter(function (x) { return x.id !== id; }); ohSaveLS(); ohList();
+  if (!cfg().url) return;
+  enq(function () {
+    return api({ action: "ohDelete", id: id }).then(function () { setSy("ok", "Tersinkron"); }, function (x) {
+      var q = []; try { q = JSON.parse(store("stpl_ohdelq") || "[]"); } catch (y) { }
+      q.push(id); store("stpl_ohdelq", JSON.stringify(q)); ohNote("Gagal menghapus di Drive: " + x.message, 1);
+    });
+  });
+}
+function ohFlushDel() {
+  var q = []; try { q = JSON.parse(store("stpl_ohdelq") || "[]"); } catch (x) { }
+  if (!q.length) return Promise.resolve();
+  return Promise.all(q.map(function (id) { return api({ action: "ohDelete", id: id }); })).then(function () { store("stpl_ohdelq", "[]"); });
+}
+function ohSync() {
+  var c = cfg(); if (!c.url || !navigator.onLine) return Promise.resolve();
+  return ohFlushDel().then(function () { return fetch(curl("&action=ohlist")).then(function (r) { return r.json(); }); }).then(function (j) {
+    if (j.error) throw new Error(j.error);
+    if (!Array.isArray(j.oh)) { ohNote("Google Apps Script belum diperbarui: tempel Code.gs terbaru, jalankan setup, lalu terapkan versi baru. Laporan tetap aman di perangkat ini.", 1); return; }
+    var S = {}, Lc = {}, out = [], ps = [];
+    j.oh.forEach(function (s) { S[s.id] = s; }); OH.forEach(function (r) { Lc[r.id] = 1; });
+    OH.forEach(function (r) {
+      var s = S[r.id];
+      if (!s) { if (!r.sy) { out.push(r); ps.push(r.id); } }
+      else if (r.saved > s.saved) { out.push(r); ps.push(r.id); }
+      else { s.sy = true; out.push(s); }
+    });
+    j.oh.forEach(function (s) { if (!Lc[s.id]) { s.sy = true; out.push(s); } });
+    OH = out; ohSaveLS(); ohList(); ohNote("");
+    return Promise.all(ps.map(ohPushNow));
+  }).catch(function (x) { ohNote("Sinkron laporan orang hilang gagal: " + x.message, 1); });
+}
+
+// ---------- Ekspor, backup ----------
+$("ohxls").onclick = function () {
+  var rows = [["No", "Nomor Surat", "Tgl Laporan", "Jam", "Nama Orang Hilang", "JK", "Umur", "Kategori", "Pelapor", "Hubungan", "Telp Pelapor", "Terakhir Terlihat", "Tempat Terakhir Terlihat", "Status", "Tgl Status", "Catatan Status", "Petugas", "Dicetak", "PDF"]];
+  OH.slice().sort(function (a, b) { return (a.waktu || "") < (b.waktu || "") ? -1 : 1; }).forEach(function (r, i) {
+    var d = r.d || {}, w = String(r.waktu || "").split("T"), S = OHS[r.status || "cari"] || OHS.cari;
+    rows.push([i + 1, r.no, w[0] || "", (w[1] || "").slice(0, 5), r.nama, d.jk || "", d.umur || "", d.kat || "", r.pelapor || "", d.hub || "", d.ptel || "", String(r.tlihat || "").replace("T", " "), r.tmp || "", S[0], r.sdate || "", r.snote || "", d.petugas || r.petugas || "", r.cetak ? "Ya" : "Belum", r.pdf ? "Ya" : "Belum"]);
+  });
+  var nm = "Laporan_Orang_Hilang_KSPKT_Jatirogo_" + ohIso();
+  if (!window.XLSX) {
+    var csv = "\ufeff" + rows.map(function (r) { return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
+    dlBlob(nm + ".csv", new Blob([csv], { type: "text/csv" }));
+    alert("Pustaka Excel gagal dimuat (butuh internet), jadi diunduh sebagai CSV yang tetap bisa dibuka di Excel."); return;
+  }
+  var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(rows);
+  ws["!cols"] = [{ wch: 5 }, { wch: 38 }, { wch: 12 }, { wch: 7 }, { wch: 26 }, { wch: 11 }, { wch: 7 }, { wch: 22 }, { wch: 24 }, { wch: 16 }, { wch: 16 }, { wch: 17 }, { wch: 30 }, { wch: 22 }, { wch: 12 }, { wch: 40 }, { wch: 22 }, { wch: 9 }, { wch: 9 }];
+  XLSX.utils.book_append_sheet(wb, ws, "Orang Hilang"); XLSX.writeFile(wb, nm + ".xlsx");
+};
+$("ohbak").onclick = function () {
+  var a = document.createElement("a"), d = new Date();
+  a.href = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(OH));
+  a.download = "arsip-orang-hilang-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+};
+$("ohrst").onchange = function () {
+  var f = this.files[0]; if (!f) return; var inp = this, rd = new FileReader();
+  rd.onload = function () {
+    try {
+      var arr = JSON.parse(rd.result), n = 0;
+      arr.forEach(function (x) { if (x && x.id && x.d && !OH.some(function (y) { return y.id === x.id; })) { x.sy = false; OH.push(x); n++; } });
+      ohSaveLS(); ohList(); alert(n + " laporan dipulihkan.");
+      if (n && cfg().url) sync();
+    } catch (x) { alert("File backup tidak valid."); }
+    inp.value = "";
+  };
+  rd.readAsText(f);
+};
+
+// ---------- Dashboard ----------
+IC.oh = '<circle cx="9" cy="7.5" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 11-4.6"/><circle cx="17" cy="16" r="3"/><path d="M19.2 18.2l2.3 2.3"/>';
+var _rd = window.refreshDash;
+window.refreshDash = function () {
+  _rd();
+  var s = $("stats"); if (!s) return;
+  var n = OH.filter(function (r) { return (r.status || "cari") === "cari"; }).length;
+  s.insertAdjacentHTML("beforeend", '<div class="st2"><div class="ic">' + icn("oh") + '</div><div><b data-v="' + n + '">' + n + '</b><span>Orang Hilang Dicari</span><small>' + OH.length + ' laporan seluruhnya</small></div></div>');
+};
+$("qa").insertAdjacentHTML("beforeend", '<div role="button" tabindex="0" data-go="oh"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true">' + IC.oh + '</svg><b>Orang Hilang</b><span>Laporan orang hilang &amp; status pencarian</span></div>');
+
+// ---------- Tab & navigasi ----------
+var _show = window.show;
+window.show = function (v) {
+  _show(v);
+  var on = v === "oh";
+  $("voh").style.display = on ? "" : "none"; $("toh").className = on ? "on" : "";
+  if (on) { if (ohMode === "form") ohFit(); else ohList(); }
+};
+var _ds = window.doSync;
+window.doSync = function () { return _ds().then(ohSync); };
+$("toh").onclick = function () { show("oh"); };
+
+$("oh_pilih").innerHTML = $("pilih").innerHTML;
+$("oh_fmt").innerHTML = $("fmt").innerHTML;
+$("ohnew").onclick = function () { ohNew(); ohShowForm(); };
+$("oh_baru").onclick = function () { ohNew(); ohRender(); window.scrollTo(0, 0); };
+$("oh_back").onclick = ohShowList;
+$("ohq").addEventListener("input", ohList); $("ohfs").addEventListener("change", ohList);
+
+$("ohform").addEventListener("input", function (ev) {
+  var t = ev.target.id;
+  if (t === "oh_pnik") ohNik();
+  if (t === "oh_ttl") ohAge();
+  if ((t === "oh_umur" || t === "oh_kat") && ev.isTrusted) ev.target.dataset.man = "1";
+  if (t === "oh_urut") ohNoSt();
+  ohRender();
+});
+$("ohform").addEventListener("change", function (ev) {
+  var t = ev.target.id;
+  if (t === "oh_pilih") { var p = PT[ev.target.value]; if (p) { ohG("petugas").value = p[0]; ohG("nrp").value = p[1]; } }
+  if (t === "oh_fmt") { var k = KP[ev.target.value]; if (k) { ohG("kspkt").value = k[0]; ohG("knrp").value = k[1]; } }
+  if (t === "oh_status" && ev.target.value !== "cari" && !ohG("sdate").value) ohG("sdate").value = ohIso();
+  if (t === "oh_waktu" && !ohCur) ohSuggest();
+  ohRender();
+});
+$("oh_fpick").onclick = function () { $("oh_foto").click(); };
+$("oh_fdel").onclick = function () { ohPhoto = ""; ohPhotoUI(); ohRender(); };
+$("oh_foto").onchange = function () {
+  var f = this.files[0], inp = this; if (!f) return;
+  ohShrink(f).then(function (du) { ohPhoto = du; ohPhotoUI(); ohRender(); }, function (er) { alert("Foto gagal diproses: " + er.message); });
+  inp.value = "";
+};
+
+$("oh_simpan").onclick = function () { if (!ohOk()) return; ohClaim(); ohUpsert({}); ohMsg("Laporan tersimpan."); };
+$("oh_pdf").onclick = function () {
+  if (!ohOk()) return; ohClaim(); ohUpsert({});
+  ohMakePDF().then(function (o) { if (o) { ohUpsert({ pdf: true }); ohMsg("PDF diunduh dan laporan tersimpan."); } });
+};
+$("oh_cetak").onclick = function () {
+  if (!ohOk()) return; ohClaim(); ohUpsert({});
+  ohMakePDF().then(function (o) {
+    if (o) ohUpsert({ pdf: true });
+    window.print(); ohUpsert({ cetak: true });
+    ohMsg("Surat dicetak, PDF diunduh, dan laporan tersimpan.");
+  });
+};
+$("ohb").onclick = function (ev) {
+  var b = ev.target.closest("button"); if (!b) return;
+  var id = b.getAttribute("data-i"), a = b.getAttribute("data-a"), rec = ohGet(id); if (!rec) return;
+  if (a === "hapus") {
+    if (!canDel(rec)) { alert("Laporan hanya dapat dihapus oleh Admin atau operator yang membuatnya."); return; }
+    if (confirm("Hapus laporan " + rec.no + " (" + rec.nama + ") dari arsip?")) ohDel(id);
+    return;
+  }
+  ohOpen(rec, a === "status");
+  if (a === "cetak") setTimeout(function () { window.print(); ohUpsert({ cetak: true }); }, 250);
+  if (a === "pdf") ohMakePDF().then(function (o) { if (o) { ohUpsert({ pdf: true }); ohMsg("PDF diunduh."); } });
+};
+
+ohNew(); ohList();
+if (cfg().url) enq(ohSync);
+})();
 </script>
 </body>
 </html>
