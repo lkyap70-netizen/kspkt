@@ -118,7 +118,7 @@ body.locked>*:not(#login):not(script){display:none!important}
 #pinm{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0008;z-index:50;align-items:center;justify-content:center;padding:20px}
 .tabs .ub{font-size:12px}
 @page{size:215.9mm 330mm;margin:0}
-@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vdoc{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
+@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
 </style>
 </head>
 <body class="locked">
@@ -141,7 +141,7 @@ body.locked>*:not(#login):not(script){display:none!important}
 <button id="lcon" type="button" class="o" style="margin-top:8px">Sambungkan &amp; ambil akun</button></details>
 </div></div>
 <header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div>
-<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="tdoc">Dokumentasi</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="keluar" class="ub">Keluar</button></nav></header>
+<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="keluar" class="ub">Keluar</button></nav></header>
 <div id="vdash" class="dash">
 <div class="hero"><div><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p></div><div class="hbtn"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div>
 <div class="stats" id="stats"></div>
@@ -238,19 +238,6 @@ body.locked>*:not(#login):not(script){display:none!important}
 <button id="rxls" type="button">Ekspor Excel (.xlsx)</button><button class="o" id="rpdf" type="button">Unduh PDF Rekap</button>
 </div>
 <div class="card"><div id="rekapDoc"></div></div>
-</div>
-<div id="vdoc" class="dash" style="display:none">
-<div class="card"><h3>Dokumentasi Arsip Kegiatan</h3>
-<div id="dnote" style="display:none;background:#fff4d1;border-radius:8px;padding:10px;font-size:13px;margin-bottom:10px">Hubungkan aplikasi ke Google Drive dulu (tab Arsip, bagian Sinkronisasi Google Drive) supaya file tersimpan di Drive dan bisa dibuka dari semua komputer.</div>
-<div class="row"><div><label>Judul kegiatan</label><input id="dtitle" autocomplete="off" placeholder="Contoh: Apel Gelar Pasukan Operasi Zebra"></div><div><label>Tanggal kegiatan</label><input id="dtgl" type="date" autocomplete="off"></div></div>
-<div class="row"><div><label>Kategori</label><select id="dkat" autocomplete="off"></select></div><div><label>Keterangan (opsional)</label><input id="dket" autocomplete="off"></div></div>
-<label>Pilih file (foto, PDF, Word, Excel, dan lainnya; maksimal 10 MB per file)</label><input id="dfiles" type="file" multiple>
-<input id="dadd" type="file" multiple style="display:none">
-<button id="dup" type="button">Unggah ke Drive</button> <span id="dmsg" style="font-size:12px"></span>
-</div>
-<div class="card"><h3>Daftar Dokumentasi</h3>
-<div class="bar"><input id="dq" placeholder="Cari judul atau keterangan..." autocomplete="off"><select id="dkf" autocomplete="off" style="width:200px"></select></div>
-<div id="dlist"></div></div>
 </div>
 <div id="vuser" class="dash" style="display:none"><div class="card"><h3>Manajemen Pengguna</h3>
 <div class="wrap"><table class="at"><thead><tr><th>Nama</th><th>NRP (login)</th><th>Peran</th><th>Aksi</th></tr></thead><tbody id="ub"></tbody></table></div>
@@ -370,7 +357,7 @@ if(!window.html2pdf){alert("Pembuatan PDF otomatis butuh koneksi internet (pusta
 var mh=el.style.minHeight;el.style.minHeight="328mm";
 return html2pdf().set({margin:0,filename:fname(),image:{type:"jpeg",quality:.98},html2canvas:{scale:2,useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:[215.9,330],orientation:"portrait"}}).from(el).toPdf().get("pdf").then(function(pdf){pdf.save(fname());return pdf.output("datauristring")}).then(function(du){el.style.minHeight=mh;upPdf(du);return true},function(e){el.style.minHeight=mh;alert("Gagal membuat PDF: "+e);return false})}
 function nextUrut(){var u=(+$("urut").value||1)+1;store("stpl_urut",String(Math.max(+store("stpl_urut")||1,u)))}
-function show(v){["dash","buat","arsip","rekap","doc","user"].forEach(function(k){$("v"+k).style.display=k===v?"":"none";$("t"+k).className=k===v?"on":""});if(v==="arsip")refreshArsip();if(v==="dash")refreshDash();if(v==="rekap"){rkInit();renderRekap()}if(v==="doc")docsLoad();if(v==="user")userRender();if(v!=="buat")syncSoon();window.scrollTo(0,0)}
+function show(v){["dash","buat","arsip","rekap","user"].forEach(function(k){$("v"+k).style.display=k===v?"":"none";$("t"+k).className=k===v?"on":""});if(v==="arsip")refreshArsip();if(v==="dash")refreshDash();if(v==="rekap"){rkInit();renderRekap()}if(v==="user")userRender();if(v!=="buat")syncSoon();window.scrollTo(0,0)}
 $("tbuat").onclick=function(){show("buat")};$("tarsip").onclick=function(){show("arsip")};
 function loadRec(rec){FL.forEach(function(i){if(rec.d[i]!==undefined)$(i).value=rec.d[i]});CK.forEach(function(i){$(i).checked=!!rec.d[i]});curId=rec.id;show("buat");render()}
 function drv(r){var u=r.pdfUrl;return u&&/^https:\/\/(drive|docs)\.google\.com\//.test(u)?"<a class='lnk' target='_blank' rel='noopener' href='"+u.replace(/'/g,"%27")+"'>Drive</a>":""}
@@ -495,43 +482,8 @@ XLSX.utils.book_append_sheet(wb,w1,"Daftar Surat");XLSX.utils.book_append_sheet(
 $("rpdf").onclick=function(){if(!window.html2pdf){alert("Pembuatan PDF butuh koneksi internet (pustaka PDF gagal dimuat).");return}var D=rkData();renderRekap();
 html2pdf().set({margin:8,filename:"Rekap_KSPKT_Jatirogo_"+D.y+"-"+pad(D.m+1)+".pdf",image:{type:"jpeg",quality:.98},html2canvas:{scale:2},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:"tr"}}).from($("rekapDoc")).save()};
 
-// ===== DOKUMENTASI ARSIP KEGIATAN =====
-var DOCS=[],MAXF=10*1024*1024,KATS=["Kegiatan","Rapat / Apel","Pelatihan","Pengamanan","Bakti Sosial","Lainnya"];
-KATS.forEach(function(k){var o=document.createElement("option");o.textContent=k;$("dkat").appendChild(o)});
-(function(){var o=document.createElement("option");o.value="";o.textContent="Semua kategori";$("dkf").appendChild(o);KATS.forEach(function(k){var x=document.createElement("option");x.textContent=k;$("dkf").appendChild(x)})})();
-(function(){var n=new Date();$("dtgl").value=n.getFullYear()+"-"+pad(n.getMonth()+1)+"-"+pad(n.getDate())})();
 function curl(x){var c=cfg();return c.url+(c.url.indexOf("?")<0?"?":"&")+"token="+encodeURIComponent(c.token)+(x||"")}
-function fsz(n){return n>1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB"}
-function dmsg(t,er){var m=$("dmsg");m.textContent=t;m.style.color=er?"#b3261e":"#128a3d"}
-function b64f(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split("base64,")[1])};r.onerror=rej;r.readAsDataURL(f)})}
-function findDoc(id){var r=null;DOCS.forEach(function(x){if(x.id===id)r=x});return r}
-function docsLoad(){var on=!!cfg().url;$("dnote").style.display=on?"none":"block";$("dup").disabled=!on;
-if(!on){DOCS=[];renderDocs();return Promise.resolve()}
-return fetch(curl("&action=doclist")).then(function(r){return r.json()}).then(function(j){if(j.error)throw new Error(j.error);DOCS=j.docs||[];renderDocs()},function(x){dmsg("Gagal memuat daftar: "+x.message,1)})}
-function renderDocs(){var q=($("dq").value||"").toLowerCase(),kf=$("dkf").value,h="";
-DOCS.slice().sort(function(a,b){return String(b.tgl).localeCompare(String(a.tgl))||b.saved-a.saved}).forEach(function(d){
-if(kf&&d.kat!==kf)return;if(q&&((d.judul||"")+" "+(d.ket||"")).toLowerCase().indexOf(q)<0)return;
-h+='<div class="dcard"><div class="dh"><div><b>'+e(d.judul)+'</b><div class="dm">'+e(d.tgl||"")+' &middot; <span class="pill g">'+e(d.kat||"")+'</span></div></div><div><button class="o" data-a="add" data-i="'+d.id+'">+ File</button><button class="o" data-a="del" data-i="'+d.id+'">Hapus</button></div></div>'+(d.ket?'<div class="dk">'+e(d.ket)+'</div>':'')+'<div>'+(d.files||[]).map(function(f){return '<div class="df"><span>'+e(f.name)+' <i>('+fsz(f.size||0)+')</i></span><span><button data-a="dl" data-i="'+d.id+'" data-f="'+f.fileId+'">Unduh</button><button class="o" data-a="rm" data-i="'+d.id+'" data-f="'+f.fileId+'">Hapus</button></span></div>'}).join("")+'</div></div>'});
-$("dlist").innerHTML=h||'<div class="empty">Belum ada dokumentasi.</div>'}
-function upOne(f){return b64f(f).then(function(d){return api({action:"docUpload",name:f.name,type:f.type||"application/octet-stream",data:d})}).then(function(j){return {name:f.name,size:f.size,type:f.type||"",fileId:j.fileId,url:j.url}})}
-function upMany(files,rec){var i=0;function next(){if(i>=files.length)return Promise.resolve();var f=files[i++];dmsg("Mengunggah "+i+"/"+files.length+": "+f.name+" ...");return upOne(f).then(function(x){rec.files.push(x)}).then(next)}return next()}
-function chkSize(fs){for(var i=0;i<fs.length;i++)if(fs[i].size>MAXF){dmsg('File "'+fs[i].name+'" lebih dari 10 MB.',1);return false}return true}
-$("dup").onclick=function(){if(!cfg().url){dmsg("Hubungkan ke Google Drive dulu.",1);return}
-var t=$("dtitle").value.trim(),fs=[].slice.call($("dfiles").files);
-if(!t){dmsg("Judul kegiatan wajib diisi.",1);return}if(!fs.length){dmsg("Pilih minimal satu file.",1);return}if(!chkSize(fs))return;
-var rec={id:"d"+Date.now(),tgl:$("dtgl").value,judul:t,kat:$("dkat").value,ket:$("dket").value.trim(),files:[],saved:Date.now()};$("dup").disabled=true;
-upMany(fs,rec).then(function(){return api({action:"docSave",record:rec})}).then(function(){DOCS.push(rec);renderDocs();dmsg("Tersimpan di Drive ("+rec.files.length+" file).");$("dtitle").value="";$("dket").value="";$("dfiles").value=""},function(x){if(rec.files.length){api({action:"docSave",record:rec}).then(function(){DOCS.push(rec);renderDocs()},function(){})}dmsg("Gagal: "+x.message,1)}).then(function(){$("dup").disabled=false})};
-$("dadd").onchange=function(){var id=this.getAttribute("data-i"),rec=findDoc(id),fs=[].slice.call(this.files);this.value="";if(!rec||!fs.length||!chkSize(fs))return;
-upMany(fs,rec).then(function(){rec.saved=Date.now();return api({action:"docSave",record:rec})}).then(function(){renderDocs();dmsg("File ditambahkan.")},function(x){dmsg("Gagal: "+x.message,1)})};
-function dlDoc(fid){dmsg("Mengunduh...");fetch(curl("&action=docget&id="+encodeURIComponent(fid))).then(function(r){return r.json()}).then(function(j){if(j.error)throw new Error(j.error);
-return fetch("data:"+(j.type||"application/octet-stream")+";base64,"+j.data).then(function(r){return r.blob()}).then(function(b){dlBlob(j.name,b)})}).then(function(){dmsg("File diunduh.")},function(x){dmsg("Gagal mengunduh: "+x.message,1)})}
-$("dlist").onclick=function(ev){var b=ev.target.closest("button");if(!b)return;var a=b.getAttribute("data-a"),id=b.getAttribute("data-i"),fid=b.getAttribute("data-f"),rec=findDoc(id);if(!rec)return;
-if(a==="add"){$("dadd").setAttribute("data-i",id);$("dadd").click()}
-if(a==="dl")dlDoc(fid);
-if(a==="rm"&&confirm("Hapus file ini dari Drive?")){api({action:"docTrash",fileId:fid}).then(function(){rec.files=rec.files.filter(function(x){return x.fileId!==fid});return api({action:"docSave",record:rec})}).then(function(){renderDocs();dmsg("File dihapus.")},function(x){dmsg("Gagal: "+x.message,1)})}
-if(a==="del"&&confirm('Hapus dokumentasi "'+rec.judul+'" beserta semua filenya?')){api({action:"docDelete",id:id}).then(function(){DOCS=DOCS.filter(function(x){return x.id!==id});renderDocs();dmsg("Dokumentasi dihapus.")},function(x){dmsg("Gagal: "+x.message,1)})}};
-$("dq").addEventListener("input",renderDocs);$("dkf").addEventListener("change",renderDocs);
-$("trekap").onclick=function(){show("rekap")};$("tdoc").onclick=function(){show("doc")};
+$("trekap").onclick=function(){show("rekap")};
 show("dash");
 render();
 
