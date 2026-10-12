@@ -204,6 +204,12 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 #kertas.c4 .nm{margin-bottom:4px}#kertas.c4 table.d{margin-bottom:4px}
 #kertas.c4 .sp{height:42px}#kertas.c4 .sa{height:10mm}
 #kertas.c4 .sp .sg{max-height:14mm}#kertas.c4 .sa .sg{max-height:11mm}#kertas.c4 .sa .kap{height:11mm}
+#kertas.c5{font-size:8.5pt;line-height:1.1;padding:8mm 9mm 9mm 24mm}
+#kertas.c5 p{margin-bottom:2px}#kertas.c5 .ket p{margin-bottom:1px}
+#kertas.c5 .nm{margin-bottom:3px}#kertas.c5 table.d{margin-bottom:3px}#kertas.c5 table.d td{padding:0}
+#kertas.c5 .logo{height:14mm}#kertas.c5 .logo img{width:13mm}
+#kertas.c5 .sp{height:36px}#kertas.c5 .sa{height:9mm}
+#kertas.c5 .sp .sg{max-height:12mm}#kertas.c5 .sa .sg{max-height:9mm}#kertas.c5 .sa .kap{height:9mm}
 /* sangat banyak (>~25 barang): boleh 2 lembar, tapi blok tanda tangan tidak pernah terpotong/terpisah */
 #kertas.mp{-webkit-box-decoration-break:clone;box-decoration-break:clone}
 @page{size:215.9mm 330mm;margin:0}
@@ -400,9 +406,9 @@ h+='<div class="mg">MENGETAHUI<br>'+JUD()+'<div class="sa">'+mgImgs()+'</div>'+N
 h+='</div>';
 $("kertas").innerHTML=h;fit()}
 function fit(){var el=$("kertas");if(!el||!el.offsetWidth)return;
-var lim=328*96/25.4,mh=el.style.minHeight;el.className="";el.style.minHeight="0";
-var lv=0;while(el.scrollHeight>lim&&lv<4){lv++;el.className="c"+lv}
-if(el.scrollHeight>lim)el.className="c4 mp";
+var lim=(arguments[0]||322)*96/25.4,mh=el.style.minHeight;el.className="";el.style.minHeight="0";
+var lv=0;while(el.scrollHeight>lim&&lv<5){lv++;el.className="c"+lv}
+if(el.scrollHeight>lim)el.className="c5 mp";
 el.style.minHeight=mh}
 var PT={bambang:["BAMBANG HIMAWAN","AIPDA NRP 84100747"],priyono:["PRIYONO","AIPTU NRP 82020343"],sukamto:["SUKAMTO","AIPDA NRP 77010533"],wiris:["WIRIS ARI WIJAYA","AIPTU NRP 78020059"],kaswadi:["KASWADI","AIPDA NRP 76101071"],arif:["M. ARIF NUGROHO,S.H.","IPTU NRP 82100416"],joko:["JOKO SUSANTO, S.H.","IPTU NRP 74030466"],sugianto:["SUGIANTO","AIPTU NRP 71050246"],ika:["IKA ARI.P, S.H.","AIPTU NRP 81030633"],retno:["RETNO HARTAJI","AIPTU NRP 69070407"],suwignyo:["SUWIGNYO","AIPTU NRP 83070036"],rofiqul:["ROFIQUL UMAM SETIANA","BRIG. NRP 94090247"],fahrul:["FAHRUL NUR CAHYO","AIPTU NRP 81051400"],yulis:["YULISTIYONO","AIPTU NRP 69070433"],karsimin:["KARSIMIN","BRIGPOL NRP 93080528"],lain:["",""]};
 $("pilih").onchange=function(){var v=PT[this.value];$("petugas").value=v[0];$("nrp").value=v[1];render()};
@@ -470,7 +476,7 @@ saveDB();refreshArsip();pushRec(rec.id);return rec}
 function fname(){return "STPL_"+($("urut").value||"0")+"-"+$("kode").value+"-"+new Date($("waktu").value||Date.now()).getFullYear()+"_"+$("nama").value.trim().toUpperCase().replace(/[^A-Z0-9]+/g,"_")+".pdf"}
 function makePDF(){render();var el=$("kertas");
 if(!window.html2pdf){alert("Pembuatan PDF otomatis butuh koneksi internet (pustaka PDF gagal dimuat). Alternatif: klik Cetak, lalu pilih 'Simpan sebagai PDF'.");return Promise.resolve(false)}
-var mh=el.style.minHeight;el.style.minHeight="328mm";
+fit(318);var mh=el.style.minHeight;el.style.minHeight="328mm";
 var mp=el.classList.contains("mp");return html2pdf().set({margin:mp?[8,0,10,0]:0,filename:fname(),image:{type:"jpeg",quality:.98},html2canvas:{scale:2,useCORS:true,scrollX:0,scrollY:0},pagebreak:{mode:["css","legacy"],avoid:[".sigw","li"]},jsPDF:{unit:"mm",format:[215.9,330],orientation:"portrait"}}).from(el).toPdf().get("pdf").then(function(pdf){pdf.save(fname());return pdf.output("datauristring")}).then(function(du){el.style.minHeight=mh;upPdf(du);return true},function(e){el.style.minHeight=mh;alert("Gagal membuat PDF: "+e);return false})}
 function nextUrut(){var u=(+$("urut").value||1)+1;store("stpl_urut",String(Math.max(+store("stpl_urut")||1,u)))}
 function show(v){["dash","buat","arsip","rekap","reg","user"].forEach(function(k){$("v"+k).style.display=k===v?"":"none";$("t"+k).className=k===v?"on":""});if(v==="buat")fit();if(v==="arsip")refreshArsip();if(v==="dash")refreshDash();if(v==="rekap"){rkInit();renderRekap()}if(v==="user")userRender();if(v==="reg"){rgInit();renderReg()}if(v!=="buat")syncSoon();window.scrollTo(0,0)}
