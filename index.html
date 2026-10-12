@@ -230,6 +230,8 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 <div><label>Jenis kelamin</label><select autocomplete="off" id="jk"><option>Laki laki</option><option>Perempuan</option></select></div>
 <div><label>NIK</label><input autocomplete="off" id="nik" inputmode="numeric" maxlength="16"></div>
 </div>
+<div id="nikst" style="font-size:12px;margin-top:6px;line-height:1.5"></div>
+<div style="font-size:13px;margin-top:6px"><label style="display:inline;color:#111"><input type="checkbox" id="nikcek" autocomplete="off" style="width:auto"> NIK sudah dicek ke KTP asli / sistem dinas (Dukcapil)</label></div>
 <label>Tempat / tanggal lahir</label><input autocomplete="off" id="ttl" placeholder="Tuban 22-07-2000">
 <div class="row">
 <div><label>Agama</label><input autocomplete="off" id="agama" value="Islam"></div>
@@ -377,7 +379,7 @@ $("pilih").onchange=function(){var v=PT[this.value];$("petugas").value=v[0];$("n
 $("waktu").value=nowLocal();
 $("urut").value=store("stpl_urut")||1;
 document.querySelectorAll("input,select,textarea").forEach(function(i){i.addEventListener("input",render)});
-$("baru").onclick=function(){["nama","nik","ttl","dsn","rt","rw","desa","barang","thilang"].forEach(function(i){$(i).value=""});$("waktu").value=nowLocal();render()};
+$("baru").onclick=function(){["nama","nik","ttl","dsn","rt","rw","desa","barang","thilang"].forEach(function(i){$(i).value=""});$("nikcek").checked=false;$("nikst").innerHTML="";$("waktu").value=nowLocal();render()};
 var KP={kapolsek:["M. ARIF NUGROHO,S.H.","INSPEKTUR POLISI SATU NRP 82100416"],wiris:["WIRIS ARI WIJAYA","AIPTU NRP 78020059"],priyono:PT.priyono,redno:["REDNO HARTADI","AIPTU NRP 69070407"]};
 $("fmt").onchange=function(){var v=KP[this.value];$("kspkt").value=v[0];$("knrp").value=v[1];render()};
 
@@ -417,17 +419,22 @@ $("badd").onclick=function(){var t=$("bhasil").value.trim();if(!t)return;var a=$
 bbuild();
 
 var LOGO="data:image/png;base64,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";
-var FL=["gaya","urut","waktu","nama","jk","nik","ttl","agama","wn","kerja","tel","dsn","desa","rt","rw","kec","kab","barang","thilang","tempat","pilih","petugas","nrp","fmt","kspkt","knrp"],CK=["cstempel","cttd","cttd2"];
+var FL=["gaya","urut","waktu","nama","jk","nik","ttl","agama","wn","kerja","tel","dsn","desa","rt","rw","kec","kab","barang","thilang","tempat","pilih","petugas","nrp","fmt","kspkt","knrp"],CK=["cstempel","cttd","cttd2","nikcek"];
 var DB=[],curId=null;
 try{DB=JSON.parse(store("stpl_arsip")||"[]")}catch(x){DB=[]}
 function saveDB(){try{localStorage.setItem("stpl_arsip",JSON.stringify(DB));return true}catch(x){alert("Arsip gagal disimpan (penyimpanan browser penuh atau diblokir). Segera lakukan Backup.");return false}}
 function msg(t){$("msg").textContent=t;setTimeout(function(){if($("msg").textContent===t)$("msg").textContent=""},4000)}
 function noText(){var n=$("kertas").querySelector(".nm");return n?n.textContent.replace(/^Nomor\s*:\s*/,"").trim():""}
-function ok(){if(!$("nama").value.trim()){alert("Nama pelapor wajib diisi.");return false}return true}
+function ok(){if(!$("nama").value.trim()){alert("Nama pelapor wajib diisi.");return false}
+var n=$("nik").value.trim();
+if(!n){if(!confirm("NIK belum diisi. Tetap lanjutkan?"))return false}
+else{var i=nikInfo(n);if(!i.ok){alert("NIK tidak valid: "+i.msg+". Periksa kembali sesuai KTP.");$("nik").focus();return false}
+if(!$("nikcek").checked&&!confirm("NIK belum ditandai sudah dicek ke KTP asli / sistem dinas. Tetap simpan?"))return false}
+return true}
 function upsert(fl){render();var d={};FL.forEach(function(i){d[i]=$(i).value});CK.forEach(function(i){d[i]=$(i).checked});
 var rec=null;DB.forEach(function(x){if(x.id===curId)rec=x});
 if(!rec){rec={id:"r"+Date.now(),cetak:false,pdf:false};DB.push(rec);curId=rec.id}
-if(!rec.oleh)rec.oleh=who();rec.edit=who();rec.no=noText();rec.urut=+d.urut||0;rec.waktu=d.waktu;rec.nama=d.nama;rec.barang=d.barang;rec.petugas=d.petugas;rec.saved=Date.now();rec.d=d;
+if(!rec.oleh)rec.oleh=who();rec.edit=who();rec.nikcek=!!d.nikcek;rec.no=noText();rec.urut=+d.urut||0;rec.waktu=d.waktu;rec.nama=d.nama;rec.barang=d.barang;rec.petugas=d.petugas;rec.saved=Date.now();rec.d=d;
 if(fl.cetak)rec.cetak=true;if(fl.pdf)rec.pdf=true;
 saveDB();refreshArsip();pushRec(rec.id);return rec}
 function fname(){return "STPL_"+($("urut").value||"0")+"-"+$("kode").value+"-"+new Date($("waktu").value||Date.now()).getFullYear()+"_"+$("nama").value.trim().toUpperCase().replace(/[^A-Z0-9]+/g,"_")+".pdf"}
@@ -443,7 +450,7 @@ function drv(r){var u=r.pdfUrl;return u&&/^https:\/\/(drive|docs)\.google\.com\/
 function refreshArsip(){$("cnt").textContent=DB.length;var q=($("q").value||"").toLowerCase(),h="";
 DB.slice().sort(function(a,b){return b.saved-a.saved}).forEach(function(r){
 var t=(r.no+" "+r.nama+" "+r.barang).toLowerCase();if(q&&t.indexOf(q)<0)return;
-h+="<tr><td>"+e(r.no)+"</td><td>"+e((r.waktu||"").replace("T"," "))+"</td><td>"+e(r.nama)+"</td><td>"+e((r.barang||"").split("\n")[0].slice(0,70))+"</td><td>"+e(r.oleh||"-")+"</td><td>"+(r.cetak?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>')+"</td><td>"+(r.pdf?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>')+"</td><td><button data-a='buka' data-i='"+r.id+"'>Buka</button><button class='o' data-a='cetak' data-i='"+r.id+"'>Cetak</button><button class='o' data-a='pdf' data-i='"+r.id+"'>PDF</button><button class='o' data-a='hapus' data-i='"+r.id+"'>Hapus</button>"+drv(r)+"</td></tr>"});
+h+="<tr><td>"+e(r.no)+"</td><td>"+e((r.waktu||"").replace("T"," "))+"</td><td>"+e(r.nama)+(r.nikcek?" <span class='pill g'>NIK dicek</span>":"")+"</td><td>"+e((r.barang||"").split("\n")[0].slice(0,70))+"</td><td>"+e(r.oleh||"-")+"</td><td>"+(r.cetak?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>')+"</td><td>"+(r.pdf?'<span class="pill g">Sudah</span>':'<span class="pill r">Belum</span>')+"</td><td><button data-a='buka' data-i='"+r.id+"'>Buka</button><button class='o' data-a='cetak' data-i='"+r.id+"'>Cetak</button><button class='o' data-a='pdf' data-i='"+r.id+"'>PDF</button><button class='o' data-a='hapus' data-i='"+r.id+"'>Hapus</button>"+drv(r)+"</td></tr>"});
 $("ab").innerHTML=h||"<tr><td colspan='8'>Belum ada surat di arsip.</td></tr>"}
 $("q").addEventListener("input",refreshArsip);
 $("ab").onclick=function(ev){var b=ev.target.closest("button");if(!b)return;var id=b.getAttribute("data-i"),a=b.getAttribute("data-a"),rec=null;DB.forEach(function(x){if(x.id===id)rec=x});if(!rec)return;
@@ -713,6 +720,35 @@ rows.push([],["Jumlah laporan",D.list.length]);
 if(!window.XLSX){var csv="\ufeff"+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(",")}).join("\n");dlBlob(nm+".csv",new Blob([csv],{type:"text/csv"}));alert("Pustaka Excel belum termuat, jadi diunduh sebagai CSV yang tetap bisa dibuka di Excel.");return}
 var wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=[{wch:5},{wch:36},{wch:12},{wch:7},{wch:24}].concat(nik?[{wch:20}]:[]).concat([{wch:40},{wch:60},{wch:22},{wch:10}]);
 XLSX.utils.book_append_sheet(wb,ws,"Register");XLSX.writeFile(wb,nm+".xlsx")};
+
+// ===== VALIDASI NIK & ISI OTOMATIS PELAPOR =====
+var PROV={11:1,12:1,13:1,14:1,15:1,16:1,17:1,18:1,19:1,21:1,31:1,32:1,33:1,34:1,35:1,36:1,51:1,52:1,53:1,61:1,62:1,63:1,64:1,65:1,71:1,72:1,73:1,74:1,75:1,76:1,81:1,82:1,91:1,92:1,93:1,94:1,95:1,96:1};
+function nikInfo(n){
+if(!/^\d{16}$/.test(n))return{ok:false,msg:"NIK harus 16 angka (baru "+n.length+")"};
+if(/^(\d)\1{15}$/.test(n))return{ok:false,msg:"NIK tidak wajar"};
+if(!PROV[+n.slice(0,2)])return{ok:false,msg:"kode provinsi "+n.slice(0,2)+" tidak dikenal"};
+if(n.slice(2,4)==="00"||n.slice(4,6)==="00")return{ok:false,msg:"kode kabupaten/kecamatan tidak valid"};
+var dd=+n.slice(6,8),mm=+n.slice(8,10),yy=+n.slice(10,12),fem=dd>40;if(fem)dd-=40;
+var y=2000+yy;if(y>new Date().getFullYear())y=1900+yy;
+var dt=new Date(y,mm-1,dd);
+if(mm<1||mm>12||dd<1||dt.getDate()!==dd||dt.getMonth()!==mm-1)return{ok:false,msg:"tanggal lahir di dalam NIK tidak valid"};
+return{ok:true,jk:fem?"Perempuan":"Laki laki",dd:dd,mm:mm,y:y}}
+function nikPrev(n){var r=null;DB.slice().sort(function(a,b){return b.saved-a.saved}).forEach(function(x){if(!r&&x.d&&String(x.d.nik)===n&&x.id!==curId)r=x});return r}
+function nikCheck(nf){var n=$("nik").value.replace(/\D/g,"");if(n!==$("nik").value)$("nik").value=n;var st=$("nikst");
+if(!n){st.innerHTML="";return}
+var i=nikInfo(n);if(!i.ok){st.innerHTML='<span class="no">'+e(i.msg)+'</span>';return}
+var tg=pad(i.dd)+"-"+pad(i.mm)+"-"+i.y,m=["Format NIK valid: "+i.jk+", lahir "+tg],w=[],pr=nikPrev(n);
+if(!nf){$("jk").value=i.jk;
+if(pr&&!$("nama").value.trim()){var d=pr.d;["nama","jk","ttl","agama","wn","kerja","tel","dsn","desa","rt","rw","kec","kab"].forEach(function(k){if(d[k]!==undefined)$(k).value=d[k]});m.push("data pelapor diisi dari laporan sebelumnya ("+pr.no+")")}
+else if(!$("ttl").value.trim()){$("ttl").value=tg;w.push("tambahkan tempat lahir di depan tanggal")}}
+if(pr&&pr.nama&&$("nama").value.trim()&&pr.nama.trim().toUpperCase()!==$("nama").value.trim().toUpperCase())w.push("NIK ini pernah dipakai atas nama "+pr.nama+" ("+pr.no+")");
+var tv=$("ttl").value.match(/(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{4})/);
+if(tv&&(+tv[1]!==i.dd||+tv[2]!==i.mm||+tv[3]!==i.y))w.push("tanggal lahir pada kolom tempat/tanggal lahir berbeda dari NIK ("+tg+")");
+if($("jk").value!==i.jk)w.push("jenis kelamin berbeda dari NIK");
+st.innerHTML='<span class="ok">'+e(m.join("; "))+'</span>'+(w.length?'<br><span class="no">Periksa: '+e(w.join("; "))+'</span>':'')+'<br><span style="color:#777">Cocok tidaknya dengan data Dukcapil harus dicek lewat sistem dinas, lalu centang kotak di bawah.</span>';render()}
+$("nik").addEventListener("input",function(){nikCheck(false)});
+$("ttl").addEventListener("input",function(){nikCheck(true)});
+var _lr=loadRec;loadRec=function(r){_lr(r);nikCheck(true)};
 
 // ===== MODE OFFLINE =====
 function netUI(){var off=!navigator.onLine,b=$("offbar");b.style.display=off?"block":"none";
