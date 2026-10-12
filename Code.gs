@@ -5,6 +5,7 @@
  *                 (sheet "Arsip" = surat, sheet "Dokumentasi" = kegiatan)
  *   - PDF surat : subfolder "PDF Surat"
  *   - File dokumentasi kegiatan : subfolder "Dokumentasi"
+ *   - Laporan orang hilang      : sheet "Orang Hilang" (PDF-nya ikut masuk subfolder "PDF Surat")
  *
  * PENTING: kalau kamu menempel kode ini ke proyek yang sudah ada, PERTAHANKAN
  * nilai TOKEN milikmu sendiri. Setelah menempel: Ctrl+S, jalankan fungsi "setup"
@@ -18,6 +19,8 @@ var PDF_FOLDER = 'PDF Surat';
 var DOC_SHEET = 'Dokumentasi';
 var DOC_FOLDER = 'Dokumentasi';
 var USER_SHEET = 'Pengguna';
+var OH_SHEET = 'Orang Hilang';
+var OH_HEAD = ['id', 'Nomor Surat', 'Dilaporkan', 'Orang Hilang', 'Pelapor', 'Terakhir Terlihat', 'Status', 'Petugas', 'Dicetak', 'PDF', 'Link PDF', 'Disimpan', 'Data (JSON)'];
 var USER_HEAD = ['id', 'Nama', 'Username', 'Peran', 'Pangkat / NRP', 'Dibuat', 'Data (JSON)'];
 var HEAD = ['id', 'Nomor Surat', 'Tanggal', 'Pelapor', 'Barang / Surat', 'Petugas', 'Dicetak', 'PDF', 'Link PDF', 'Disimpan', 'Data (JSON)'];
 var DOC_HEAD = ['id', 'Tanggal', 'Judul Kegiatan', 'Kategori', 'Keterangan', 'Jumlah File', 'Disimpan', 'Data (JSON)'];
@@ -80,6 +83,16 @@ function userSheet_() {
   return sh;
 }
 
+function ohSheet_() {
+  var ss = ss_();
+  var sh = ss.getSheetByName(OH_SHEET) || ss.insertSheet(OH_SHEET);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(OH_HEAD);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
 function numSheet_() {
   var ss = ss_();
   var sh = ss.getSheetByName('Nomor') || ss.insertSheet('Nomor');
@@ -114,6 +127,7 @@ function setup() {
   sheet_();
   docSheet_();
   userSheet_();
+  ohSheet_();
   numSheet_();
   folder_();
   docFolder_();
@@ -151,6 +165,15 @@ function doGet(e) {
       try { users.push(JSON.parse(urows[k][6])); } catch (x) {}
     }
     return out_({ users: users });
+  }
+
+  if (act === 'ohlist') {
+    var orows = ohSheet_().getDataRange().getValues();
+    var oh = [];
+    for (var m = 1; m < orows.length; m++) {
+      try { oh.push(JSON.parse(orows[m][12])); } catch (x) {}
+    }
+    return out_({ oh: oh });
   }
 
   if (act === 'docget') {
@@ -259,6 +282,26 @@ function doPost(e) {
         } catch (x) {}
         dsh2.deleteRow(drow2);
       }
+      return out_({ ok: true });
+    }
+
+    // ----- Laporan orang hilang -----
+    if (act === 'ohSave') {
+      var osh = ohSheet_();
+      var o = b.record;
+      var ojs = JSON.stringify(o);
+      if (ojs.length > 49000) return out_({ error: 'Data laporan terlalu besar (kemungkinan foto). Perkecil foto lalu simpan lagi.' });
+      var ovals = [o.id, o.no, o.waktu, o.nama, o.pelapor || '', o.tlihat || '', o.status || 'cari', o.petugas || '',
+        o.cetak ? 'Ya' : 'Belum', o.pdf ? 'Ya' : 'Belum', o.pdfUrl || '', new Date(o.saved || Date.now()), ojs];
+      var orow = rowOf_(osh, o.id);
+      if (orow > 1) osh.getRange(orow, 1, 1, ovals.length).setValues([ovals]);
+      else osh.appendRow(ovals);
+      return out_({ ok: true });
+    }
+    if (act === 'ohDelete') {
+      var osh2 = ohSheet_();
+      var orow2 = rowOf_(osh2, b.id);
+      if (orow2 > 1) osh2.deleteRow(orow2);
       return out_({ ok: true });
     }
 
