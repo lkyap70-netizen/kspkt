@@ -1,47 +1,81 @@
-// This is the "Offline page" service worker
+// Service worker KSPKT Polsek Jatirogo: aplikasi tetap bisa dibuka tanpa internet.
+// Naikkan VERSION setiap kali Anda mengganti index.html agar cache lama dibuang.
+var VERSION = "kspkt-v1";
 
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
+var CORE = ["./", "index.html"];
+var LIBS = [
+  "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
+  "lib/html2pdf.bundle.min.js",
+  "lib/xlsx.full.min.js"
+];
 
-const CACHE = "pwabuilder-page";
-
-// TODO: replace the following with the correct offline fallback page i.e.: const offlineFallbackPage = "offline.html";
-const offlineFallbackPage = "ToDo-replace-this-name.html";
-
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
+self.addEventListener("message", function (event) {
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
-self.addEventListener('install', async (event) => {
+self.addEventListener("install", function (event) {
   event.waitUntil(
-    caches.open(CACHE)
-      .then((cache) => cache.add(offlineFallbackPage))
+    caches.open(VERSION).then(function (cache) {
+      // Satu file gagal (misalnya folder lib/ belum ada) tidak boleh membatalkan instalasi.
+      return Promise.all(CORE.concat(LIBS).map(function (u) {
+        return cache.add(new Request(u, { cache: "reload" })).catch(function () {});
+      }));
+    }).then(function () { return self.skipWaiting(); })
   );
 });
 
-if (workbox.navigationPreload.isSupported()) {
-  workbox.navigationPreload.enable();
+self.addEventListener("activate", function (event) {
+  event.waitUntil(
+    caches.keys().then(function (keys) {
+      return Promise.all(keys.filter(function (k) { return k !== VERSION; }).map(function (k) { return caches.delete(k); }));
+    }).then(function () { return self.clients.claim(); })
+  );
+});
+
+function put(req, res) {
+  if (res && res.ok) {
+    var copy = res.clone();
+    caches.open(VERSION).then(function (c) { c.put(req, copy); });
+  }
+  return res;
 }
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.mode === 'navigate') {
-    event.respondWith((async () => {
-      try {
-        const preloadResp = await event.preloadResponse;
+self.addEventListener("fetch", function (event) {
+  var req = event.request;
+  if (req.method !== "GET") return;
 
-        if (preloadResp) {
-          return preloadResp;
-        }
+  var url = new URL(req.url);
+  var same = url.origin === self.location.origin;
+  var cdn = url.hostname === "cdnjs.cloudflare.com";
+  // Permintaan ke Google Apps Script (sinkronisasi Drive) dan situs lain tidak disentuh.
+  if (!same && !cdn) return;
 
-        const networkResp = await fetch(event.request);
-        return networkResp;
-      } catch (error) {
-
-        const cache = await caches.open(CACHE);
-        const cachedResp = await cache.match(offlineFallbackPage);
-        return cachedResp;
-      }
-    })());
+  // Buka halaman: pakai versi terbaru kalau online, versi tersimpan kalau offline.
+  if (req.mode === "navigate") {
+    event.respondWith(
+      fetch(req).then(function (res) { return put("index.html", res); }).catch(function () {
+        return caches.match("index.html").then(function (m) { return m || caches.match("./"); });
+      })
+    );
+    return;
   }
+
+  // Pustaka PDF/Excel dari CDN: ambil dari cache dulu.
+  if (cdn) {
+    event.respondWith(
+      caches.match(req).then(function (m) {
+        return m || fetch(req).then(function (res) { return put(req, res); });
+      })
+    );
+    return;
+  }
+
+  // File lain di situs yang sama: tampilkan yang tersimpan, perbarui di belakang layar.
+  event.respondWith(
+    caches.match(req).then(function (m) {
+      var net = fetch(req).then(function (res) { return put(req, res); }).catch(function () { return m; });
+      return m || net;
+    })
+  );
 });
