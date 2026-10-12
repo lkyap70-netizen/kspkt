@@ -606,7 +606,7 @@ $("lgo").onclick=doLogin;$("lu").addEventListener("keydown",function(ev){if(ev.k
 
 function doReg(){var nm=$("rn").value.trim(),un=$("ru").value.trim();
 if(!nm){lmsg("Nama lengkap wajib diisi.",1);return}
-if(!/^\d{6,10}$/.test(un)){lmsg("NRP harus berupa 6-10 angka.",1);return}
+if(!/^\d{4,10}$/.test(un)){lmsg("NRP harus berupa 4-10 angka.",1);return}
 var go=function(){if(findU(un)){lmsg("NRP ini sudah terdaftar.",1);return}
 var u={id:"u"+Date.now()+rnd().slice(0,4),nama:nm,user:un,nrp:"NRP "+un,role:US.length?"operator":"admin",created:Date.now(),upd:Date.now()};
 US.push(u);saveUS();pushUser(u);$("rn").value="";$("ru").value="";startSes(u)};
@@ -633,10 +633,13 @@ u.role=u.role==="admin"?"operator":"admin";u.upd=Date.now();u.sy=false;saveUS();
 if(a==="hapus"){if(u.role==="admin"&&admins<2){alert("Admin terakhir tidak dapat dihapus.");return}
 if(confirm("Hapus akun "+u.nama+" (NRP "+u.user+")? Surat yang pernah dibuatnya tetap ada di arsip."))delUser(u.id)}};
 
-var SEED=[["M. ARIF NUGROHO,S.H.","82100416","admin","INSPEKTUR POLISI SATU NRP 82100416"],["JOKO SUSANTO, S.H.","74030466"],["SUGIANTO","71050246"],["IKA ARI.P, S.H.","81030633"],["RETNO HARTAJI","69070407"],["SUWIGNYO","83070036"],["SUKAMTO","77010533"],["ROFIQUL UMAM SETIANA","94090247"],["WIRIS ARI WIJAYA","78020059"],["KASWADI, S.H.","76101071"],["FAHRUL NUR CAHYO","81051400"],["BAMBANG HIMAWAN","84100747"],["PRIYONO","82020343"],["YULISTIYONO","69070433"],["KARSIMIN","93080528"]];
-function seedUsers(){if(store("stpl_seeded"))return;
-SEED.forEach(function(r){if(!findU(r[1]))US.push({id:"s"+r[1],nama:r[0],user:r[1],nrp:r[3]||("NRP "+r[1]),role:r[2]||"operator",created:1,upd:1})});
-saveUS();store("stpl_seeded","1");US.forEach(pushUser)}
+var SEED=[["M. ARIF NUGROHO,S.H.","82100416","admin","INSPEKTUR POLISI SATU NRP 82100416"],["JOKO SUSANTO, S.H.","74030466"],["SUGIANTO","71050246"],["IKA ARI.P, S.H.","81030633"],["RETNO HARTAJI","69070407"],["SUWIGNYO","83070036"],["SUKAMTO","77010533"],["ROFIQUL UMAM SETIANA","94090247"],["WIRIS ARI WIJAYA","78020059"],["KASWADI, S.H.","76101071"],["FAHRUL NUR CAHYO","81051400"],["BAMBANG HIMAWAN","84100747"],["PRIYONO","82020343"],["YULISTIYONO","69070433"],["KARSIMIN","93080528"],["LUCKY ARDIANSYAH PUTRA","1590","operator",0,1]];
+function seedUsers(){var done=[];try{done=JSON.parse(store("stpl_seeded2")||"[]")}catch(x){}
+if(store("stpl_seeded")&&!done.length)done=SEED.filter(function(r){return !r[4]}).map(function(r){return r[1]});
+var add=false;
+SEED.forEach(function(r){if(done.indexOf(r[1])<0){if(!findU(r[1])){US.push({id:"s"+r[1],nama:r[0],user:r[1],nrp:r[3]||("NRP "+r[1]),role:r[2]||"operator",created:1,upd:1});add=true}done.push(r[1])}});
+store("stpl_seeded2",JSON.stringify(done));store("stpl_seeded","1");
+if(add){saveUS();US.forEach(pushUser)}}
 function initAuth(){$("llogo").src=LOGO;
 if(cfg().url){$("lurl").value=cfg().url;$("ltok").value=cfg().token;
 syncUsers().then(function(){seedUsers();panel(US.length?"l":"r")},function(){seedUsers();panel(US.length?"l":"r")})}
