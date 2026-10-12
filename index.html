@@ -125,16 +125,13 @@ body.locked>*:not(#login):not(script){display:none!important}
 <div id="login"><div class="lbox">
 <div class="lhead"><img id="llogo" alt=""><div><div class="b1l">POLSEK JATIROGO</div><div class="b2l">Sistem Administrasi KSPKT</div></div></div>
 <div id="pl"><h3>Masuk</h3>
-<label>Username</label><input id="lu" autocomplete="username" autocapitalize="none">
-<label>PIN</label><input id="lp" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password">
+<label>NRP</label><input id="lu" inputmode="numeric" maxlength="10" autocomplete="username" placeholder="Contoh: 84100747">
 <button id="lgo" type="button" style="width:100%;margin:14px 0 0">Masuk</button>
 <div class="lsw">Belum punya akun? <a id="toreg">Daftar di sini</a></div></div>
 <div id="pr" style="display:none"><h3>Daftar Akun Operator</h3>
 <div class="lnote" id="lfirst" style="display:none">Belum ada akun. Akun pertama yang dibuat otomatis menjadi <b>Admin</b>.</div>
 <label>Nama lengkap petugas</label><input id="rn" autocomplete="off" placeholder="Contoh: Bambang Himawan">
-<label>Pangkat &amp; NRP</label><input id="rnr" autocomplete="off" placeholder="Contoh: AIPDA NRP 84100747">
-<label>Username (huruf kecil/angka, 3-20 karakter)</label><input id="ru" autocomplete="off" autocapitalize="none" placeholder="bambang">
-<div class="row"><div><label>PIN (4-8 angka)</label><input id="rp1" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></div><div><label>Ulangi PIN</label><input id="rp2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></div></div>
+<label>NRP (angka, dipakai untuk masuk)</label><input id="ru" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="Contoh: 84100747">
 <button id="rgo" type="button" style="width:100%;margin:14px 0 0">Daftar &amp; Masuk</button>
 <div class="lsw">Sudah punya akun? <a id="tolog">Masuk</a></div></div>
 <div id="lmsg"></div>
@@ -143,13 +140,8 @@ body.locked>*:not(#login):not(script){display:none!important}
 <label>Kode rahasia</label><input id="ltok" type="password" autocomplete="off">
 <button id="lcon" type="button" class="o" style="margin-top:8px">Sambungkan &amp; ambil akun</button></details>
 </div></div>
-<div id="pinm"><div class="lbox" style="max-width:340px"><h3>Ganti PIN</h3>
-<label>PIN lama</label><input id="po" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password">
-<label>PIN baru (4-8 angka)</label><input id="pn" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
-<label>Ulangi PIN baru</label><input id="pn2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
-<button id="pins" type="button">Simpan</button><button id="pinc" type="button" class="o">Batal</button><div id="pinmsg"></div></div></div>
 <header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div>
-<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="tdoc">Dokumentasi</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="pinbtn" class="ub">Ganti PIN</button><button id="keluar" class="ub">Keluar</button></nav></header>
+<nav class="tabs"><span id="syncpill" class="sp0 off">Belum tersambung</span><button id="tdash">Dashboard</button><button id="tbuat">Buat Surat</button><button id="tarsip">Arsip <span class="badge" id="cnt">0</span></button><button id="trekap">Rekap</button><button id="tdoc">Dokumentasi</button><button id="tuser" style="display:none">Pengguna</button><span id="who" class="sp0"></span><button id="keluar" class="ub">Keluar</button></nav></header>
 <div id="vdash" class="dash">
 <div class="hero"><div><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p></div><div class="hbtn"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div>
 <div class="stats" id="stats"></div>
@@ -261,8 +253,8 @@ body.locked>*:not(#login):not(script){display:none!important}
 <div id="dlist"></div></div>
 </div>
 <div id="vuser" class="dash" style="display:none"><div class="card"><h3>Manajemen Pengguna</h3>
-<div class="wrap"><table class="at"><thead><tr><th>Nama</th><th>Username</th><th>Pangkat / NRP</th><th>Peran</th><th>Aksi</th></tr></thead><tbody id="ub"></tbody></table></div>
-<div style="font-size:11.5px;color:#777;margin-top:8px">Akun baru yang mendaftar otomatis berperan Operator. Admin dapat mereset PIN, mengubah peran, dan menghapus akun. Sebaiknya ada minimal dua Admin supaya tidak terkunci jika satu lupa PIN.</div></div></div>
+<div class="wrap"><table class="at"><thead><tr><th>Nama</th><th>NRP (login)</th><th>Peran</th><th>Aksi</th></tr></thead><tbody id="ub"></tbody></table></div>
+<div style="font-size:11.5px;color:#777;margin-top:8px">Akun baru yang mendaftar otomatis berperan Operator. Admin dapat mengubah peran dan menghapus akun. Masuk hanya memakai NRP tanpa PIN.</div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -543,14 +535,10 @@ $("trekap").onclick=function(){show("rekap")};$("tdoc").onclick=function(){show(
 show("dash");
 render();
 
-// ===== LOGIN & AKUN PETUGAS =====
+// ===== LOGIN & AKUN PETUGAS (masuk hanya dengan NRP) =====
 var US=[],SES=null;
 try{US=JSON.parse(store("stpl_users")||"[]")}catch(x){US=[]}
 function saveUS(){try{localStorage.setItem("stpl_users",JSON.stringify(US))}catch(x){}}
-function sha(t){
-if(window.crypto&&crypto.subtle&&window.TextEncoder){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return("0"+x.toString(16)).slice(-2)}).join("")})}
-var h=5381,i;for(i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return Promise.resolve("f"+(h>>>0).toString(16))}
-function hp(salt,user,pin){return sha(salt+":"+user+":"+pin)}
 function rnd(){var a="",i;if(window.crypto&&crypto.getRandomValues){var u=new Uint8Array(8);crypto.getRandomValues(u);for(i=0;i<8;i++)a+=("0"+u[i].toString(16)).slice(-2);return a}
 for(i=0;i<16;i++)a+=Math.floor(Math.random()*16).toString(16);return a}
 function findU(un){var r=null;US.forEach(function(x){if(x.user===un)r=x});return r}
@@ -560,8 +548,6 @@ function who(){var u=curU();return u?u.nama:""}
 function canDel(rec){var u=curU();return !!u&&(u.role==="admin"||(!!rec.oleh&&rec.oleh===u.nama))}
 function isAdmin(){var u=curU();return !!u&&u.role==="admin"}
 function lmsg(t,er){var m=$("lmsg");m.textContent=t;m.style.color=er?"#b3261e":"#128a3d"}
-function getLk(){try{return JSON.parse(store("stpl_lk")||"{}")}catch(x){return{}}}
-function setLk(n,u){store("stpl_lk",JSON.stringify({n:n,until:u}))}
 
 function pushUser(u){if(!cfg().url)return;enq(function(){return api({action:"userSave",record:u}).then(function(){u.sy=true;saveUS()},function(){})})}
 function delUser(id){US=US.filter(function(x){return x.id!==id});saveUS();userRender();if(!cfg().url)return;
@@ -583,31 +569,26 @@ $("toreg").onclick=function(){panel("r")};$("tolog").onclick=function(){panel("l
 
 function enter(u){document.body.classList.remove("locked");$("who").textContent=u.nama+(u.role==="admin"?" (Admin)":"");
 $("tuser").style.display=u.role==="admin"?"":"none";
-var nm=u.nama.toUpperCase(),m="lain";for(var k in PT){if(k!=="lain"&&PT[k][0]===nm)m=k}
-$("pilih").value=m;$("petugas").value=nm;$("nrp").value=u.nrp||"";
+var nm=u.nama.toUpperCase(),m="lain";for(var k in PT){if(k!=="lain"&&(PT[k][0]===nm||PT[k][1].indexOf(" "+u.user)>-1))m=k}
+if(m!=="lain")nm=PT[m][0];
+$("pilih").value=m;$("petugas").value=nm;$("nrp").value=m!=="lain"?PT[m][1]:(u.nrp||"");
 if(cfg().url)sync();show("dash");render()}
-function startSes(u){SES={id:u.id};store("stpl_ses",JSON.stringify({id:u.id,exp:Date.now()+12*3600*1000}));$("lu").value="";$("lp").value="";enter(u)}
+function startSes(u){SES={id:u.id};store("stpl_ses",JSON.stringify({id:u.id,exp:Date.now()+12*3600*1000}));$("lu").value="";enter(u)}
 
-function failLogin(){var lk=getLk(),n=(lk.n||0)+1;
-if(n>=5){setLk(0,Date.now()+60000);lmsg("Terlalu banyak percobaan salah. Coba lagi dalam 60 detik.",1)}else{setLk(n,0);lmsg("Username atau PIN salah.",1)}}
-function doLogin(){var un=$("lu").value.trim().toLowerCase(),pin=$("lp").value,lk=getLk();
-if(lk.until&&Date.now()<lk.until){lmsg("Terlalu banyak percobaan. Coba lagi dalam "+Math.ceil((lk.until-Date.now())/1000)+" detik.",1);return}
-if(!un||!pin){lmsg("Isi username dan PIN.",1);return}
-var go=function(){var u=findU(un);if(!u){failLogin();return}
-hp(u.salt,u.user,pin).then(function(h){if(h===u.hash){setLk(0,0);startSes(u)}else failLogin()})};
+function doLogin(){var un=$("lu").value.trim();
+if(!un){lmsg("Isi NRP.",1);return}
+var go=function(){var u=findU(un);if(!u){lmsg("NRP belum terdaftar. Klik Daftar di bawah.",1);return}startSes(u)};
 if(findU(un)||!cfg().url)go();else syncUsers().then(go,go)}
-$("lgo").onclick=doLogin;$("lp").addEventListener("keydown",function(ev){if(ev.key==="Enter")doLogin()});$("lu").addEventListener("keydown",function(ev){if(ev.key==="Enter")$("lp").focus()});
+$("lgo").onclick=doLogin;$("lu").addEventListener("keydown",function(ev){if(ev.key==="Enter")doLogin()});
 
-function doReg(){var nm=$("rn").value.trim(),nr=$("rnr").value.trim(),un=$("ru").value.trim().toLowerCase(),p1=$("rp1").value,p2=$("rp2").value;
+function doReg(){var nm=$("rn").value.trim(),un=$("ru").value.trim();
 if(!nm){lmsg("Nama lengkap wajib diisi.",1);return}
-if(!/^[a-z0-9._-]{3,20}$/.test(un)){lmsg("Username 3-20 karakter: huruf kecil, angka, titik, strip, atau garis bawah.",1);return}
-if(!/^\d{4,8}$/.test(p1)){lmsg("PIN harus 4-8 angka.",1);return}
-if(p1!==p2){lmsg("Ulangi PIN tidak sama.",1);return}
-var go=function(){if(findU(un)){lmsg("Username sudah dipakai.",1);return}
-var salt=rnd();hp(salt,un,p1).then(function(h){var u={id:"u"+Date.now()+rnd().slice(0,4),nama:nm,user:un,nrp:nr,salt:salt,hash:h,role:US.length?"operator":"admin",created:Date.now(),upd:Date.now()};
-US.push(u);saveUS();pushUser(u);$("rn").value="";$("rnr").value="";$("ru").value="";$("rp1").value="";$("rp2").value="";startSes(u)})};
+if(!/^\d{6,10}$/.test(un)){lmsg("NRP harus berupa 6-10 angka.",1);return}
+var go=function(){if(findU(un)){lmsg("NRP ini sudah terdaftar.",1);return}
+var u={id:"u"+Date.now()+rnd().slice(0,4),nama:nm,user:un,nrp:"NRP "+un,role:US.length?"operator":"admin",created:Date.now(),upd:Date.now()};
+US.push(u);saveUS();pushUser(u);$("rn").value="";$("ru").value="";startSes(u)};
 if(cfg().url){lmsg("Memeriksa akun di Drive...");syncUsers().then(go,function(x){lmsg("Tidak bisa terhubung ke Drive: "+x.message+". Coba lagi.",1)})}else go()}
-$("rgo").onclick=doReg;$("rp2").addEventListener("keydown",function(ev){if(ev.key==="Enter")doReg()});
+$("rgo").onclick=doReg;$("ru").addEventListener("keydown",function(ev){if(ev.key==="Enter")doReg()});
 
 $("lcon").onclick=function(){var u=$("lurl").value.trim(),t=$("ltok").value.trim();
 if(!/^https:\/\/script\.google\.com\/.+\/exec/.test(u)){lmsg("URL harus berbentuk https://script.google.com/macros/s/.../exec",1);return}
@@ -617,28 +598,17 @@ syncUsers().then(function(){lmsg("Tersambung. "+US.length+" akun ditemukan.");pa
 
 $("keluar").onclick=function(){store("stpl_ses","");location.reload()};
 $("tuser").onclick=function(){show("user")};
-$("pinbtn").onclick=function(){["po","pn","pn2"].forEach(function(i){$(i).value=""});$("pinmsg").textContent="";$("pinm").style.display="flex"};
-$("pinc").onclick=function(){$("pinm").style.display="none"};
-function pm(t,er){var m=$("pinmsg");m.textContent=t;m.style.color=er?"#b3261e":"#128a3d"}
-$("pins").onclick=function(){var u=curU();if(!u)return;var o=$("po").value,n=$("pn").value,n2=$("pn2").value;
-if(!/^\d{4,8}$/.test(n)){pm("PIN baru harus 4-8 angka.",1);return}
-if(n!==n2){pm("Ulangi PIN baru tidak sama.",1);return}
-hp(u.salt,u.user,o).then(function(h){if(h!==u.hash){pm("PIN lama salah.",1);return}
-var salt=rnd();return hp(salt,u.user,n).then(function(h2){u.salt=salt;u.hash=h2;u.upd=Date.now();u.sy=false;saveUS();pushUser(u);$("pinm").style.display="none";alert("PIN berhasil diganti.")})})};
 
 function userRender(){var me=curU(),h="";
 US.slice().sort(function(a,b){return a.nama.localeCompare(b.nama)}).forEach(function(u){var self=me&&me.id===u.id;
-h+="<tr><td>"+e(u.nama)+(self?" <i style='color:#6b7488'>(Anda)</i>":"")+"</td><td>"+e(u.user)+"</td><td>"+e(u.nrp||"")+"</td><td>"+(u.role==="admin"?'<span class="pill g">Admin</span>':'<span class="pill" style="background:#e8efff;color:#1d3a8a">Operator</span>')+"</td><td><button class='o' data-a='reset' data-i='"+u.id+"'>Reset PIN</button>"+(self?"":"<button class='o' data-a='role' data-i='"+u.id+"'>"+(u.role==="admin"?"Jadikan Operator":"Jadikan Admin")+"</button><button class='o' data-a='hapus' data-i='"+u.id+"'>Hapus</button>")+"</td></tr>"});
-$("ub").innerHTML=h||"<tr><td colspan='5'>Belum ada akun.</td></tr>"}
+h+="<tr><td>"+e(u.nama)+(self?" <i style='color:#6b7488'>(Anda)</i>":"")+"</td><td>"+e(u.user)+"</td><td>"+(u.role==="admin"?'<span class="pill g">Admin</span>':'<span class="pill" style="background:#e8efff;color:#1d3a8a">Operator</span>')+"</td><td>"+(self?"-":"<button class='o' data-a='role' data-i='"+u.id+"'>"+(u.role==="admin"?"Jadikan Operator":"Jadikan Admin")+"</button><button class='o' data-a='hapus' data-i='"+u.id+"'>Hapus</button>")+"</td></tr>"});
+$("ub").innerHTML=h||"<tr><td colspan='4'>Belum ada akun.</td></tr>"}
 $("ub").onclick=function(ev){var b=ev.target.closest("button");if(!b||!isAdmin())return;var u=findUid(b.getAttribute("data-i")),a=b.getAttribute("data-a");if(!u)return;
 var admins=US.filter(function(x){return x.role==="admin"}).length;
-if(a==="reset"){var p=prompt("PIN sementara baru untuk "+u.nama+" (4-8 angka):");if(p===null)return;
-if(!/^\d{4,8}$/.test(p)){alert("PIN harus 4-8 angka.");return}
-var salt=rnd();hp(salt,u.user,p).then(function(h){u.salt=salt;u.hash=h;u.upd=Date.now();u.sy=false;saveUS();pushUser(u);alert("PIN diganti. Minta "+u.nama+" menggantinya lewat tombol Ganti PIN setelah masuk.")})}
 if(a==="role"){if(u.role==="admin"&&admins<2){alert("Harus ada minimal satu Admin.");return}
 u.role=u.role==="admin"?"operator":"admin";u.upd=Date.now();u.sy=false;saveUS();pushUser(u);userRender()}
 if(a==="hapus"){if(u.role==="admin"&&admins<2){alert("Admin terakhir tidak dapat dihapus.");return}
-if(confirm("Hapus akun "+u.nama+" ("+u.user+")? Surat yang pernah dibuatnya tetap ada di arsip."))delUser(u.id)}};
+if(confirm("Hapus akun "+u.nama+" (NRP "+u.user+")? Surat yang pernah dibuatnya tetap ada di arsip."))delUser(u.id)}};
 
 function initAuth(){$("llogo").src=LOGO;
 if(cfg().url){$("lurl").value=cfg().url;$("ltok").value=cfg().token;
