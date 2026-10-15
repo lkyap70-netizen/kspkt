@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Surat Tanda Penerimaan Laporan - Polsek Jatirogo</title>
+<title>Surat Keterangan Tanda Laporan Kehilangan - Polsek Jatirogo</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#e9edf3;color:#111}
@@ -618,19 +618,19 @@ function nowLocal(){var n=new Date();return n.getFullYear()+"-"+pad(n.getMonth()
 function render(){$("hasilalamat").textContent=ALM()||"-";
 var w=new Date($("waktu").value||nowLocal()),yr=w.getFullYear();
 var kode=RM[w.getMonth()];$("kode").value=kode;
-var no="B/ "+($("urut").value||"...")+" /"+kode+"/ TUK.7.2.2 / "+yr+" / Polsek";
+var no="SKTLK/ "+($("urut").value||"...")+" / "+kode+"/ TUK.7.2.2 / "+yr+" / Polsek";
 var hl=$("thilang").value?new Date($("thilang").value+"T00:00:00"):null;
 var items=$("barang").value.split("\n").filter(function(x){return x.trim()}).map(function(x){return "<li>- "+e(x.trim())+"</li>"}).join("")||"<li>- ...</li>";
 
 var h='<div class="kop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<br>SEKTOR JATIROGO<br><span class="al">Jalan Raya Barat 277 Jatirogo Tuban 62362</span></div><div class="logo">'+'<img src="'+LOGO+'" alt="">'+'</div>';
-h+='<div class="jd"><u>SURAT TANDA PENERIMAAN LAPORAN</u></div><div class="nm">Nomor : '+e(no)+'</div>';
+h+='<div class="jd"><u>SURAT KETERANGAN TANDA LAPORAN KEHILANGAN</u></div><div class="nm">Nomor : '+e(no)+'</div>';
 h+='<p style="text-indent:10mm">Pada hari ini '+H[w.getDay()]+' tanggal '+tgl(w)+' pukul '+pad(w.getHours())+'.'+pad(w.getMinutes())+' WIB, telah datang ke Polsek Jatirogo seorang '+e($("jk").value)+' yang bernama dibawah ini :</p>';
 h+='<table class="d">';
 [["N a m a",$("nama").value.toUpperCase()],["N I K",$("nik").value],["Tempat/ Tanggal lahir",$("ttl").value],["Agama",$("agama").value],["Kewarganegaraan",$("wn").value],["Pekerjaan",$("kerja").value],["Alamat",ALM()],["No. telepon",$("tel").value]].forEach(function(r){h+='<tr><td style="width:150px">'+r[0]+'</td><td style="width:14px">:</td><td>'+e(r[1])+'</td></tr>'});
 h+='</table><p>Melaporkan kehilangan sebuah barang / surat berupa :</p><ul>'+items+'</ul>';
 h+='<p>'+kataBarang()+' tersebut diketahui hilang pada '+(hl?H[hl.getDay()]+' tanggal '+tgl(hl):'Hari ... tanggal ...')+' '+tempatTeks()+'</p>';
 h+='<div class="ket"><p><b>KETERANGAN :</b></p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) ini bukan sebagai pengganti Surat/Dokumen yang hilang, melainkan sebagai syarat untuk mengurus surat-surat yang baru ke instansi yang berwenang.</p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) ini berlaku 14 ( Empat Belas) hari tanggal dikeluarkan.</p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) tidak berlaku apabila laporan/palsu, sebagaimana dimaksud dalam pasal 242 ayat (1) KUHP (barang siapa memberikan, membuat laporan atau keterangan palsu atau bohong diancam penjara paling lama tujuh tahun).</p></div>';
-h+='<p>Demikian Surat Tanda Penerimaan Laporan ini dibuat untuk dapat dipergunakan seperlunya</p>';
+h+='<p>Demikian Surat Keterangan Tanda Laporan Kehilangan ini dibuat untuk dapat dipergunakan seperlunya</p>';
 h+='<div class="sigw">';
 h+='<table class="ttd"><tr><td><br>'+L("PELAPOR")+'<div class="sp"></div>'+N(e($("nama").value.toUpperCase()),1)+'</td><td>Jatirogo, '+tgl(w)+'<br>'+L("YANG MENERIMA")+'<div class="sp">'+pnImg()+'</div>'+N(e($("petugas").value))+'<br>'+e($("nrp").value)+'</td></tr></table>';
 h+='<div class="mg">MENGETAHUI<br>'+JUD()+'<div class="sa">'+mgImgs()+'</div>'+N(e($("kspkt").value))+'<br>'+e($("knrp").value)+'</div>';
@@ -722,7 +722,7 @@ if(!rec){rec={id:"r"+Date.now(),cetak:false,pdf:false};DB.push(rec);curId=rec.id
 if(!rec.oleh)rec.oleh=who();rec.edit=who();rec.nikcek=!!d.nikcek;rec.no=noText();rec.urut=+d.urut||0;rec.waktu=d.waktu;rec.nama=d.nama;rec.barang=d.barang;rec.petugas=d.petugas;rec.saved=Date.now();rec.d=d;
 if(fl.cetak)rec.cetak=true;if(fl.pdf)rec.pdf=true;
 saveDB();refreshArsip();pushRec(rec.id);return rec}
-function fname(){return "STPL_"+($("urut").value||"0")+"-"+$("kode").value+"-"+new Date($("waktu").value||Date.now()).getFullYear()+"_"+$("nama").value.trim().toUpperCase().replace(/[^A-Z0-9]+/g,"_")+".pdf"}
+function fname(){return "SKTLK_"+($("urut").value||"0")+"-"+$("kode").value+"-"+new Date($("waktu").value||Date.now()).getFullYear()+"_"+$("nama").value.trim().toUpperCase().replace(/[^A-Z0-9]+/g,"_")+".pdf"}
 function makePDF(){render();var el=$("kertas");
 if(!window.html2pdf){alert("Pembuatan PDF otomatis butuh koneksi internet (pustaka PDF gagal dimuat). Alternatif: klik Cetak, lalu pilih 'Simpan sebagai PDF'.");return Promise.resolve(false)}
 fit(318);var mh=el.style.minHeight;el.style.minHeight="328mm";
@@ -848,7 +848,7 @@ return {y:y,m:m,list:list,jenis:jenis,pet:pet,cetak:cetak,pdf:pdf,thn:thn}}
 function rkTable(o){var ks=Object.keys(o).sort(function(a,b){return o[b]-o[a]});
 return ks.length?'<table class="at"><tbody>'+ks.map(function(k){return '<tr><td>'+e(k)+'</td><td style="width:60px"><b>'+o[k]+'</b></td></tr>'}).join("")+'</tbody></table>':'<div class="empty">Tidak ada data.</div>'}
 function renderRekap(){var D=rkData(),h='';
-h+='<div style="text-align:center;margin-bottom:10px"><div style="font-weight:700;font-size:15px">REKAPITULASI SURAT TANDA PENERIMAAN LAPORAN</div><div>KSPKT POLSEK JATIROGO &middot; POLRESTA TUBAN</div><div>Periode: <b>'+BLNF[D.m]+' '+D.y+'</b></div></div>';
+h+='<div style="text-align:center;margin-bottom:10px"><div style="font-weight:700;font-size:15px">REKAPITULASI SURAT KETERANGAN TANDA LAPORAN KEHILANGAN</div><div>KSPKT POLSEK JATIROGO &middot; POLRESTA TUBAN</div><div>Periode: <b>'+BLNF[D.m]+' '+D.y+'</b></div></div>';
 h+='<div class="stats"><div class="st2"><div><b>'+D.list.length+'</b><span>Total Surat</span></div></div><div class="st2"><div><b>'+D.cetak+'</b><span>Sudah Dicetak</span></div></div><div class="st2"><div><b>'+D.pdf+'</b><span>Sudah PDF</span></div></div></div>';
 h+='<div class="grid2"><div><h4>Menurut Jenis Barang / Surat</h4>'+rkTable(D.jenis)+'</div><div><h4>Menurut Petugas Penerima</h4>'+rkTable(D.pet)+'</div></div>';
 h+='<h4>Daftar Surat</h4>';
@@ -864,7 +864,7 @@ function rkRows(D){var nik=$("rnik").checked,head=["No","Nomor Surat","Tanggal",
 D.list.forEach(function(r,i){var d=r.d||{},w=String(r.waktu||"").split("T");
 rows.push([i+1,r.no,w[0]||"",(w[1]||"").slice(0,5),r.nama].concat(nik?[String(d.nik||"")]:[]).concat([(r.barang||"").split("\n").filter(function(x){return x.trim()}).join("; "),d.petugas||r.petugas||"",d.kspkt||"",r.cetak?"Ya":"Belum",r.pdf?"Ya":"Belum"]))});
 return rows}
-function rkSummary(D){var a=[["REKAPITULASI SURAT TANDA PENERIMAAN LAPORAN"],["KSPKT POLSEK JATIROGO - POLRESTA TUBAN"],["Periode",BLNF[D.m]+" "+D.y],[],["Total surat",D.list.length],["Sudah dicetak",D.cetak],["Sudah PDF",D.pdf],[],["Menurut jenis barang / surat","Jumlah"]];
+function rkSummary(D){var a=[["REKAPITULASI SURAT KETERANGAN TANDA LAPORAN KEHILANGAN"],["KSPKT POLSEK JATIROGO - POLRESTA TUBAN"],["Periode",BLNF[D.m]+" "+D.y],[],["Total surat",D.list.length],["Sudah dicetak",D.cetak],["Sudah PDF",D.pdf],[],["Menurut jenis barang / surat","Jumlah"]];
 Object.keys(D.jenis).sort(function(x,y){return D.jenis[y]-D.jenis[x]}).forEach(function(k){a.push([k,D.jenis[k]])});
 a.push([],["Menurut petugas penerima","Jumlah"]);Object.keys(D.pet).sort(function(x,y){return D.pet[y]-D.pet[x]}).forEach(function(k){a.push([k,D.pet[k]])});
 a.push([],["Rekap per bulan "+D.y,"Jumlah"]);BLNF.forEach(function(b,i){a.push([b,D.thn[i]])});return a}
