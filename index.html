@@ -19,7 +19,7 @@ button.o{background:#fff;color:#1d3a8a;border:1px solid #1d3a8a}
 hr{border:0;border-top:1px solid #ddd;margin:12px 0}
 .wrap{overflow-x:auto}
 /* ===== KERTAS F4 ===== */
-#kertas,#ohkertas{background:#fff;width:215.9mm;min-height:330mm;padding:15mm 16mm 20mm 30mm;margin:0 auto;font-size:11pt;line-height:1.35;box-shadow:0 1px 6px #0003}
+#kertas,#ohkertas{background:#fff;width:215.9mm;min-height:330mm;padding:22mm 16mm 18mm 30mm;margin:0 auto;font-size:11pt;line-height:1.35;box-shadow:0 1px 6px #0003}
 .kop{width:81.5mm;text-align:center;line-height:1.3}
 .kop .al{text-decoration:underline}
 .logo{position:relative;height:16mm}
@@ -189,22 +189,22 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 #kertas.c1,#ohkertas.c1{font-size:10.5pt;line-height:1.3}
 #kertas.c1 p,#ohkertas.c1 p{margin-bottom:6px}
 #kertas.c1 .sp,#ohkertas.c1 .sp{height:70px}
-#kertas.c2,#ohkertas.c2{font-size:10pt;line-height:1.24;padding:13mm 14mm 14mm 30mm}
+#kertas.c2,#ohkertas.c2{font-size:10pt;line-height:1.24;padding:17mm 14mm 14mm 30mm}
 #kertas.c2 p,#ohkertas.c2 p{margin-bottom:5px}
 #kertas.c2 .nm,#ohkertas.c2 .nm{margin-bottom:8px}
 #kertas.c2 .sp,#ohkertas.c2 .sp{height:60px}#kertas.c2 .sa,#ohkertas.c2 .sa{height:15mm}
 #kertas.c2 .sp .sg,#ohkertas.c2 .sp .sg{max-height:21mm}#kertas.c2 .sa .sg,#ohkertas.c2 .sa .sg{max-height:17mm}#kertas.c2 .sa .kap,#ohkertas.c2 .sa .kap{height:17mm}
-#kertas.c3,#ohkertas.c3{font-size:9.5pt;line-height:1.2;padding:11mm 12mm 12mm 28mm}
+#kertas.c3,#ohkertas.c3{font-size:9.5pt;line-height:1.2;padding:14mm 12mm 12mm 28mm}
 #kertas.c3 p,#ohkertas.c3 p{margin-bottom:4px}#kertas.c3 .ket p,#ohkertas.c3 .ket p{margin-bottom:2px}
 #kertas.c3 .nm,#ohkertas.c3 .nm{margin-bottom:6px}#kertas.c3 table.d,#ohkertas.c3 table.d{margin-bottom:5px}
 #kertas.c3 .sp,#ohkertas.c3 .sp{height:50px}#kertas.c3 .sa,#ohkertas.c3 .sa{height:12mm}
 #kertas.c3 .sp .sg,#ohkertas.c3 .sp .sg{max-height:17mm}#kertas.c3 .sa .sg,#ohkertas.c3 .sa .sg{max-height:13mm}#kertas.c3 .sa .kap,#ohkertas.c3 .sa .kap{height:13mm}
-#kertas.c4,#ohkertas.c4{font-size:9pt;line-height:1.15;padding:9mm 10mm 10mm 26mm}
+#kertas.c4,#ohkertas.c4{font-size:9pt;line-height:1.15;padding:12mm 10mm 10mm 26mm}
 #kertas.c4 p,#ohkertas.c4 p{margin-bottom:3px}#kertas.c4 .ket p,#ohkertas.c4 .ket p{margin-bottom:2px}
 #kertas.c4 .nm,#ohkertas.c4 .nm{margin-bottom:4px}#kertas.c4 table.d,#ohkertas.c4 table.d{margin-bottom:4px}
 #kertas.c4 .sp,#ohkertas.c4 .sp{height:42px}#kertas.c4 .sa,#ohkertas.c4 .sa{height:10mm}
 #kertas.c4 .sp .sg,#ohkertas.c4 .sp .sg{max-height:14mm}#kertas.c4 .sa .sg,#ohkertas.c4 .sa .sg{max-height:11mm}#kertas.c4 .sa .kap,#ohkertas.c4 .sa .kap{height:11mm}
-#kertas.c5,#ohkertas.c5{font-size:8.5pt;line-height:1.1;padding:8mm 9mm 9mm 24mm}
+#kertas.c5,#ohkertas.c5{font-size:8.5pt;line-height:1.1;padding:10mm 9mm 9mm 24mm}
 #kertas.c5 p,#ohkertas.c5 p{margin-bottom:2px}#kertas.c5 .ket p,#ohkertas.c5 .ket p{margin-bottom:1px}
 #kertas.c5 .nm,#ohkertas.c5 .nm{margin-bottom:3px}#kertas.c5 table.d,#ohkertas.c5 table.d{margin-bottom:3px}#kertas.c5 table.d td,#ohkertas.c5 table.d td{padding:0}
 #kertas.c5 .logo,#ohkertas.c5 .logo{height:14mm}#kertas.c5 .logo img,#ohkertas.c5 .logo img{width:13mm}
@@ -212,6 +212,19 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 #kertas.c5 .sp .sg,#ohkertas.c5 .sp .sg{max-height:12mm}#kertas.c5 .sa .sg,#ohkertas.c5 .sa .sg{max-height:9mm}#kertas.c5 .sa .kap,#ohkertas.c5 .sa .kap{height:9mm}
 /* sangat banyak (>~25 barang): boleh 2 lembar, tapi blok tanda tangan tidak pernah terpotong/terpisah */
 #kertas.mp,#ohkertas.mp{-webkit-box-decoration-break:clone;box-decoration-break:clone}
+/* surat pendek: renggangkan isi supaya mengisi kertas sampai ke bawah */
+#kertas.e1{line-height:1.42}
+#kertas.e1 p{margin-bottom:10px}
+#kertas.e1 .nm{margin-bottom:16px}
+#kertas.e1 .sp{height:88px}
+#kertas.e1 .sa{height:24mm}
+#kertas.e2{line-height:1.5}
+#kertas.e2 p{margin-bottom:12px}
+#kertas.e2 .nm{margin-bottom:20px}
+#kertas.e2 table.d td{padding:2px 0}
+#kertas.e2 .sp{height:98px}
+#kertas.e2 .sa{height:30mm}
+#kertas.e2 .mg{margin-top:20px}
 @page{size:215.9mm 330mm;margin:0}
 @media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas,#ohkertas{box-shadow:none;margin:0}}
 </style>
@@ -380,8 +393,10 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <textarea id="barang" rows="4" autocomplete="off" placeholder="KTP dengan Nik.xxxx An.Pelapor."></textarea>
 <div class="row">
 <div><label>Tanggal hilang</label><input autocomplete="off" id="thilang" type="date"></div>
-<div><label>Tempat hilang</label><input autocomplete="off" id="tempat" value="di dalam rumah perlapor"></div>
+<div><label>Tempat hilang (pilih contoh)</label><select id="tpl" autocomplete="off"><option value="rumah">Di dalam rumah pelapor</option><option value="jalan">Di perjalanan dari ... ke ...</option><option value="jln">Di jalan ...</option><option value="kerja">Di tempat kerja pelapor</option><option value="lain">Ketik sendiri</option></select></div>
 </div>
+<label>Tempat hilang (bisa diedit)</label><input autocomplete="off" id="tempat" value="di dalam rumah perlapor">
+<div style="font-size:13px;margin-top:6px"><label style="display:inline;color:#111"><input type="checkbox" id="talm" checked autocomplete="off" style="width:auto"> Tambahkan alamat pelapor di belakang tempat hilang</label></div>
 <div class="sec">Petugas &amp; Pengesahan</div>
 <label>Petugas penerima</label>
 <select autocomplete="off" id="pilih"><option value="bambang">Bambang Himawan</option><option value="priyono">Priyono</option><option value="sukamto">Sukamto</option><option value="wiris">Wiris Ari Wijaya</option><option value="kaswadi">Kaswadi</option><option value="arif">M. Arif Nugroho</option><option value="joko">Joko Susanto</option><option value="sugianto">Sugianto</option><option value="ika">Ika Ari P</option><option value="retno">Retno Hartaji</option><option value="suwignyo">Suwignyo</option><option value="rofiqul">Rofiqul Umam Setiana</option><option value="fahrul">Fahrul Nur Cahyo</option><option value="yulis">Yulistiyono</option><option value="karsimin">Karsimin</option><option value="lain">Lainnya (isi manual)</option></select>
@@ -613,7 +628,7 @@ h+='<p style="text-indent:10mm">Pada hari ini '+H[w.getDay()]+' tanggal '+tgl(w)
 h+='<table class="d">';
 [["N a m a",$("nama").value.toUpperCase()],["N I K",$("nik").value],["Tempat/ Tanggal lahir",$("ttl").value],["Agama",$("agama").value],["Kewarganegaraan",$("wn").value],["Pekerjaan",$("kerja").value],["Alamat",ALM()],["No. telepon",$("tel").value]].forEach(function(r){h+='<tr><td style="width:150px">'+r[0]+'</td><td style="width:14px">:</td><td>'+e(r[1])+'</td></tr>'});
 h+='</table><p>Melaporkan kehilangan sebuah barang / surat berupa :</p><ul>'+items+'</ul>';
-h+='<p>Dokumen tersebut diketahui hilang pada '+(hl?H[hl.getDay()]+' tanggal '+tgl(hl):'Hari ... tanggal ...')+' '+e($("tempat").value)+'.</p>';
+h+='<p>'+kataBarang()+' tersebut diketahui hilang pada '+(hl?H[hl.getDay()]+' tanggal '+tgl(hl):'Hari ... tanggal ...')+' '+tempatTeks()+'</p>';
 h+='<div class="ket"><p><b>KETERANGAN :</b></p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) ini bukan sebagai pengganti Surat/Dokumen yang hilang, melainkan sebagai syarat untuk mengurus surat-surat yang baru ke instansi yang berwenang.</p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) ini berlaku 14 ( Empat Belas) hari tanggal dikeluarkan.</p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) tidak berlaku apabila laporan/palsu, sebagaimana dimaksud dalam pasal 242 ayat (1) KUHP (barang siapa memberikan, membuat laporan atau keterangan palsu atau bohong diancam penjara paling lama tujuh tahun).</p></div>';
 h+='<p>Demikian Surat Tanda Penerimaan Laporan ini dibuat untuk dapat dipergunakan seperlunya</p>';
 h+='<div class="sigw">';
@@ -625,6 +640,7 @@ function fit(){var el=$("kertas");if(!el||!el.offsetWidth)return;
 var lim=(arguments[0]||322)*96/25.4,mh=el.style.minHeight;el.className="";el.style.minHeight="0";
 var lv=0;while(el.scrollHeight>lim&&lv<5){lv++;el.className="c"+lv}
 if(el.scrollHeight>lim)el.className="c5 mp";
+if(!lv&&el.className===""){var ex=["e1","e2"],ok="";for(var i=0;i<ex.length;i++){el.className=ex[i];if(el.scrollHeight>lim)break;ok=ex[i]}el.className=ok}
 el.style.minHeight=mh}
 var PT={bambang:["BAMBANG HIMAWAN","AIPDA NRP 84100747"],priyono:["PRIYONO","AIPTU NRP 82020343"],sukamto:["SUKAMTO","AIPDA NRP 77010533"],wiris:["WIRIS ARI WIJAYA","AIPTU NRP 78020059"],kaswadi:["KASWADI","AIPDA NRP 76101071"],arif:["M. ARIF NUGROHO,S.H.","IPTU NRP 82100416"],joko:["JOKO SUSANTO, S.H.","IPTU NRP 74030466"],sugianto:["SUGIANTO","AIPTU NRP 71050246"],ika:["IKA ARI.P, S.H.","AIPTU NRP 81030633"],retno:["RETNO HARTAJI","AIPTU NRP 69070407"],suwignyo:["SUWIGNYO","AIPTU NRP 83070036"],rofiqul:["ROFIQUL UMAM SETIANA","BRIG. NRP 94090247"],fahrul:["FAHRUL NUR CAHYO","AIPTU NRP 81051400"],yulis:["YULISTIYONO","AIPTU NRP 69070433"],karsimin:["KARSIMIN","BRIGPOL NRP 93080528"],lain:["",""]};
 $("pilih").onchange=function(){var v=PT[this.value];$("petugas").value=v[0];$("nrp").value=v[1];render()};
@@ -640,7 +656,7 @@ function FT(i){var v=$("b_"+i).value;if(!v)return "...";var d=new Date(v+"T00:00
 var pel=function(){return $("nik").value},plp=function(){return "Pelapor"};
 var BT={
 ktp:["KTP",[["Nik","nik",pel],["Atas nama","an",plp]],function(){return "KTP dengan Nik."+V("nik")+" An."+V("an")+"."}],
-kk:["KK (Kartu Keluarga)",[["Nik kepala keluarga","nik",pel],["Atas nama","an",function(){return $("nama").value}],["Alamat","alm",ALM]],function(){return "KK (Kartu Keluarga) dengan Nik:"+V("nik")+" an."+V("an")+" alamat."+V("alm")}],
+kk:["KK (Kartu Keluarga)",[["Nik kartu keluarga","nik",null],["Nama kepala keluarga","an",null],["Alamat","alm",ALM]],function(){return "KK (Kartu Keluarga) dengan Nik:"+V("nik")+" an."+V("an")+" alamat."+V("alm")}],
 nikah:["Buku Nikah",[["No. buku nikah","no",null],["Keperluan (boleh kosong)","kep",null],["Atas nama","an",function(){return "Pelapor dan "}]],function(){var k=$("b_kep").value.trim();return "Buku Nikah dengan No."+V("no")+(k?" Keperluan "+k:"")+" An."+V("an")+"."}],
 jalan:["Slip Surat Jalan",[["Tanggal","tgl","date"],["No.","no",null],["Nopol","nopol",null],["Nama sopir","sopir",null],["Muatan","muat",null]],function(){return "1(satu) lembar slip surat jalan tanggal "+FT("tgl")+" No : "+V("no")+" Dengan Nopol "+V("nopol")+" an.sopir "+V("sopir")+" yang mengangkut "+V("muat")+"."}],
 timbang:["Slip Timbang",[["Tanggal","tgl","date"],["No.","no",null],["Berat (Kg)","berat",null],["Nopol","nopol",null],["Nama sopir","sopir",null],["Dari (perusahaan)","pt",null]],function(){return "1(satu) lembar slip timbang tanggal "+FT("tgl")+" No."+V("no")+" dengan berat "+V("berat")+" Kg dengan kendaraan Nopol "+V("nopol")+" Sopir an."+V("sopir")+" Dari "+V("pt")+"."}],
@@ -688,7 +704,7 @@ $("badd").onclick=function(){var t=$("bhasil").value.trim();if(!t)return;var a=$
 bbuild();
 
 var LOGO="data:image/png;base64,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";
-var FL=["gaya","urut","waktu","nama","jk","nik","ttl","agama","wn","kerja","tel","dsn","desa","rt","rw","kec","kab","barang","thilang","tempat","pilih","petugas","nrp","fmt","kspkt","knrp"],CK=["cstempel","cttd","cttd2","nikcek"];
+var FL=["gaya","urut","waktu","nama","jk","nik","ttl","agama","wn","kerja","tel","dsn","desa","rt","rw","kec","kab","barang","thilang","tempat","pilih","petugas","nrp","fmt","kspkt","knrp"],CK=["cstempel","cttd","cttd2","nikcek","talm"];
 var DB=[],curId=null;
 try{DB=JSON.parse(store("stpl_arsip")||"[]")}catch(x){DB=[]}
 function saveDB(){try{localStorage.setItem("stpl_arsip",JSON.stringify(DB));return true}catch(x){alert("Arsip gagal disimpan (penyimpanan browser penuh atau diblokir). Segera lakukan Backup.");return false}}
@@ -1073,6 +1089,18 @@ for(var k in c){var a=k.split("/");if(c[k].length>1&&a[1]!=="0")d.push(a[1]+" (t
 $("dupnote").innerHTML=d.length?'<div class="lnote" style="background:#fde8e6">Nomor ganda ditemukan: '+e(d.join(" | "))+'. Buka salah satu surat, ganti nomor urutnya, lalu simpan.</div>':""}
 var _ra=refreshArsip;refreshArsip=function(){_ra();dupNote()};
 suggestNo();refreshArsip();
+
+// ===== TEMPAT HILANG & KATA SURAT/DOKUMEN/BARANG =====
+var TPL={rumah:"di dalam rumah perlapor",jalan:"di dalam perjalanan dari ... menuju ke ...",jln:"di jalan ...",kerja:"di tempat kerja pelapor"};
+function tempatTeks(){var tp=$("tempat").value.trim().replace(/\.+$/,""),al=$("talm").checked?ALM():"";return e(tp)+(al?". "+e(al):".")}
+var KG={"SIM":"Surat","STNK":"Surat","BPKB":"Surat","Buku Nikah":"Surat","Slip":"Surat","Akta":"Surat","Ijazah":"Surat","Sertifikat":"Surat","Kredit Bank":"Surat","HP":"Barang","Plat Nomor":"Barang"};
+function gKind(l){var k=kindOf(l);if(KG[k])return KG[k];if(k==="Lainnya"&&/^surat\b/i.test(l.trim()))return"Surat";return"Dokumen"}
+function kataBarang(){var c={},n=0;$("barang").value.split("\n").forEach(function(x){if(x.trim()){c[gKind(x)]=1;n++}});
+var k=Object.keys(c);if(k.length===1)return k[0];if(k.length===2&&c.Surat&&c.Barang)return"Barang / surat";return"Dokumen"}
+function setTpl(v){$("tpl").value=v;if(TPL[v]){$("tempat").value=TPL[v];$("talm").checked=(v==="rumah");if(v==="jalan"||v==="jln"){$("tempat").focus();$("tempat").select()}}render()}
+$("tpl").addEventListener("change",function(){setTpl(this.value)});
+var _b4=$("baru").onclick;$("baru").onclick=function(){_b4();setTpl("rumah")};
+var _lr2=loadRec;loadRec=function(r){_lr2(r);$("tpl").value=($("tempat").value===TPL.rumah)?"rumah":"lain"};
 
 // ===== MODE OFFLINE =====
 function netUI(){var off=!navigator.onLine,b=$("offbar");b.style.display=off?"block":"none";
