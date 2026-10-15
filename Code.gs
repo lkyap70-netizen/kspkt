@@ -220,7 +220,7 @@ function doPost(e) {
       var ash = sheet_();
       var arows = ash.getLastRow() > 1 ? ash.getRange(2, 2, ash.getLastRow() - 1, 1).getValues() : [];
       arows.forEach(function (r) {
-        var m = String(r[0]).match(/B\/\s*(\d+)\s*\/.*?\/\s*(\d{4})\s*\/\s*Polsek/);
+        var m = String(r[0]).match(/(?:B|SKTLK)\/\s*(\d+)\s*\/.*?\/\s*(\d{4})\s*\/\s*Polsek/);
         if (m && +m[2] === yr) { used[+m[1]] = 1; if (+m[1] > mx) mx = +m[1]; }
       });
       var nn = (want > 0 && !used[want]) ? want : mx + 1;
