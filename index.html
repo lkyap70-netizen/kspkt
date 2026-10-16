@@ -1580,5 +1580,455 @@ ohNew(); ohList();
 if (cfg().url) enq(ohSync);
 })();
 </script>
+<style id="dhcss">
+/* ===== ANIMASI SUKSES / LOADING ===== */
+#anim{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:#0b1f4d66;backdrop-filter:blur(2px)}
+#anim.on{display:flex}
+.anbox{background:#fff;border-radius:18px;padding:26px 36px 22px;min-width:230px;max-width:86vw;text-align:center;box-shadow:0 18px 50px #0b1f4d55;animation:anpop .28s cubic-bezier(.2,1.4,.4,1)}
+.anbox b{display:block;margin-top:14px;font-size:14px;color:#14213d}
+.ansp{width:58px;height:58px;margin:0 auto;border:5px solid #e3e9f5;border-top-color:#1d3a8a;border-radius:50%;animation:anspin .8s linear infinite}
+.ansv{width:70px;height:70px;display:block;margin:0 auto}
+.ansv circle{fill:none;stroke-width:4;stroke-dasharray:166;stroke-dashoffset:166;animation:andraw .6s ease forwards}
+.ansv path{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:50;stroke-dashoffset:50;animation:andraw .4s .45s ease forwards}
+.ansv.ok circle,.ansv.ok path{stroke:#128a3d}
+.ansv.er circle,.ansv.er path{stroke:#d71920}
+.ansv.ok{animation:anbounce .5s .9s}
+@keyframes anspin{to{transform:rotate(360deg)}}
+@keyframes andraw{to{stroke-dashoffset:0}}
+@keyframes anpop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes anbounce{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+/* ===== DAFTAR HADIR ===== */
+.dhctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.dhctl select,.dhctl input{width:auto;min-width:130px;margin:0}
+.dhctl input[type=number]{min-width:90px;width:90px}
+.dhctl button{margin:0}
+.dhchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:12px}
+.dhchip{background:#e3ecff;color:#1d3a8a;border-radius:12px;padding:3px 10px;cursor:pointer;font-weight:600}
+.dhchip.on{background:#1d3a8a;color:#fff}
+.dhinfo{font-size:12px;color:#6b7488;margin-top:8px}
+.dhdet{margin-top:12px;border:1px solid #e3e9f5;border-radius:10px;padding:8px 12px}
+.dhdet summary{cursor:pointer;font-weight:700;color:#1d3a8a;font-size:13px}
+.dhrost{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
+.dhrost th{background:#eef2fb;text-align:left;padding:4px 6px}
+.dhrost td{padding:2px}
+.dhrost input{width:100%;min-width:60px;padding:5px 6px;font-size:12px;box-sizing:border-box}
+.dhrost button{margin:0;padding:4px 8px;font-size:12px}
+.dhpj{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px;margin-top:8px}
+.dhpj label{font-size:11px;color:#6b7488;display:block}
+.dhpj input{width:100%;box-sizing:border-box;font-size:12px;padding:5px 6px}
+#dhpages{overflow-x:auto;padding:4px 0}
+.dhpg{background:#fff;width:215.9mm;min-height:328mm;box-sizing:border-box;padding:21mm 10.1mm 12mm 23.2mm;margin:0 auto 18px;box-shadow:0 1px 6px #0003;font-family:"Arial Narrow","Liberation Sans Narrow",Arial,sans-serif;font-size:12pt;color:#000;position:relative}
+.dhpg.off{opacity:.35}
+.dhtool{position:absolute;top:3px;right:8px;font:12px Arial,sans-serif;color:#1d3a8a;background:#fff;z-index:2}
+.dhtool label{cursor:pointer}
+.dhbox{border:1px solid #000;min-height:296mm;box-sizing:border-box;padding:1mm .7mm 3mm 1.3mm;display:flex;flex-direction:column;align-items:flex-start}
+.dhbox>*{align-self:stretch}
+.dhbox>.dhkop{align-self:flex-start}
+.dhkop{display:table;white-space:nowrap;margin-left:1.8mm;padding:0;text-align:center;line-height:1.2;font-size:12pt}
+.dhkop .ln{border-bottom:1px solid #000;padding-bottom:.2mm}
+.dhjd{text-align:center;font-size:14pt;margin:8mm 0 .5mm;text-decoration:underline}
+.dhhari{text-align:center;margin-bottom:7mm;font-size:12pt}
+.dhpg table{width:100%;border-collapse:collapse;table-layout:fixed}
+.dhpg th,.dhpg td{border:1px solid #000;padding:.4mm .5mm;font-size:8pt;vertical-align:middle;text-align:center;white-space:nowrap;overflow:hidden}
+.dhpg th{font-weight:400;font-size:12pt}
+.dhpg td.l{text-align:left;padding-left:2.5mm}
+.dhpg tr.num td{font-size:12pt;padding:0}
+.dhpg tbody tr{height:8.5mm}
+.dhpg [contenteditable]:focus{outline:2px solid #f2b705;background:#fffbe6}
+.dhft{display:flex;justify-content:space-between;margin-top:8mm;padding:0 8mm;line-height:1.3;font-size:12pt;page-break-inside:avoid}
+.dhft>div{text-align:center;min-width:75mm}
+.dhft .sp{height:17mm}
+.dhft u{font-weight:700}
+#vdh.dhfb .dhpg{font-family:Arial,Helvetica,sans-serif}
+#vdh.dhfb .dhkop,#vdh.dhfb .dhhari,#vdh.dhfb .dhft{font-size:9.6pt}
+#vdh.dhfb .dhjd{font-size:11pt}
+#vdh.dhfb .dhpg th,#vdh.dhfb .dhpg tr.num td{font-size:9pt}
+#vdh.dhfb .dhpg td{font-size:6.8pt}
+@media print{
+  body.printdh>*:not(#vdh){display:none!important}
+  body.printdh #vdh{display:block!important;padding:0}
+  body.printdh .dhno,body.printdh .dhtool{display:none!important}
+  body.printdh #dhpages{overflow:visible;padding:0}
+  body.printdh .dhpg{box-shadow:none;margin:0;page-break-after:always;break-after:page}
+  body.printdh .dhpg.off{display:none!important}
+  body.printdh .dhpg [contenteditable]{outline:none!important;background:none!important}
+}
+</style>
+
+<script id="dhjs">
+(function () {
+  var $ = function (i) { return document.getElementById(i); };
+  if (!$("devfoot") || document.getElementById("vdh")) return;
+
+  /* ---------- Animasi global: animLoad / animOK / animErr / animHide ---------- */
+  var an = document.createElement("div");
+  an.id = "anim";
+  document.body.appendChild(an);
+  var anT = null;
+  var SV = function (cls, d) {
+    return '<svg class="ansv ' + cls + '" viewBox="0 0 52 52"><circle cx="26" cy="26" r="25"/><path d="' + d + '"/></svg>';
+  };
+  function anShow(html, t, ms) {
+    clearTimeout(anT);
+    an.innerHTML = '<div class="anbox">' + html + (t ? "<b>" + t + "</b>" : "") + "</div>";
+    an.className = "on";
+    if (ms) anT = setTimeout(window.animHide, ms);
+  }
+  window.animLoad = function (t) { anShow('<div class="ansp"></div>', t || "Memproses..."); };
+  window.animOK = function (t, ms) { anShow(SV("ok", "M14 27l8 8 16-17"), t || "Berhasil", ms || 1600); };
+  window.animErr = function (t, ms) { anShow(SV("er", "M17 17l18 18M35 17L17 35"), t || "Gagal", ms || 2200); };
+  window.animHide = function () { clearTimeout(anT); an.className = ""; };
+  an.onclick = function (e) { if (e.target === an && an.querySelector(".ansv")) window.animHide(); };
+
+  /* ---------- Data & penyimpanan ---------- */
+  var BLN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  var HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  var KB = "stpl_dh_bulan", KA = "stpl_dh_ang", KP = "stpl_dh_pj";
+
+  function jget(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function jset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function A(n, p, j, a, b) { return { n: n, p: p, j: j, a: a || "08.00 WIB", b: b || "15.00 WIB" }; }
+
+  var DEF_ANG = [
+    A("M. ARIF NUGROHO,S.H.", "IPTU / 82100416", "Kapolsek"),
+    A("JOKO SUSANTO, S.H.", "IPTU / 74030466", "Waka Polsek"),
+    A("PUGUH PRASETYO, S.H.", "IPDA / 87100184", "Knt.Reskrim"),
+    A("SUGIANTO", "AIPDA / 71050246", "Ps. Kasium"),
+    A("IKA ARI.P, S.H.", "AIPTU / 81030633", "Ps.Knt Intel", "08.00 WIB", "20.00 WIB"),
+    A("RETNO HARTAJI", "AIPTU / 69070407", "Ps.KSPKT", "08.00 WIB", "20.00 WIB"),
+    A("SUWIGNYO", "AIPTU / 83070036", "Ps.Knt Propam", "08.00 WIB", "20.00 WIB"),
+    A("SUKAMTO", "AIPDA / 77010533", "BKTM", "08.00 WIB", "20.00 WIB"),
+    A("ROFIQUL UMAM SETIANA", "BRIG. / 94090247", "BKTM"),
+    A("WIRIS ARI WIJAYA", "AIPTU / 78020059", "Ps.KSPKT"),
+    A("KASWADI, S.H.", "AIPDA / 76101071", "Ps.Knt Lantas"),
+    A("FAHRUL NUR CAHYO", "AIPTU / 81051400", "Ps.Knt Binmas"),
+    A("BAMBANG HIMAWAN", "AIPDA / 84100747", "BA POLSEK"),
+    A("PRIYONO", "AIPDA / 82020343", "Ps.KSPKT"),
+    A("YULISTIYONO", "AIPDA / 84061256", "Ps.Knt Samapta"),
+    A("KARSIMIN", "AIPTU / 69070433", "BKTM"),
+    A("LAUNA SURYA GANGGA", "BRIG. / 93080528", "BA POLSEK"),
+    A("AGOES MIENARSIH", "PENGATUR / 196912092014122001", "Ban Um / Benma")
+  ];
+  var DEF_PJ = {
+    kota: "Jatirogo",
+    k1j: "KEPALA KEPOLISIAN SEKTOR JATIROGO", k1n: "M.ARIF NUGROHO, S.H.", k1p: "INSPEKTUR POLISI SATU NRP 82100416",
+    k2j: "PS. KASIUM", k2n: "SUGIANTO", k2p: "AIPDA NRP 71050246"
+  };
+
+  var ROS = jget(KA, null) || clone(DEF_ANG);
+  var PJ = jget(KP, null) || clone(DEF_PJ);
+  var ST = null, dirty = false;
+
+  function keyOf(y, m) { return y + "-" + (m + 1); }
+
+  function mk(y, m) {
+    var days = [], n = new Date(y, m + 1, 0).getDate();
+    for (var d = 1; d <= n; d++) {
+      var w = new Date(y, m, d).getDay();
+      if (w >= 1 && w <= 5) days.push({ d: d, on: true, rows: clone(ROS) });
+    }
+    return { y: y, m: m, days: days };
+  }
+
+  /* ---------- Tampilan (menu + tab) ---------- */
+  var v = document.createElement("div");
+  v.id = "vdh";
+  v.style.display = "none";
+  v.innerHTML =
+    '<div class="dash dhno" style="padding-bottom:0"><div class="card"><h3>Daftar Hadir Anggota</h3>' +
+    '<div class="dhctl">' +
+    '<select id="dh_bln"></select><input id="dh_thn" type="number" min="2000" max="2100">' +
+    '<button id="dh_simpan" type="button">Simpan</button>' +
+    '<button id="dh_cetak" type="button" class="o">Cetak / PDF</button>' +
+    '<button id="dh_ulang" type="button" class="o">Buat Ulang</button>' +
+    '<button id="dh_hapus" type="button" class="o">Hapus Bulan Ini</button></div>' +
+    '<div class="dhinfo" id="dh_info"></div>' +
+    '<div class="dhchips" id="dh_chips"></div>' +
+    '<details class="dhdet" id="dh_dros"><summary>Daftar Anggota (nama, pangkat/NRP, jabatan, jam)</summary>' +
+    '<div class="dhinfo">Perubahan di sini langsung berlaku ke seluruh halaman bulan yang sedang dibuka (dan dipakai untuk bulan baru). Jangan lupa tekan <b>Simpan</b> di atas. Untuk mengubah satu hari saja, klik langsung isi tabel di bawah.</div>' +
+    '<div style="overflow-x:auto"><table class="dhrost"><thead><tr><th>No. Urut</th><th>Nama</th><th>Pangkat / NRP</th><th>Jabatan</th><th>Datang</th><th>Pulang</th><th></th></tr></thead><tbody id="dh_rb"></tbody></table></div>' +
+    '<input id="dh_addpos" type="number" min="1" placeholder="No. urut" title="Kosongkan = paling bawah" style="width:92px;margin:8px 4px 0 0;padding:8px 6px;box-sizing:border-box"> <button id="dh_add" type="button" class="o" style="margin-top:8px">+ Tambah Anggota</button> ' +
+    '<button id="dh_rsave" type="button" style="margin-top:8px">Simpan Daftar Anggota</button> ' +
+    '<button id="dh_rdef" type="button" class="o" style="margin-top:8px">Kembalikan Bawaan</button></details>' +
+    '<details class="dhdet"><summary>Pejabat Pengetahui &amp; Tanda Tangan</summary><div class="dhpj" id="dh_pj"></div>' +
+    '<button id="dh_psave" type="button" style="margin-top:8px">Simpan Pejabat</button></details>' +
+    '</div></div>' +
+    '<div class="wrap" style="padding:16px"><div id="dhpages"></div></div>';
+  document.body.insertBefore(v, $("devfoot"));
+
+  (function () {
+    var c = document.createElement("canvas").getContext("2d"), t = "mmmmmmmmmmWWWW";
+    c.font = '40px monospace'; var w0 = c.measureText(t).width;
+    c.font = '40px "Arial Narrow", monospace';
+    if (c.measureText(t).width === w0) v.classList.add("dhfb");
+  })();
+
+  var tab = document.createElement("button");
+  tab.id = "tdh";
+  tab.innerHTML = '<svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M8 15l2.5 2.5L16 13"/></svg>Daftar Hadir';
+  var tabs = document.querySelector("nav.tabs");
+  tabs.insertBefore(tab, $("tuser") || null);
+
+  var qa = $("qa");
+  if (qa) qa.insertAdjacentHTML("beforeend",
+    '<div role="button" tabindex="0" data-go="dh"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M8 15l2.5 2.5L16 13"/></svg><b>Daftar Hadir</b><span>Absen anggota Senin-Jumat per bulan</span></div>');
+
+  var _show = window.show;
+  window.show = function (k) {
+    _show(k);
+    var on = k === "dh";
+    v.style.display = on ? "" : "none";
+    tab.className = on ? "on" : "";
+    if (on) { if (!ST) pilih(); window.scrollTo(0, 0); }
+  };
+  tab.onclick = function () { window.show("dh"); };
+
+  /* ---------- Render halaman ---------- */
+  function pageHTML(day, i) {
+    var dt = new Date(ST.y, ST.m, day.d);
+    var tg = day.d + " " + BLN[ST.m] + " " + ST.y;
+    var rows = "";
+    for (var r = 0; r < day.rows.length; r++) {
+      var o = day.rows[r];
+      var ed = function (f, val, cls) {
+        return '<td class="' + (cls || "") + '" contenteditable="true" data-i="' + i + '" data-r="' + r + '" data-f="' + f + '">' + esc(val) + "</td>";
+      };
+      rows += "<tr><td>" + (r + 1) + ".</td>" + ed("n", o.n, "l") + ed("p", o.p) + ed("j", o.j) +
+        ed("a", o.a) + ed("b", o.b) + "<td></td><td></td></tr>";
+    }
+    return '<div class="dhpg' + (day.on ? "" : " off") + '" data-i="' + i + '">' +
+      '<div class="dhtool"><label><input type="checkbox" data-on="' + i + '"' + (day.on ? " checked" : "") + '> Pakai hari ini (hilangkan centang jika libur)</label></div>' +
+      '<div class="dhbox">' +
+      '<div class="dhkop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<div class="ln">SEKTOR JATIROGO</div></div>' +
+      '<div class="dhjd">DAFTAR HADIR POLSEK JATIROGO</div>' +
+      '<div class="dhhari">Hari : ' + HARI[dt.getDay()] + " / " + tg + "</div>" +
+      '<table><colgroup><col style="width:9.2mm"><col style="width:41.3mm"><col style="width:30.1mm"><col style="width:20.3mm"><col style="width:17.2mm"><col style="width:20.1mm"><col style="width:22.8mm"><col style="width:19.9mm"></colgroup>' +
+      '<thead><tr><th rowspan="2">NO</th><th rowspan="2">NAMA</th><th rowspan="2">PANGKAT / NRP</th><th rowspan="2">JABATAN</th><th colspan="2">JAM KEHADIRAN</th><th colspan="2">TANDA TANGAN</th></tr>' +
+      '<tr><th>DATANG</th><th>PULANG</th><th>DATANG</th><th>PULANG</th></tr>' +
+      '<tr class="num"><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr></thead>' +
+      "<tbody>" + rows + "</tbody></table>" +
+      '<div class="dhft"><div>Mengetahui<br>' + esc(PJ.k1j) + '<div class="sp"></div><u>' + esc(PJ.k1n) + "</u><br>" + esc(PJ.k1p) + "</div>" +
+      "<div>" + esc(PJ.kota) + ", " + tg + "<br>" + esc(PJ.k2j) + '<div class="sp"></div><u>' + esc(PJ.k2n) + "</u><br>" + esc(PJ.k2p) + "</div></div>" +
+      "</div></div>";
+  }
+
+  function render() {
+    var h = "";
+    for (var i = 0; i < ST.days.length; i++) h += pageHTML(ST.days[i], i);
+    $("dhpages").innerHTML = h;
+    info();
+  }
+
+  function info() {
+    var n = ST.days.filter(function (d) { return d.on; }).length;
+    var sv = !!jget(KB, {})[keyOf(ST.y, ST.m)];
+    $("dh_info").innerHTML = BLN[ST.m] + " " + ST.y + ": <b>" + ST.days.length + "</b> hari kerja (Senin-Jumat), <b>" + n + "</b> dipakai &middot; " +
+      (dirty ? '<b style="color:#b3261e">belum disimpan</b>' : sv ? '<b style="color:#128a3d">tersimpan</b>' : "belum disimpan");
+    chips();
+  }
+
+  function chips() {
+    var all = jget(KB, {}), ks = Object.keys(all).sort(function (a, b) {
+      var x = a.split("-"), y = b.split("-");
+      return (x[0] - y[0]) || (x[1] - y[1]);
+    });
+    var cur = keyOf(ST.y, ST.m);
+    $("dh_chips").innerHTML = ks.length ? "Tersimpan: " + ks.map(function (k) {
+      var p = k.split("-");
+      return '<span class="dhchip' + (k === cur ? " on" : "") + '" data-k="' + k + '">' + BLN[p[1] - 1] + " " + p[0] + "</span>";
+    }).join("") : "";
+  }
+
+  /* ---------- Pilih bulan -> langsung jadi ---------- */
+  function pilih(force) {
+    var m = +$("dh_bln").value, y = +$("dh_thn").value;
+    var sv = jget(KB, {})[keyOf(y, m)];
+    ST = sv ? clone(sv) : mk(y, m);
+    dirty = false;
+    render();
+  }
+
+  function cekPindah() {
+    return !dirty || confirm("Ada perubahan yang belum disimpan. Pindah bulan tanpa menyimpan?");
+  }
+
+  var now = new Date();
+  $("dh_bln").innerHTML = BLN.map(function (b, i) { return '<option value="' + i + '">' + b + "</option>"; }).join("");
+  $("dh_bln").value = now.getMonth();
+  $("dh_thn").value = now.getFullYear();
+
+  var lastB = $("dh_bln").value, lastY = $("dh_thn").value;
+  function onPeriode() {
+    if (!cekPindah()) { $("dh_bln").value = lastB; $("dh_thn").value = lastY; return; }
+    lastB = $("dh_bln").value; lastY = $("dh_thn").value;
+    if (!+lastY) return;
+    animLoad("Menyusun daftar hadir...");
+    setTimeout(function () { pilih(); animHide(); }, 350);
+  }
+  $("dh_bln").onchange = onPeriode;
+  $("dh_thn").onchange = onPeriode;
+
+  $("dh_chips").onclick = function (e) {
+    var c = e.target.closest("[data-k]"); if (!c) return;
+    var p = c.getAttribute("data-k").split("-");
+    $("dh_thn").value = p[0]; $("dh_bln").value = p[1] - 1;
+    onPeriode();
+  };
+
+  /* ---------- Edit langsung di tabel ---------- */
+  $("dhpages").addEventListener("input", function (e) {
+    var t = e.target;
+    if (t.getAttribute && t.getAttribute("data-f")) {
+      ST.days[+t.getAttribute("data-i")].rows[+t.getAttribute("data-r")][t.getAttribute("data-f")] = t.textContent;
+      if (!dirty) { dirty = true; info(); }
+    }
+  });
+  $("dhpages").addEventListener("change", function (e) {
+    var t = e.target, i = t.getAttribute && t.getAttribute("data-on");
+    if (i === null || i === undefined) return;
+    ST.days[+i].on = t.checked;
+    t.closest(".dhpg").classList.toggle("off", !t.checked);
+    dirty = true; info();
+  });
+  $("dhpages").addEventListener("paste", function (e) {
+    if (!e.target.getAttribute || !e.target.getAttribute("data-f")) return;
+    e.preventDefault();
+    var tx = (e.clipboardData || window.clipboardData).getData("text").replace(/\s+/g, " ");
+    document.execCommand("insertText", false, tx);
+  });
+  $("dhpages").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.target.getAttribute && e.target.getAttribute("data-f")) e.preventDefault();
+  });
+
+  /* ---------- Tombol ---------- */
+  $("dh_simpan").onclick = function () {
+    animLoad("Menyimpan daftar hadir...");
+    setTimeout(function () {
+      var all = jget(KB, {});
+      all[keyOf(ST.y, ST.m)] = clone(ST);
+      if (jset(KB, all)) { dirty = false; info(); animOK("Daftar hadir " + BLN[ST.m] + " " + ST.y + " tersimpan"); }
+      else animErr("Gagal menyimpan (penyimpanan browser penuh)");
+    }, 600);
+  };
+
+  $("dh_cetak").onclick = function () {
+    if (!ST.days.some(function (d) { return d.on; })) { animErr("Tidak ada hari yang dipakai"); return; }
+    animLoad("Menyiapkan cetakan...");
+    setTimeout(function () {
+      animHide();
+      document.body.classList.add("printdh");
+      setTimeout(function () { window.print(); document.body.classList.remove("printdh"); }, 150);
+    }, 500);
+  };
+
+  $("dh_ulang").onclick = function () {
+    if (!confirm("Buat ulang daftar hadir " + BLN[ST.m] + " " + ST.y + " dari Daftar Anggota terbaru? Isi yang sudah diedit di bulan ini akan diganti.")) return;
+    animLoad("Membuat ulang...");
+    setTimeout(function () { ST = mk(ST.y, ST.m); dirty = true; render(); animOK("Daftar hadir dibuat ulang"); }, 450);
+  };
+
+  $("dh_hapus").onclick = function () {
+    var all = jget(KB, {}), k = keyOf(ST.y, ST.m);
+    if (!all[k]) { animErr("Bulan ini belum pernah disimpan", 1600); return; }
+    if (!confirm("Hapus daftar hadir " + BLN[ST.m] + " " + ST.y + " yang tersimpan?")) return;
+    delete all[k]; jset(KB, all);
+    ST = mk(ST.y, ST.m); dirty = false; render();
+    animOK("Daftar hadir dihapus");
+  };
+
+  /* ---------- Daftar anggota ---------- */
+  function rosterUI() {
+    $("dh_rb").innerHTML = ROS.map(function (o, i) {
+      var f = function (k) { return '<td><input data-ri="' + i + '" data-rf="' + k + '" value="' + esc(o[k]) + '"></td>'; };
+      return '<tr><td style="white-space:nowrap"><input type="number" min="1" max="' + ROS.length + '" data-rpos="' + i + '" value="' + (i + 1) + '" style="width:54px"></td>' +
+        f("n") + f("p") + f("j") + f("a") + f("b") +
+        '<td style="white-space:nowrap"><button type="button" class="o" data-rup="' + i + '" title="Naik">&#9650;</button> ' +
+        '<button type="button" class="o" data-rdn="' + i + '" title="Turun">&#9660;</button> ' +
+        '<button type="button" class="o" data-rdel="' + i + '">Hapus</button></td></tr>';
+    }).join("");
+  }
+  function moveRow(from, to) {
+    to = Math.max(0, Math.min(ROS.length - 1, to));
+    if (from === to) return false;
+    var mv = function (arr) { if (arr.length > from) arr.splice(to, 0, arr.splice(from, 1)[0]); };
+    mv(ROS);
+    if (ST) ST.days.forEach(function (d) { mv(d.rows); });
+    return true;
+  }
+  rosterUI();
+  var rT = null;
+  function rosterApply() {
+    jset(KA, ROS);
+    if (!ST) return;
+    dirty = true;
+    clearTimeout(rT);
+    rT = setTimeout(render, 120);
+  }
+  $("dh_rb").addEventListener("input", function (e) {
+    var t = e.target; if (t.getAttribute("data-ri") === null) return;
+    var i = +t.getAttribute("data-ri"), f = t.getAttribute("data-rf");
+    ROS[i][f] = t.value;
+    if (ST) ST.days.forEach(function (d) { if (d.rows[i]) d.rows[i][f] = t.value; });
+    rosterApply();
+  });
+  $("dh_rb").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-rdel]"); if (!b) return;
+    var i = +b.getAttribute("data-rdel");
+    ROS.splice(i, 1);
+    if (ST) ST.days.forEach(function (d) { d.rows.splice(i, 1); });
+    rosterUI(); rosterApply();
+  });
+  $("dh_rb").addEventListener("click", function (e) {
+    var u = e.target.closest("[data-rup]"), d = e.target.closest("[data-rdn]");
+    if (!u && !d) return;
+    var i = +(u ? u.getAttribute("data-rup") : d.getAttribute("data-rdn"));
+    if (moveRow(i, i + (u ? -1 : 1))) { rosterUI(); rosterApply(); }
+  });
+  $("dh_rb").addEventListener("change", function (e) {
+    var t = e.target; if (t.getAttribute("data-rpos") === null) return;
+    var i = +t.getAttribute("data-rpos"), n = parseInt(t.value, 10);
+    if (!n) { rosterUI(); return; }
+    if (moveRow(i, n - 1)) rosterApply();
+    rosterUI();
+  });
+  $("dh_add").onclick = function () {
+    var o = A("", "", ""), n = parseInt($("dh_addpos").value, 10);
+    var idx = n ? Math.max(0, Math.min(ROS.length, n - 1)) : ROS.length;
+    ROS.splice(idx, 0, o);
+    if (ST) ST.days.forEach(function (d) { d.rows.splice(idx, 0, clone(o)); });
+    $("dh_addpos").value = "";
+    rosterUI(); rosterApply();
+    var inp = $("dh_rb").querySelector('[data-ri="' + idx + '"][data-rf="n"]');
+    if (inp) { inp.focus(); inp.scrollIntoView({ block: "center" }); }
+  };
+  $("dh_rsave").onclick = function () {
+    if (jset(KA, ROS)) animOK("Daftar anggota tersimpan dan sudah diterapkan ke halaman. Tekan Simpan untuk menyimpan bulan ini.", 2800);
+    else animErr("Gagal menyimpan daftar anggota");
+  };
+  $("dh_rdef").onclick = function () {
+    if (!confirm("Kembalikan daftar anggota ke bawaan (18 anggota)? Isi halaman bulan ini ikut diganti.")) return;
+    ROS = clone(DEF_ANG);
+    if (ST) ST.days.forEach(function (d) { d.rows = clone(ROS); });
+    rosterUI(); rosterApply();
+  };
+
+  /* ---------- Pejabat ---------- */
+  var PL = [["kota", "Kota (tanda tangan)"], ["k1j", "Pejabat kiri - jabatan"], ["k1n", "Pejabat kiri - nama"], ["k1p", "Pejabat kiri - pangkat/NRP"],
+    ["k2j", "Pejabat kanan - jabatan"], ["k2n", "Pejabat kanan - nama"], ["k2p", "Pejabat kanan - pangkat/NRP"]];
+  $("dh_pj").innerHTML = PL.map(function (p) {
+    return "<div><label>" + p[1] + '</label><input data-pk="' + p[0] + '" value="' + esc(PJ[p[0]]) + '"></div>';
+  }).join("");
+  $("dh_pj").addEventListener("input", function (e) {
+    var k = e.target.getAttribute("data-pk"); if (k) PJ[k] = e.target.value;
+  });
+  $("dh_psave").onclick = function () {
+    if (jset(KP, PJ)) { if (ST) render(); animOK("Pejabat tersimpan"); } else animErr("Gagal menyimpan");
+  };
+})();
+</script>
+
 </body>
 </html>
