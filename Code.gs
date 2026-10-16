@@ -352,10 +352,15 @@ function doPost(e) {
       if (mrow2 > 1) {
         try {
           var mrec = JSON.parse(ssh2.getRange(mrow2, 13).getValue());
-          if (mrec.file && mrec.file.fileId) {
-            var mff = DriveApp.getFileById(mrec.file.fileId);
-            if (inSmFolder_(mff)) mff.setTrashed(true);
-          }
+          var ids = [];
+          if (mrec.file && mrec.file.fileId) ids.push(mrec.file.fileId);
+          (mrec.dispo || []).forEach(function (dd) { if (dd.pdf && dd.pdf.fileId) ids.push(dd.pdf.fileId); });
+          ids.forEach(function (fid) {
+            try {
+              var mff = DriveApp.getFileById(fid);
+              if (inSmFolder_(mff)) mff.setTrashed(true);
+            } catch (x) {}
+          });
         } catch (x) {}
         ssh2.deleteRow(mrow2);
       }
