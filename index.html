@@ -1645,6 +1645,16 @@ if (cfg().url) enq(ohSync);
 #vdh.dhfb .dhjd{font-size:11pt}
 #vdh.dhfb .dhpg th,#vdh.dhfb .dhpg tr.num td{font-size:9pt}
 #vdh.dhfb .dhpg td{font-size:6.8pt}
+/* sampul & surat pengantar */
+.dhpg.cvp{padding:0;height:328mm;overflow:hidden;font-family:Arial,Helvetica,sans-serif;font-size:11pt;line-height:1.3}
+.cvp .a{position:absolute}
+.cvp .ed{white-space:pre-wrap}
+.cvp .ln{border-bottom:1px solid #000}
+#vdh .dhpg.cvp table{table-layout:fixed;width:100%;border-collapse:collapse}
+#vdh .dhpg.cvp td,#vdh .dhpg.cvp th{border:1px solid #000;padding:1.5mm 2mm;font-size:11pt;font-weight:400;white-space:normal;overflow:visible;vertical-align:top;text-align:center}
+#vdh .dhpg.cvp td.j{text-align:justify}
+.cvp .pf{border:1px solid #0000ff;color:#0000ff;font-weight:700;font-size:7pt;padding:3mm 3mm}
+.cvp .pf div{margin-bottom:7.5mm}
 @media print{
   body.printdh>*:not(#vdh){display:none!important}
   body.printdh #vdh{display:block!important;padding:0}
@@ -1730,7 +1740,21 @@ if (cfg().url) enq(ohSync);
       var w = new Date(y, m, d).getDay();
       if (w >= 1 && w <= 5) days.push({ d: d, on: true, rows: clone(ROS) });
     }
-    return { y: y, m: m, days: days };
+    return { y: y, m: m, days: days, cv: defCV(y, m) };
+  }
+  var ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  function defCV(y, m) {
+    return {
+      sOn: true, cOn: true, paraf: true,
+      nomor: "B/        /" + ROMAN[m] + "/REN.4.1.3./" + y + "/Polsek",
+      tgl: "Tuban,      " + BLN[m] + " " + y,
+      kls: "BIASA", up: "Kabag SDM",
+      yth: "KEPALA KEPOLISIAN RESOR KOTA TUBAN",
+      isi: "Pengiriman Laporan Daftar Hadir Anggota Polsek Jatirogo Bulan " + BLN[m] + " " + y + " dari Kepolisian Sektor Jatirogo.",
+      jml: "satu buku", ket: "Disampaikan dengan hormat untuk menjadi maklum.",
+      t1: "DAFTAR HADIR", t2: "POLSEK JATIROGO", t3: "BULAN " + BLN[m].toUpperCase() + " " + y,
+      ctgl: "Jatirogo, 1 " + BLN[m] + " " + y
+    };
   }
 
   /* ---------- Tampilan (menu + tab) ---------- */
@@ -1815,8 +1839,50 @@ if (cfg().url) enq(ohSync);
       "</div></div>";
   }
 
+  function logoSrc() { return (typeof LOGO !== "undefined" && LOGO) ? LOGO : "logo-polri.png"; }
+  function E(k, tag, style, cls) {
+    return "<" + tag + ' class="ed ' + (cls || "") + '" style="' + (style || "") + '" contenteditable="true" data-cv="' + k + '">' + esc(ST.cv[k]) + "</" + tag + ">";
+  }
+  function suratHTML() {
+    var c = ST.cv;
+    return '<div class="dhpg cvp' + (c.sOn ? "" : " off") + '" data-cvp="s">' +
+      '<div class="dhtool"><label><input type="checkbox" data-cvon="sOn"' + (c.sOn ? " checked" : "") + '> Cetak Surat Pengantar</label> &nbsp; ' +
+      '<label><input type="checkbox" data-cvon="paraf"' + (c.paraf ? " checked" : "") + '> Kotak PARAF</label></div>' +
+      '<img class="a" src="' + logoSrc() + '" style="left:50.3mm;top:12.5mm;width:22mm">' +
+      '<div class="a" style="left:17.8mm;top:37mm;width:87mm;text-align:center">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<br>SEKTOR JATIROGO</div>' +
+      '<div class="a ln" style="left:17.8mm;top:53mm;width:87mm;text-align:center">Jalan Raya Barat  277, Jatirogo Tuban 62362</div>' +
+      E("tgl", "div", "position:absolute;left:114mm;top:53mm;width:75mm") +
+      '<div class="a" style="left:17.8mm;top:62.5mm;width:95mm;line-height:5mm"><div style="display:flex"><span style="width:20mm">Nomor</span><span>:&nbsp;</span>' + E("nomor", "span") + '</div>' +
+      '<div style="display:flex"><span style="width:20mm">Klasifikasi</span><span>:&nbsp;</span>' + E("kls", "span") + "</div></div>" +
+      '<div class="a" style="left:124mm;top:72mm">Kepada</div>' +
+      '<div class="a" style="left:114mm;top:81.5mm">Yth.</div>' +
+      E("yth", "div", "position:absolute;left:124mm;top:81.5mm;width:62mm") +
+      '<div class="a" style="left:124mm;top:96mm">di</div>' +
+      '<div class="a" style="left:124mm;top:106mm">Tuban</div>' +
+      '<div class="a" style="left:17.8mm;top:116mm;text-decoration:underline">u.p ' + E("up", "span") + "</div>" +
+      '<div class="a" style="left:0;right:0;top:130mm;text-align:center">SURAT  PENGANTAR</div>' +
+      '<div class="a" style="left:19.7mm;top:140mm;width:165mm"><table><colgroup><col style="width:20mm"><col style="width:64.8mm"><col style="width:30mm"><col style="width:50.2mm"></colgroup>' +
+      '<thead><tr><th style="vertical-align:middle">NOMOR</th><th style="vertical-align:middle">ISI</th><th style="vertical-align:middle">BANYAKNYA</th><th style="vertical-align:middle">KETERANGAN</th></tr></thead>' +
+      '<tbody><tr style="height:40mm"><td>-</td>' + E("isi", "td", "", "j") + E("jml", "td") + E("ket", "td", "", "j") + "</tr></tbody></table></div>" +
+      (c.paraf ? '<div class="a pf" style="left:54mm;top:200mm;width:45mm;height:62mm;box-sizing:border-box"><div style="text-decoration:underline;letter-spacing:.8mm">PARAF :</div><div>1&nbsp; Konseptor &nbsp;&nbsp;&nbsp;:</div><div>2.&nbsp; Kanit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</div><div>3.&nbsp; Kasium &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</div></div>' : "") +
+      '<div class="a" style="left:100mm;top:205mm;width:82mm;text-align:center">' + esc(PJ.k1j) + '<div style="height:20mm"></div><u>' + esc(PJ.k1n) + "</u><br>" + esc(PJ.k1p) + "</div>" +
+      "</div>";
+  }
+  function sampulHTML() {
+    var c = ST.cv;
+    return '<div class="dhpg cvp' + (c.cOn ? "" : " off") + '" data-cvp="c">' +
+      '<div class="dhtool"><label><input type="checkbox" data-cvon="cOn"' + (c.cOn ? " checked" : "") + '> Cetak Sampul</label></div>' +
+      '<div class="a" style="left:28.5mm;top:30mm;width:68mm;text-align:center;font-weight:700;font-size:12pt;line-height:1.2">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<div class="ln" style="margin:0 -2mm 0 -1mm">SEKTOR JATIROGO</div></div>' +
+      '<img class="a" src="' + logoSrc() + '" style="left:50%;margin-left:-19.5mm;top:59mm;width:39mm">' +
+      '<div class="a" style="left:0;right:0;top:120mm;text-align:center;font-weight:700;font-size:24pt;line-height:13.2mm">' +
+      E("t1", "div") + E("t2", "div") + E("t3", "div") + "</div>" +
+      '<svg class="a" style="left:calc(50% - 4.7mm);top:187mm;width:9.4mm;height:94mm" viewBox="0 0 28 280" preserveAspectRatio="none"><g stroke="#000" stroke-width="4"><line x1="14" y1="0" x2="14" y2="280"/><line x1="2" y1="45" x2="2" y2="225"/><line x1="26" y1="45" x2="26" y2="225"/></g></svg>' +
+      E("ctgl", "div", "position:absolute;left:0;right:0;top:291mm;text-align:center") +
+      "</div>";
+  }
+
   function render() {
-    var h = "";
+    var h = suratHTML() + sampulHTML();
     for (var i = 0; i < ST.days.length; i++) h += pageHTML(ST.days[i], i);
     $("dhpages").innerHTML = h;
     info();
@@ -1847,6 +1913,7 @@ if (cfg().url) enq(ohSync);
     var m = +$("dh_bln").value, y = +$("dh_thn").value;
     var sv = jget(KB, {})[keyOf(y, m)];
     ST = sv ? clone(sv) : mk(y, m);
+    if (!ST.cv) ST.cv = defCV(ST.y, ST.m);
     dirty = false;
     render();
   }
@@ -1881,26 +1948,38 @@ if (cfg().url) enq(ohSync);
   /* ---------- Edit langsung di tabel ---------- */
   $("dhpages").addEventListener("input", function (e) {
     var t = e.target;
+    if (t.getAttribute && t.getAttribute("data-cv")) {
+      ST.cv[t.getAttribute("data-cv")] = t.textContent;
+      if (!dirty) { dirty = true; info(); }
+      return;
+    }
     if (t.getAttribute && t.getAttribute("data-f")) {
       ST.days[+t.getAttribute("data-i")].rows[+t.getAttribute("data-r")][t.getAttribute("data-f")] = t.textContent;
       if (!dirty) { dirty = true; info(); }
     }
   });
   $("dhpages").addEventListener("change", function (e) {
-    var t = e.target, i = t.getAttribute && t.getAttribute("data-on");
+    var t = e.target, cv = t.getAttribute && t.getAttribute("data-cvon");
+    if (cv) {
+      ST.cv[cv] = t.checked; dirty = true;
+      if (cv === "paraf") render();
+      else { t.closest(".dhpg").classList.toggle("off", !t.checked); info(); }
+      return;
+    }
+    var i = t.getAttribute && t.getAttribute("data-on");
     if (i === null || i === undefined) return;
     ST.days[+i].on = t.checked;
     t.closest(".dhpg").classList.toggle("off", !t.checked);
     dirty = true; info();
   });
   $("dhpages").addEventListener("paste", function (e) {
-    if (!e.target.getAttribute || !e.target.getAttribute("data-f")) return;
+    if (!e.target.getAttribute || !(e.target.getAttribute("data-f") || e.target.getAttribute("data-cv"))) return;
     e.preventDefault();
     var tx = (e.clipboardData || window.clipboardData).getData("text").replace(/\s+/g, " ");
     document.execCommand("insertText", false, tx);
   });
   $("dhpages").addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && e.target.getAttribute && e.target.getAttribute("data-f")) e.preventDefault();
+    if (e.key === "Enter" && e.target.getAttribute && (e.target.getAttribute("data-f") || e.target.getAttribute("data-cv"))) e.preventDefault();
   });
 
   /* ---------- Tombol ---------- */
@@ -1915,7 +1994,7 @@ if (cfg().url) enq(ohSync);
   };
 
   $("dh_cetak").onclick = function () {
-    if (!ST.days.some(function (d) { return d.on; })) { animErr("Tidak ada hari yang dipakai"); return; }
+    if (!ST.days.some(function (d) { return d.on; }) && !ST.cv.sOn && !ST.cv.cOn) { animErr("Tidak ada hari yang dipakai"); return; }
     animLoad("Menyiapkan cetakan...");
     setTimeout(function () {
       animHide();
