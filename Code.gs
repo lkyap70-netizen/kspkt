@@ -20,6 +20,9 @@ var DOC_SHEET = 'Dokumentasi';
 var DOC_FOLDER = 'Dokumentasi';
 var USER_SHEET = 'Pengguna';
 var OH_SHEET = 'Orang Hilang';
+var SM_SHEET = 'Surat Masuk';
+var SM_FOLDER = 'Surat Masuk';
+var SM_HEAD = ['id', 'No Agenda', 'Tgl Terima', 'Asal Surat', 'Nomor Surat', 'Perihal', 'Sifat', 'Status', 'Disposisi', 'File', 'Link File', 'Disimpan', 'Data (JSON)'];
 var OH_HEAD = ['id', 'Nomor Surat', 'Dilaporkan', 'Orang Hilang', 'Pelapor', 'Terakhir Terlihat', 'Status', 'Petugas', 'Dicetak', 'PDF', 'Link PDF', 'Disimpan', 'Data (JSON)'];
 var USER_HEAD = ['id', 'Nama', 'Username', 'Peran', 'Pangkat / NRP', 'Dibuat', 'Data (JSON)'];
 var HEAD = ['id', 'Nomor Surat', 'Tanggal', 'Pelapor', 'Barang / Surat', 'Petugas', 'Dicetak', 'PDF', 'Link PDF', 'Disimpan', 'Data (JSON)'];
@@ -93,6 +96,16 @@ function ohSheet_() {
   return sh;
 }
 
+function smSheet_() {
+  var ss = ss_();
+  var sh = ss.getSheetByName(SM_SHEET) || ss.insertSheet(SM_SHEET);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(SM_HEAD);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
 function numSheet_() {
   var ss = ss_();
   var sh = ss.getSheetByName('Nomor') || ss.insertSheet('Nomor');
@@ -111,6 +124,17 @@ function sub_(name) {
 
 function folder_() { return sub_(PDF_FOLDER); }
 function docFolder_() { return sub_(DOC_FOLDER); }
+function smFolder_() { return sub_(SM_FOLDER); }
+
+// File surat masuk hanya boleh dihapus kalau ada di folder "Surat Masuk"
+function inSmFolder_(file) {
+  var want = smFolder_().getId();
+  var ps = file.getParents();
+  while (ps.hasNext()) {
+    if (ps.next().getId() === want) return true;
+  }
+  return false;
+}
 
 // File hanya boleh diakses/dihapus kalau ada di folder "Dokumentasi"
 function inDocFolder_(file) {
@@ -128,9 +152,11 @@ function setup() {
   docSheet_();
   userSheet_();
   ohSheet_();
+  smSheet_();
   numSheet_();
   folder_();
   docFolder_();
+  smFolder_();
   Logger.log('Siap. Database dan folder sudah dibuat di folder Drive.');
 }
 
@@ -174,6 +200,15 @@ function doGet(e) {
       try { oh.push(JSON.parse(orows[m][12])); } catch (x) {}
     }
     return out_({ oh: oh });
+  }
+
+  if (act === 'smlist') {
+    var srows = smSheet_().getDataRange().getValues();
+    var sm = [];
+    for (var q = 1; q < srows.length; q++) {
+      try { sm.push(JSON.parse(srows[q][12])); } catch (x) {}
+    }
+    return out_({ sm: sm });
   }
 
   if (act === 'docget') {
@@ -281,6 +316,48 @@ function doPost(e) {
           });
         } catch (x) {}
         dsh2.deleteRow(drow2);
+      }
+      return out_({ ok: true });
+    }
+
+    // ----- Surat masuk + disposisi -----
+    if (act === 'smUpload') {
+      var sblob = Utilities.newBlob(Utilities.base64Decode(b.data), b.type || 'application/octet-stream', b.name);
+      var sf = smFolder_().createFile(sblob);
+      return out_({ ok: true, fileId: sf.getId(), url: sf.getUrl(), size: sf.getSize() });
+    }
+    if (act === 'smTrash') {
+      try {
+        var stf = DriveApp.getFileById(b.fileId);
+        if (inSmFolder_(stf)) stf.setTrashed(true);
+      } catch (x) {}
+      return out_({ ok: true });
+    }
+    if (act === 'smSave') {
+      var ssh = smSheet_();
+      var m = b.record;
+      var mjs = JSON.stringify(m);
+      if (mjs.length > 49000) return out_({ error: 'Data surat terlalu besar. Persingkat ringkasan / catatan disposisi.' });
+      var mvals = [m.id, m.no || '', m.tglterima || '', m.asal || '', m.nomor || '', m.perihal || '', m.sifat || '',
+        m.status || 'baru', (m.dispo || []).length, m.file ? 'Ya' : 'Belum', (m.file && m.file.url) || '',
+        new Date(m.saved || Date.now()), mjs];
+      var mrow = rowOf_(ssh, m.id);
+      if (mrow > 1) ssh.getRange(mrow, 1, 1, mvals.length).setValues([mvals]);
+      else ssh.appendRow(mvals);
+      return out_({ ok: true });
+    }
+    if (act === 'smDelete') {
+      var ssh2 = smSheet_();
+      var mrow2 = rowOf_(ssh2, b.id);
+      if (mrow2 > 1) {
+        try {
+          var mrec = JSON.parse(ssh2.getRange(mrow2, 13).getValue());
+          if (mrec.file && mrec.file.fileId) {
+            var mff = DriveApp.getFileById(mrec.file.fileId);
+            if (inSmFolder_(mff)) mff.setTrashed(true);
+          }
+        } catch (x) {}
+        ssh2.deleteRow(mrow2);
       }
       return out_({ ok: true });
     }
