@@ -1763,10 +1763,19 @@ function parseSurat(raw) {
     || new RegExp("\\b[A-Z][a-z]+\\s*,\\s*(\\d{1,2})\\s+" + MON + "\\.?\\s+(\\d{4})").exec(flat)
     || new RegExp("Tanggal\\s*:\\s*(\\d{1,2})\\s+" + MON + "\\.?\\s+(\\d{4})", "i").exec(flat);
   if (m) o.tglsurat = isoOf(m[1], m[2], m[3]);
-  // perihal
-  m = /\b(?:Perihal|Hal)\s*:\s*([^\n]+)/i.exec(t);
-  if (m && m[1].trim().length > 3) o.perihal = cap1(m[1].replace(/\s+/g, " "));
-  else { m = /dalam\s+rangka\s+(.+?)(?:,?\s+maka\b|\.\s|$)/i.exec(flat); if (m) o.perihal = cap1(m[1].replace(/\s+/g, " ").slice(0, 200)); }
+  // perihal: dukung PDF hasil scan/ekstraksi yang barisnya menyatu atau label Hal/Perihal tanpa titik dua
+  m = /\b(?:Perihal|Hal)\s*:?\s*([\s\S]{4,240}?)(?=\n\s*(?:Lampiran|Kepada|Yth\.?|Nomor|Tanggal|Sifat| )|\b(?:Lampiran|Kepada|Yth\.?|Sifat)\s*:|$)/i.exec(t);
+  if (m && m[1].trim().length > 3) {
+    o.perihal = cap1(m[1].replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").replace(/\s+(?:Lampiran|Kepada|Yth\.?|Sifat)\s*:.*$/i, "").trim().slice(0, 200));
+  } else {
+    m = /\b(?:dalam rangka|perihal|hal)\s+(.+?)(?:,?\s+maka\b|\.\s|\bLampiran\b|\bKepada\b|$)/i.exec(flat);
+    if (m) o.perihal = cap1(m[1].replace(/\s+/g, " ").trim().slice(0, 200));
+    else {
+      // Fallback untuk surat yang tidak mencantumkan label Perihal: ambil kalimat tujuan/kegiatan yang jelas
+      m = /(?:pengamanan|pelaksanaan|permohonan|undangan|pemberitahuan|laporan|penugasan|monitoring|kegiatan)\s+[^.!?\n]{5,170}/i.exec(flat);
+      if (m) o.perihal = cap1(m[0].replace(/\s+/g, " ").trim());
+    }
+  }
   // jenis
   var head = flat.slice(0, 500);
   if (/^sprin/i.test(o.nomor || "") || /SURAT\s+PERINTAH/.test(head)) o.jenis = "Surat Perintah";
