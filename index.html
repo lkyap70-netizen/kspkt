@@ -1753,6 +1753,7 @@ function parseSurat(raw) {
   var t = String(raw || "").replace(/ /g, " ").replace(/[ \t]+/g, " "), flat = t.replace(/\s+/g, " "), lines = t.split(/\n/).map(function (x) { return x.trim(); }).filter(Boolean), o = {};
   var MON = "(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember|Agt|Sept?|Okt|Nov|Des|Jan|Feb|Mar|Apr|Jun|Jul|Agu)";
   var m = /Nomor\s*:?\s*([A-Za-z0-9][A-Za-z0-9 .\/\-]*?\/\s*(?:19|20)\d{2})(?!\d)/i.exec(flat);
+  if (!m) m = /\b([A-Za-z]{1,8}\s*\/\s*\d{1,5}\s*\/\s*[IVXivx]+\s*\/\s*[A-Za-z0-9. \/\-]*?\/\s*(?:19|20)\d{2})(?!\d)/.exec(flat);
   if (m) o.nomor = m[1].replace(/\s*\/\s*/g, "/").replace(/\s+/g, " ").trim();
   // tanggal surat
   m = new RegExp("pada\\s+tanggal\\s*:?\\s*(\\d{1,2})\\s+" + MON + "\\.?\\s+(\\d{4})", "i").exec(flat)
@@ -1865,7 +1866,7 @@ function smAuto(force) {
 function smReset() {
   smCur = null; smFile = null; smDid = null; smPv = null;
   FLS.forEach(function (i) { var el = sg(i); if (el.tagName === "SELECT") el.selectedIndex = 0; else el.value = ""; });
-  sg("tglterima").value = iso(); sg("penerima").value = who();
+  sg("tglterima").value = iso(); sg("jam").value = pad(new Date().getHours()) + ":" + pad(new Date().getMinutes()); sg("penerima").value = who();
   sg("urut").value = maxUrut(new Date().getFullYear()) + 1;
   smFileUI(); smDispoUI(); dReset(null); autoUI("");
 }
@@ -2073,7 +2074,7 @@ function smPreview() {
   var row = function (a, b) { return '<tr><td class="l">' + a + '</td><td class="c">:</td><td>' + b + "</td></tr>"; };
   var isi = d.ins.map(function (x) { return "&bull; " + e(x); }).join("<br>") + (d.catatan ? (d.ins.length ? "<br><br>" : "") + br(d.catatan) : "") + (d.batas ? "<br><br>Batas waktu: " + e(fdt(d.batas)) : "");
   $("smkertas").innerHTML =
-    '<div class="skop">POLRI DAERAH JAWA TIMUR<br>RESOR TUBAN<span>SEKTOR JATIROGO</span></div>'
+    '<div class="skop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<span>SEKTOR JATIROGO</span></div>'
     + '<div class="sjud">LEMBAR DISPOSISI</div>'
     + '<table class="sstb">' + row("Kepada", dots(d.kepada.join(", "))) + row("Nomor Agenda", e(agenda(r)))
     + row("Surat Dari", '<span class="sdt">' + e(r.asal) + "</span>Diterima tgl. : " + e(dmy(r.tglterima)) + "/Pkl. " + (r.jam ? e(r.jam.replace(":", ".")) : "........") + " Wib")
