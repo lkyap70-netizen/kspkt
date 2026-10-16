@@ -595,18 +595,20 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 #vsm .smdi small{color:#6b7488}
 #vsm .smdi select{width:auto;display:inline-block;padding:4px 6px}
 #vsm .smdi button{margin:6px 6px 0 0;padding:6px 10px;font-size:12px}
-#smkertas{background:#fff;color:#000;width:100%;max-width:215mm;margin:0 auto;padding:10mm 16mm 12mm;font-size:11pt;line-height:1.4;box-shadow:0 1px 6px #0003;font-family:Arial,Helvetica,sans-serif}
-#smkertas .skop{text-align:center;line-height:1.3}
-#smkertas .skop span{display:inline-block;min-width:70mm;border-bottom:1px solid #000;padding-bottom:1px}
-#smkertas .sjud{text-align:center;text-decoration:underline;margin:2mm 0 3mm;font-size:11pt}
-#smkertas table.sstb{width:100%;border-collapse:collapse}
-#smkertas table.sstb td{vertical-align:top;padding:1.2mm 0}
-#smkertas table.sstb td.l{width:34mm}#smkertas table.sstb td.c{width:6mm}
-#smkertas .sdt{display:inline-block;width:44%;vertical-align:top}
-#smkertas .sdots{border-bottom:1px dotted #000;display:block;min-height:5mm}
-#smkertas .sline{border:0;border-top:1.5px solid #000;margin:2mm 0 3mm}
+#smkertas{background:#fff;color:#000;width:100%;max-width:215.9mm;margin:0 auto;padding:6mm 17.5mm 12mm 25.4mm;font-size:12pt;line-height:1.2;box-shadow:0 1px 6px #0003;font-family:Arial,Helvetica,sans-serif}
+#smkertas .skop{width:66mm;text-align:center}
+#smkertas .skop div:last-child{border-bottom:1px solid #000;padding-bottom:1px}
+#smkertas .sjud{text-align:center;text-decoration:underline;margin:1mm 0 2.5mm}
+#smkertas .srw{display:flex;align-items:baseline;min-height:6.4mm}
+#smkertas .srw .l{width:45mm;flex:none}
+#smkertas .srw .c{width:10mm;flex:none}
+#smkertas .srw .v{flex:1;display:flex;align-items:baseline}
+#smkertas .srw .v>span{white-space:nowrap}
+#smkertas .srw .v>span.w{white-space:normal}
+#smkertas .ld{flex:1;border-bottom:1px dotted #000;min-width:4mm;height:0;align-self:flex-end;margin:0 0 1.6mm 1px}
+#smkertas .sline{border:0;border-top:1.5px solid #000;margin:3mm 0 4mm}
 #smkertas .sisi{text-align:center;font-weight:700;margin-bottom:3mm}
-#smkertas .sbody{min-height:45mm;line-height:1.5}
+#smkertas .sbody{min-height:45mm}
 @media print{
   body.printsm>*:not(#vsm){display:none!important}
   body.printsm #vsm{display:block!important;padding:0}
@@ -614,7 +616,7 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
   body.printsm #smform>*:not(#smpv){display:none!important}
   body.printsm #smpv{border:0;box-shadow:none;padding:0}
   body.printsm #smpv>h3,body.printsm #smpv .smpvtool{display:none!important}
-  body.printsm #smkertas{box-shadow:none;max-width:none;padding:10mm 16mm}
+  body.printsm #smkertas{box-shadow:none;max-width:none;padding:6mm 17.5mm 12mm 25.4mm}
 }
 </style>
 <template id="smtpl">
@@ -678,9 +680,9 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <div><label>Tanggal disposisi</label><input id="smd_tgl" type="date"></div>
 <div><label>Pemberi disposisi (jabatan)</label><input id="smd_dari" value="KAPOLSEK JATIROGO"></div>
 </div>
-<label style="margin-top:10px">Diteruskan kepada</label><div id="smd_kep"></div>
+<label style="margin-top:10px">Diteruskan kepada (boleh dikosongkan)</label><div id="smd_kep"></div>
 <input id="smd_lain" placeholder="Penerima lain (pisahkan dengan koma)" style="margin-top:4px">
-<label style="margin-top:10px">Isi disposisi / instruksi</label><div id="smd_ins"></div>
+<label style="margin-top:10px">Instruksi (boleh dikosongkan, hanya untuk catatan di aplikasi)</label><div id="smd_ins"></div>
 <input id="smd_inslain" placeholder="Instruksi lain" style="margin-top:4px">
 <label style="margin-top:10px">Catatan pejabat</label><textarea id="smd_cat" rows="3"></textarea>
 <button id="smd_simpan" type="button">Simpan disposisi</button>
@@ -2054,7 +2056,6 @@ function touch(r) { r.status = smStatus(r); r.saved = Date.now(); r.sy = false; 
 function dSave() {
   var r = smCur ? smGet(smCur) : null; if (!r) return;
   var kep = checked("smk").concat(splitCsv(sd("lain").value)), ins = checked("smi").concat(splitCsv(sd("inslain").value));
-  if (!kep.length) { alert("Pilih minimal satu penerima disposisi."); return; }
   var d = smDid ? (r.dispo || []).filter(function (x) { return x.id === smDid; })[0] : null;
   if (!d) { d = { id: rnd(), status: "belum", oleh: who() }; r.dispo = r.dispo || []; r.dispo.push(d); }
   d.tgl = sd("tgl").value || iso(); d.dari = sd("dari").value.trim() || "KAPOLSEK JATIROGO";
@@ -2068,16 +2069,20 @@ function cb(on) { return '<span class="smcb">' + (on ? "&#10003;" : "&nbsp;") + 
 function smPreview() {
   var r = smCur ? smGet(smCur) : null, d = r && smPv ? (r.dispo || []).filter(function (x) { return x.id === smPv; })[0] : null;
   $("smpv").style.display = d ? "" : "none"; if (!d) return;
-  var dots = function (v) { return v ? e(v) : '<span class="sdots"></span>'; };
-  var row = function (a, b) { return '<tr><td class="l">' + a + '</td><td class="c">:</td><td>' + b + "</td></tr>"; };
-  var isi = "";
+  var ld = '<span class="ld"></span>';
+  var row = function (a, b) { return '<div class="srw"><span class="l">' + a + '</span><span class="c">:</span><span class="v">' + b + "</span></div>"; };
+  var tm = /^(\d{4})-(\d{2})-(\d{2})/.exec(r.tglterima || ""), tg = tm ? (+tm[3]) + "- " + (+tm[2]) + " -" + tm[1] : "";
+  var kep = d.kepada.join(", ");
   $("smkertas").innerHTML =
-    '<div class="skop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<br><span>SEKTOR JATIROGO</span></div>'
+    '<div class="skop"><div>POLRI DAERAH JAWA TIMUR</div><div>RESOR KOTA TUBAN</div><div>SEKTOR JATIROGO</div></div>'
     + '<div class="sjud">LEMBAR DISPOSISI</div>'
-    + '<table class="sstb">' + row("Kepada", dots(d.kepada.join(", "))) + row("Nomor Agenda", e(agenda(r)))
-    + row("Surat Dari", '<span class="sdt">' + e(r.asal) + "</span>Diterima tgl. : " + e(dmy(r.tglterima)) + "/Pkl. " + (r.jam ? e(r.jam.replace(":", ".")) : "........") + " Wib")
-    + row("Nomor Surat/tgl", e(r.nomor || "-") + (r.tglsurat ? " / " + e(dmy(r.tglsurat)) : "")) + row("Perihal", "<b>" + e(r.perihal.toUpperCase()) + "</b>") + "</table>"
-    + '<hr class="sline"><div class="sisi">Isi Disposisi</div><div class="sbody">' + isi + "</div>";
+    + row("Kepada", (kep ? "<span>" + e(kep) + "</span>" : "") + ld)
+    + row("Nomor Agenda", "<span>" + e(agenda(r)) + "</span>" + ld)
+    + row("Surat Dari", "<span>" + e(r.asal) + "</span>" + ld + "<span>Diterima tgl. :" + e(tg) + "/Pkl. " + (r.jam ? e(r.jam.replace(":", ".")) : "") + " Wib</span>")
+    + row("Nomor Surat/tgl", '<span class="w">' + e(r.nomor || "") + (r.tglsurat ? " / " + e(dmy(r.tglsurat)) : "") + "</span>" + ld)
+    + row("Perihal", '<span class="w">' + e(r.perihal.toUpperCase()) + "</span>" + ld)
+    + row("&nbsp;", ld).replace('<span class="c">:</span>', '<span class="c"></span>')
+    + '<hr class="sline"><div class="sisi">Isi Disposisi</div><div class="sbody"></div>';
 }
 function smPrint() {
   document.body.classList.add("printsm");
