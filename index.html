@@ -633,7 +633,7 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <select id="smfy"></select>
 <button class="o" id="smxls" type="button">Ekspor Excel</button>
 </div>
-<div class="wrap"><table class="at"><thead><tr><th>No. Agenda</th><th>Tgl Terima</th><th>Asal Surat</th><th>Nomor &amp; Perihal</th><th>Sifat</th><th>Status</th><th>Berkas</th><th>Aksi</th></tr></thead><tbody id="smb"></tbody></table></div>
+<div class="wrap"><table class="at"><thead><tr><th>No. Agenda</th><th>Tgl Terima</th><th>Asal Surat</th><th>Nomor &amp; Perihal</th><th>Sifat</th><th>Status</th><th>Arsip PDF</th><th>Aksi</th></tr></thead><tbody id="smb"></tbody></table></div>
 <div id="smnote" style="font-size:12px;margin-top:8px"></div>
 <div style="font-size:11px;color:#777;margin-top:8px">Surat masuk tersimpan di browser ini dan ikut tersinkron ke Google Drive (sheet &quot;Surat Masuk&quot;, berkas di folder &quot;Surat Masuk&quot;) bila sudah tersambung. Berkas yang gagal diunggah (offline) otomatis dicoba lagi saat internet kembali.</div>
 </div>
@@ -691,7 +691,7 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 </div>
 
 <div class="card" id="smpv" style="display:none"><h3>Lembar Disposisi</h3>
-<div class="smpvtool"><button id="smpv_cetak" type="button" style="margin-top:0">Cetak / simpan PDF</button> <button class="o" id="smpv_tutup" type="button" style="margin-top:0">Tutup pratinjau</button></div>
+<div class="smpvtool"><button id="smpv_cetak" type="button" style="margin-top:0">Cetak + simpan PDF ke arsip</button> <button class="o" id="smpv_pdf" type="button" style="margin-top:0">Simpan PDF saja</button> <button class="o" id="smpv_tutup" type="button" style="margin-top:0">Tutup pratinjau</button></div>
 <div class="wrap" style="margin-top:10px"><div id="smkertas"></div></div>
 </div>
 
@@ -1994,7 +1994,8 @@ function smList() {
     var t = (agenda(r) + " " + r.asal + " " + r.nomor + " " + r.perihal + " " + (r.ket || "")).toLowerCase(); if (q && t.indexOf(q) < 0) return;
     var S = SMS[st], nd = (r.dispo || []).length, sif = r.sifat && r.sifat !== "Biasa" ? ' <span class="pill ' + (r.sifat === "Rahasia" ? "k" : "r") + '">' + e(r.sifat) + "</span>" : '<span class="pill b">Biasa</span>';
     var u = r.file ? drvUrl(r.file.url) : "";
-    var fl = r.file ? (u ? "<a class='lnk' target='_blank' rel='noopener' href='" + u + "'>Buka</a>" : "<span class='pill y'>Menunggu unggah</span>") : "<span class='pill r'>Belum</span>";
+    var fl = r.file ? (u ? "<a class='lnk' target='_blank' rel='noopener' href='" + u + "'>Surat</a>" : "<span class='pill y'>Surat menunggu unggah</span>") : "<span class='pill r'>Surat belum ada</span>";
+    (r.dispo || []).forEach(function (d, i) { var du = d.pdf ? drvUrl(d.pdf.url) : ""; if (du) fl += "<br><a class='lnk' target='_blank' rel='noopener' href='" + du + "'>Disposisi" + ((r.dispo.length > 1) ? " " + (i + 1) : "") + "</a>"; });
     h += "<tr><td>" + e(agenda(r)) + "</td><td>" + e(fdt(r.tglterima)) + "</td><td><b>" + e(r.asal) + "</b></td>"
       + "<td>" + e(r.nomor || "-") + "<br><span style='color:#44506b;font-size:12.5px'>" + e(r.perihal) + "</span>" + (r.tglsurat ? "<br><span style='color:#6b7488;font-size:12px'>Tgl surat " + e(fdt(r.tglsurat)) + "</span>" : "") + "</td>"
       + "<td>" + sif + "</td>"
@@ -2039,6 +2040,7 @@ function smDispoUI() {
       + '<br><small>Status tindak lanjut:</small> <select data-a="st" data-d="' + d.id + '">' + opts + "</select>"
       + (d.status === "selesai" && d.tselesai ? " <small>selesai " + e(fdt(d.tselesai)) + "</small>" : "")
       + (d.hasil ? "<br><small>Hasil:</small> " + br(d.hasil) : "")
+      + "<br><small>Arsip PDF:</small> " + (d.pdf && drvUrl(d.pdf.url) ? "<a class='lnk' target='_blank' rel='noopener' href='" + drvUrl(d.pdf.url) + "'>" + e(d.pdf.name) + "</a>" : d.pdfname ? e(d.pdfname) + " <small>(hanya di perangkat)</small>" : "<small>belum dibuat &mdash; klik Lembar / Cetak</small>")
       + '<br><button data-a="lihat" data-d="' + d.id + '">Lembar / Cetak</button><button class="o" data-a="hasil" data-d="' + d.id + '">Catat hasil</button><button class="o" data-a="ubah" data-d="' + d.id + '">Ubah</button><button class="o" data-a="hapus" data-d="' + d.id + '">Hapus</button></div>';
   });
   $("smdlist").innerHTML = h || '<div class="lnote">Belum ada disposisi untuk surat ini.</div>';
@@ -2083,6 +2085,31 @@ function smPreview() {
     + row("Perihal", '<span class="w">' + e(r.perihal.toUpperCase()) + "</span>" + ld)
     + row("&nbsp;", ld).replace('<span class="c">:</span>', '<span class="c"></span>')
     + '<hr class="sline"><div class="sisi">Isi Disposisi</div><div class="sbody"></div>';
+}
+function pdfName(r) { return "DISPOSISI_" + agenda(r).replace(/\//g, "-") + "_" + String(r.asal || "").toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_|_$/g, "") + ".pdf"; }
+function smMakePdf(did) {
+  var r = smGet(smCur), d = r && (r.dispo || []).filter(function (x) { return x.id === did; })[0];
+  if (!d) return Promise.resolve(false);
+  smPv = did; smPreview();
+  if (!window.html2pdf) { alert("Pembuatan PDF otomatis butuh koneksi internet (pustaka PDF gagal dimuat). Alternatif: klik Cetak, lalu pilih 'Simpan sebagai PDF'."); return Promise.resolve(false); }
+  var el = $("smkertas"), w0 = el.style.width, mw0 = el.style.maxWidth, name = pdfName(r);
+  el.style.width = "215.9mm"; el.style.maxWidth = "none";
+  var back = function () { el.style.width = w0; el.style.maxWidth = mw0; };
+  return html2pdf().set({ margin: 0, filename: name, image: { type: "jpeg", quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 }, jsPDF: { unit: "mm", format: [215.9, 330], orientation: "portrait" } })
+    .from(el).toPdf().get("pdf").then(function (pdf) { pdf.save(name); return pdf.output("datauristring"); })
+    .then(function (du) {
+      back(); var data = String(du).split("base64,")[1] || "";
+      d.pdfname = name; d.pdfat = Date.now();
+      if (cfg().url && navigator.onLine) {
+        return api({ action: "smUpload", name: name, type: "application/pdf", data: data }).then(function (j) {
+          var old = d.pdf && d.pdf.fileId;
+          d.pdf = { name: name, fileId: j.fileId, url: j.url };
+          if (old && old !== j.fileId) api({ action: "smTrash", fileId: old }).catch(function () { });
+          touch(r); return true;
+        }, function (x) { d.pdf = null; touch(r); smNote("PDF diunduh ke perangkat, tetapi gagal diunggah ke Drive: " + x.message, 1); return true; });
+      }
+      d.pdf = null; touch(r); smNote("PDF diunduh ke perangkat. Belum diunggah ke Drive karena offline / belum tersambung.", 1); return true;
+    }, function (er) { back(); alert("Gagal membuat PDF: " + er); return false; });
 }
 function smPrint() {
   document.body.classList.add("printsm");
@@ -2129,11 +2156,11 @@ function smSync() {
 
 // ---------- Ekspor ----------
 $("smxls").onclick = function () {
-  var rows = [["No", "No. Agenda", "Tgl Terima", "Asal Surat", "Nomor Surat", "Tgl Surat", "Jenis", "Sifat", "Perihal", "Lampiran", "Keterangan", "Status", "Disposisi Kepada", "Instruksi", "Batas Waktu", "Berkas"]];
+  var rows = [["No", "No. Agenda", "Tgl Terima", "Asal Surat", "Nomor Surat", "Tgl Surat", "Jenis", "Sifat", "Perihal", "Lampiran", "Keterangan", "Status", "Disposisi Kepada", "Instruksi", "Batas Waktu", "Berkas", "Link Surat", "Link PDF Disposisi"]];
   SM.slice().sort(function (a, b) { return (a.tglterima || "") < (b.tglterima || "") ? -1 : 1; }).forEach(function (r, i) {
     var ds = r.dispo || [];
     rows.push([i + 1, agenda(r), r.tglterima || "", r.asal, r.nomor || "", r.tglsurat || "", r.jenis || "", r.sifat || "", r.perihal, r.lampiran || "", r.ket || "", SMS[smStatus(r)][0],
-      ds.map(function (d) { return d.kepada.join(", "); }).join(" | "), ds.map(function (d) { return d.ins.join(", "); }).join(" | "), ds.map(function (d) { return d.batas || ""; }).join(" | "), r.file ? r.file.name : ""]);
+      ds.map(function (d) { return d.kepada.join(", "); }).join(" | "), ds.map(function (d) { return d.ins.join(", "); }).join(" | "), ds.map(function (d) { return d.batas || ""; }).join(" | "), r.file ? r.file.name : "", r.file && r.file.url || "", ds.map(function (d) { return d.pdf && d.pdf.url || ""; }).filter(Boolean).join(" | ")]);
   });
   var nm = "Surat_Masuk_KSPKT_Jatirogo_" + iso();
   if (!window.XLSX) {
@@ -2142,7 +2169,7 @@ $("smxls").onclick = function () {
     alert("Pustaka Excel gagal dimuat (butuh internet), jadi diunduh sebagai CSV yang tetap bisa dibuka di Excel."); return;
   }
   var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(rows);
-  ws["!cols"] = [5, 11, 12, 26, 32, 12, 14, 12, 44, 22, 30, 20, 36, 40, 14, 24].map(function (w) { return { wch: w }; });
+  ws["!cols"] = [5, 11, 12, 26, 32, 12, 14, 12, 44, 22, 30, 20, 36, 40, 14, 24, 40, 40].map(function (w) { return { wch: w }; });
   XLSX.utils.book_append_sheet(wb, ws, "Surat Masuk"); XLSX.writeFile(wb, nm + ".xlsx");
 };
 
@@ -2201,7 +2228,8 @@ $("sm_simpan").onclick = function () {
 };
 $("smd_simpan").onclick = dSave;
 $("smd_batal").onclick = function () { dReset(null); };
-$("smpv_cetak").onclick = smPrint;
+$("smpv_cetak").onclick = function () { if (!smPv) return; smMakePdf(smPv).then(function (ok) { smPv = smPv || null; if (ok !== false) smPrint(); }); };
+$("smpv_pdf").onclick = function () { if (smPv) smMakePdf(smPv).then(function (ok) { if (ok) smMsg("PDF disposisi tersimpan di arsip."); }); };
 $("smpv_tutup").onclick = function () { smPv = null; smPreview(); };
 
 $("smdlist").onclick = function (ev) {
@@ -2211,7 +2239,7 @@ $("smdlist").onclick = function (ev) {
   if (a === "lihat") { smPv = id; smPreview(); $("smpv").scrollIntoView({ behavior: "smooth", block: "start" }); }
   if (a === "ubah") { dReset(d); $("smdform").scrollIntoView({ behavior: "smooth", block: "start" }); }
   if (a === "hasil") { var t = prompt("Hasil tindak lanjut / laporan:", d.hasil || ""); if (t !== null) { d.hasil = t.trim(); touch(r); } }
-  if (a === "hapus" && confirm("Hapus disposisi tanggal " + fdt(d.tgl) + "?")) { r.dispo = r.dispo.filter(function (x) { return x.id !== id; }); if (smDid === id) dReset(null); touch(r); }
+  if (a === "hapus" && confirm("Hapus disposisi tanggal " + fdt(d.tgl) + "?")) { r.dispo = r.dispo.filter(function (x) { return x.id !== id; }); if (smDid === id) dReset(null); if (d.pdf && d.pdf.fileId && cfg().url) api({ action: "smTrash", fileId: d.pdf.fileId }).catch(function () { }); touch(r); }
 };
 $("smdlist").onchange = function (ev) {
   var s = ev.target.closest("select"); if (!s) return;
