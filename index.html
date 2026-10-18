@@ -226,14 +226,7 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 #kertas.e2 .sa{height:30mm}
 #kertas.e2 .mg{margin-top:20px}
 @page{size:215.9mm 330mm;margin:0}
-@media print{
-html,body{width:215.9mm;margin:0!important;padding:0!important;background:#fff}
-body{background:#fff}
-.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot,#dhno,#hbtn,#menudrawer,#menuoverlay,#vdb,#vdok{display:none!important}
-.app{display:block;padding:0}
-.wrap{overflow:visible}
-#kertas,#ohkertas{box-shadow:none;margin:0;width:215.9mm!important}
-}
+@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas,#ohkertas{box-shadow:none;margin:0}}
 </style>
 <style id="uiplus">
 /* ===== HEADER ===== */
@@ -685,8 +678,6 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <div id="smdlist"></div>
 <div id="smdnone" class="lnote" style="display:none">Simpan data surat terlebih dahulu, lalu buat disposisinya di sini.</div>
 <div class="smbox" id="smdform"><h4 id="smdtitle">Buat disposisi baru</h4>
-<div style="font-size:11.5px;color:#6b7488;margin:-4px 0 8px">Tombol di bawah menyarankan tujuan, instruksi, dan keterangan disposisi secara otomatis berdasarkan perihal/jenis/sifat surat. Hasilnya tetap bisa Anda ubah sebelum disimpan.</div>
-<button type="button" class="o" id="smd_auto" style="margin:0 0 10px">Isi Otomatis (Tujuan, Instruksi &amp; Keterangan)</button>
 <div class="smg">
 <div><label>Tanggal disposisi</label><input id="smd_tgl" type="date"></div>
 <div><label>Pemberi disposisi (jabatan)</label><input id="smd_dari" value="KAPOLSEK JATIROGO"></div>
@@ -1896,9 +1887,7 @@ function smFileUI() {
   else if (f) {
     var u = drvUrl(f.url);
     h = "Berkas tersimpan: <b>" + e(f.name) + "</b>" + (f.size ? " (" + fsize(f.size) + ")" : "") + " " +
-      (u ? "<a class='lnk' target='_blank' rel='noopener' href='" + u + "'>Buka di Drive</a>" : "") +
-      (f.fileId ? " <a class='lnk' target='_blank' rel='noopener' href='https://drive.google.com/uc?export=download&id=" + encodeURIComponent(f.fileId) + "'>Unduh</a>" : "") +
-      (!u && !f.fileId && f.pending ? "<span class='pill y'>Menunggu unggah ke Drive</span>" : "");
+      (u ? "<a class='lnk' target='_blank' rel='noopener' href='" + u + "'>Buka di Drive</a>" : f.pending ? "<span class='pill y'>Menunggu unggah ke Drive</span>" : "");
   }
   $("smfi").innerHTML = h;
 }
@@ -2070,35 +2059,6 @@ function smPushNow(id) {
   });
 }
 function touch(r) { r.status = smStatus(r); r.saved = Date.now(); r.sy = false; smSaveLS(); smPush(r.id); smDispoUI(); }
-
-// ----- Saran disposisi otomatis dari isi surat -----
-var DISPO_RULES = [
-  { m: /pengamanan|unjuk rasa|demo|konser|festival|kunjungan|crowd|vvip|vip|study ?tour/i, kepada: ["KANIT SAMAPTA", "KANIT LANTAS"], ins: ["Siapkan personel / bantuan pengamanan", "Koordinasikan dengan pihak terkait"] },
-  { m: /undangan|rapat|apel|koordinasi/i, kepada: ["WAKAPOLSEK"], ins: ["Hadiri / wakili"] },
-  { m: /reskrim|tindak pidana|laporan polisi|pengaduan|kasus|penyidikan/i, kepada: ["KANIT RESKRIM"], ins: ["Untuk ditindaklanjuti", "Laporkan hasilnya"] },
-  { m: /binmas|penyuluhan|kamtibmas|sosialisasi masyarakat/i, kepada: ["KANIT BINMAS", "BHABINKAMTIBMAS"], ins: ["Untuk ditindaklanjuti"] },
-  { m: /intelijen|nota intel|intelkam|deteksi dini/i, kepada: ["KANIT INTELKAM"], ins: ["Untuk diketahui"] },
-  { m: /propam|pelanggaran|kode etik|disiplin/i, kepada: ["KASI PROPAM"], ins: ["Untuk diproses / dijawab"] },
-  { m: /personel|sdm|kepegawaian|administrasi|cuti|mutasi/i, kepada: ["KASIUM"], ins: ["Untuk diketahui"] },
-  { m: /humas|publikasi|media|pers/i, kepada: ["KASI HUMAS"], ins: ["Untuk diketahui"] }
-];
-function dAutoSuggest(fill) {
-  var r = smCur ? smGet(smCur) : null; if (!r) { alert("Simpan data surat terlebih dahulu."); return null; }
-  var txt = ((r.perihal || "") + " " + (r.jenis || "") + " " + (r.ringkas || "") + " " + (r.ket || "") + " " + (r.asal || "")).toLowerCase();
-  var rule = null;
-  DISPO_RULES.forEach(function (x) { if (!rule && x.m.test(txt)) rule = x; });
-  var kep = rule ? rule.kepada : ["KASIUM"], ins = rule ? rule.ins : ["Untuk diketahui"];
-  var cat = "Keterangan otomatis: surat perihal \"" + (r.perihal || "-") + "\"" + (r.sifat && r.sifat !== "Biasa" ? " (sifat " + r.sifat + ")" : "") + " dari " + (r.asal || "-") + ". Disarankan ditindaklanjuti oleh " + kep.join(", ") + ".";
-  if (fill !== false) {
-    document.querySelectorAll('#smd_kep input[name="smk"]').forEach(function (c) { c.checked = kep.indexOf(c.value) > -1; });
-    document.querySelectorAll('#smd_ins input[name="smi"]').forEach(function (c) { c.checked = ins.indexOf(c.value) > -1; });
-    if (!sd("cat").value.trim()) sd("cat").value = cat;
-    else if (sd("cat").value.indexOf("Keterangan otomatis") < 0) sd("cat").value = sd("cat").value + "\n" + cat;
-  }
-  return { kepada: kep, ins: ins, cat: cat };
-}
-$("smd_auto").onclick = function () { if (dAutoSuggest(true)) smMsg("Saran disposisi otomatis terisi. Periksa lalu klik Simpan disposisi."); };
-
 function dSave() {
   var r = smCur ? smGet(smCur) : null; if (!r) return;
   var kep = checked("smk").concat(splitCsv(sd("lain").value)), ins = checked("smi").concat(splitCsv(sd("inslain").value));
@@ -2264,10 +2224,8 @@ $("sm_simpan").onclick = function () {
   if (hasF && window.animLoad) animLoad("Mengunggah surat...");
   attach(r).then(function () {
     smSaveLS(); smPush(r.id); smFileUI(); smDispoUI();
-    var auto = false;
-    if (!(r.dispo && r.dispo.length)) { dAutoSuggest(true); auto = true; }
     if (window.animOK) animOK("Surat masuk tersimpan", 1400);
-    smMsg("Surat masuk tersimpan." + (auto ? " Disposisi disarankan otomatis di bawah — periksa lalu klik Simpan disposisi." : " Sekarang bisa dibuat disposisinya di bawah."));
+    smMsg("Surat masuk tersimpan. Sekarang bisa dibuat disposisinya di bawah.");
     document.getElementById("smdcard").scrollIntoView({ behavior: "smooth", block: "start" });
   }).catch(function (x) { if (window.animErr) animErr("Gagal: " + x.message); else alert("Gagal: " + x.message); })
     .then(function () { $("sm_simpan").disabled = false; });
@@ -2360,7 +2318,7 @@ if (cfg().url) enq(smSync);
 .dhpg.off{opacity:.35}
 .dhtool{position:absolute;top:3px;right:8px;font:12px Arial,sans-serif;color:#1d3a8a;background:#fff;z-index:2}
 .dhtool label{cursor:pointer}
-.dhbox{border:1px solid #000;min-height:296mm;box-sizing:border-box;padding:4mm 3mm 6mm 3mm;display:flex;flex-direction:column;align-items:flex-start}
+.dhbox{border:1px solid #000;min-height:296mm;box-sizing:border-box;padding:1mm .7mm 3mm 1.3mm;display:flex;flex-direction:column;align-items:flex-start}
 .dhbox>*{align-self:stretch}
 .dhbox>.dhkop{align-self:flex-start}
 .dhkop{display:table;white-space:nowrap;margin-left:1.8mm;padding:0;text-align:center;line-height:1.2;font-size:12pt}
@@ -2372,11 +2330,11 @@ if (cfg().url) enq(smSync);
 .dhpg th{font-weight:400;font-size:12pt}
 .dhpg td.l{text-align:left;padding-left:2.5mm}
 .dhpg tr.num td{font-size:12pt;padding:0}
-.dhpg tbody tr{height:10.2mm}
+.dhpg tbody tr{height:8.5mm}
 .dhpg [contenteditable]:focus{outline:2px solid #f2b705;background:#fffbe6}
-.dhft{display:flex;justify-content:space-between;margin-top:16mm;padding:0 8mm;line-height:1.3;font-size:12pt;page-break-inside:avoid}
+.dhft{display:flex;justify-content:space-between;margin-top:8mm;padding:0 8mm;line-height:1.3;font-size:12pt;page-break-inside:avoid}
 .dhft>div{text-align:center;min-width:75mm}
-.dhft .sp{height:24mm}
+.dhft .sp{height:17mm}
 .dhft u{font-weight:700}
 #vdh.dhfb .dhpg{font-family:Arial,Helvetica,sans-serif}
 #vdh.dhfb .dhkop,#vdh.dhfb .dhhari,#vdh.dhfb .dhft{font-size:9.6pt}
@@ -2844,235 +2802,6 @@ if (cfg().url) enq(smSync);
   $("dh_psave").onclick = function () {
     if (jset(KP, PJ)) { if (ST) render(); animOK("Pejabat tersimpan"); } else animErr("Gagal menyimpan");
   };
-})();
-</script>
-
-<style id="hbcss">
-#hbtn{background:transparent;border:1px solid #ffffff55;border-radius:7px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-right:4px}
-#hbtn:hover{background:#ffffff22}
-#hbtn svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
-#menuoverlay{display:none;position:fixed;inset:0;background:#0b1f4daa;z-index:200}
-#menuoverlay.on{display:block}
-#menudrawer{position:fixed;left:-300px;top:0;bottom:0;width:280px;background:#fff;z-index:201;box-shadow:4px 0 24px #0006;transition:left .22s ease;overflow-y:auto}
-#menudrawer.on{left:0}
-#menudrawer h4{margin:0;padding:16px 16px 12px;background:linear-gradient(110deg,#0b1f4d,#1d3a8a);color:#fff;font-family:var(--fd);letter-spacing:1px;position:relative}
-#menudrawer .mi{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #eef1f8;cursor:pointer;font-size:14px;color:#14213d}
-#menudrawer .mi:hover{background:#fff8dc}
-#menudrawer .mi svg{width:18px;height:18px;stroke:#1d3a8a;fill:none;stroke-width:2;flex:none}
-#menudrawer .mclose{position:absolute;right:8px;top:8px;background:transparent;border:0;color:#fff;font-size:24px;cursor:pointer;box-shadow:none;margin:0;padding:2px 10px;line-height:1}
-</style>
-<button id="hbtn" type="button" title="Menu fitur" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-<div id="menuoverlay"></div>
-<div id="menudrawer">
-<button class="mclose" id="mclose" type="button">&times;</button>
-<h4>MENU FITUR</h4>
-<div id="mlist"></div>
-</div>
-<script id="hbjs">
-(function(){
-function closeM(){$("menuoverlay").classList.remove("on");$("menudrawer").classList.remove("on")}
-function go(id){var b=document.getElementById(id);if(b)b.click();closeM()}
-function openM(){buildList();$("menuoverlay").classList.add("on");$("menudrawer").classList.add("on")}
-function buildList(){var h="";document.querySelectorAll("nav.tabs>button").forEach(function(b){h+='<div class="mi" data-go="'+b.id+'">'+b.innerHTML+'</div>'});$("mlist").innerHTML=h}
-$("hbtn").onclick=openM;$("mclose").onclick=closeM;$("menuoverlay").onclick=closeM;
-$("mlist").onclick=function(ev){var m=ev.target.closest("[data-go]");if(m)go(m.getAttribute("data-go"))};
-var brand=document.querySelector("header.top .brand");brand.parentNode.insertBefore($("hbtn"),brand);
-})();
-</script>
-
-<style id="dbcss">#vdb .dbbox{max-width:620px}#vdb label{display:block;font-size:12px;color:#555;margin:10px 0 3px}#vdb input{width:100%;padding:8px;border:1px solid #bbb;border-radius:6px;font-size:13px;box-sizing:border-box}</style>
-<script id="dbjs">
-(function(){
-if(!$("devfoot")||$("vdb"))return;
-var v=document.createElement("div");v.id="vdb";v.style.display="none";
-v.innerHTML='<div class="dash"><div class="card dbbox"><h3>Database &amp; Google Drive</h3>'
-+'<div class="dhinfo" style="font-size:12px;color:#6b7488">Satu sambungan ini dipakai bersama oleh semua menu: Arsip, Orang Hilang, Surat Masuk, Daftar Hadir, dan Dokumentasi. Atur sekali di sini.</div>'
-+'<label>URL Web App (Apps Script)</label><input id="db_url" autocomplete="off" placeholder="https://script.google.com/macros/s/.../exec">'
-+'<label>Kode rahasia</label><input id="db_tok" type="password" autocomplete="off">'
-+'<div style="margin-top:14px"><button id="db_save" type="button">Simpan &amp; Sambungkan</button> <button class="o" id="db_sync" type="button">Sinkronkan Sekarang</button></div>'
-+'<div id="db_st" style="font-size:12px;color:#6b7488;margin-top:10px"></div></div></div>';
-document.body.insertBefore(v,$("devfoot"));
-var tb=document.createElement("button");tb.id="tdb";tb.type="button";
-tb.innerHTML='<svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>Database';
-$("tuser").parentNode.insertBefore(tb,$("tuser"));
-tb.onclick=function(){show("db")};
-var _show=window.show;
-window.show=function(k){_show(k);var on=k==="db";$("vdb").style.display=on?"":"none";tb.className=on?"on":"";if(on){$("db_url").value=store("stpl_gurl")||"";$("db_tok").value=store("stpl_gtok")||"";$("db_st").textContent=cfg().url?"Tersambung ke Google Drive.":"Belum tersambung."}};
-$("db_save").onclick=function(){var u=$("db_url").value.trim(),t=$("db_tok").value.trim();
-if(!/^https:\/\/script\.google\.com\/.+\/exec/.test(u)){alert("URL harus berbentuk https://script.google.com/macros/s/.../exec");return}
-if(!t){alert("Kode rahasia wajib diisi.");return}
-store("stpl_gurl",u);store("stpl_gtok",t);lastSync=0;$("db_st").textContent="Menyambungkan...";
-sync().then(function(){$("db_st").textContent="Tersambung ke Google Drive."})};
-$("db_sync").onclick=function(){$("db_st").textContent="Menyinkronkan...";sync().then(function(){$("db_st").textContent="Sinkron selesai "+new Date().toLocaleTimeString("id-ID")})};
-})();
-</script>
-
-<style id="dokcss">
-#vdok .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#vdok label{display:block;font-size:12px;color:#555;margin:8px 0 3px}
-#vdok input,#vdok select{width:100%;padding:7px;border:1px solid #bbb;border-radius:6px;font-size:13px;box-sizing:border-box}
-#vdok .dkpvw{width:60px;height:60px;object-fit:cover;border:1px solid #cfd7e8;border-radius:5px}
-#vdok .dkbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
-#vdok .dkbar input{width:260px}
-#vdok .dkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
-#vdok .dkc{background:#fff;border:1px solid #e3e9f5;border-radius:10px;overflow:hidden;box-shadow:0 3px 10px #1d3a8a10}
-#vdok .dkc .ph{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:#eef2fb}
-#vdok .dkc .ph img{width:100%;height:56px;object-fit:cover;display:block;cursor:pointer}
-#vdok .dkc .ph .more{display:flex;align-items:center;justify-content:center;font-size:12px;color:#1d3a8a;background:#e3ecff;height:56px}
-#vdok .dkc .b{padding:9px 11px}
-#vdok .dkc .jd{font-weight:700;font-size:13.5px;color:#14213d;margin-bottom:2px}
-#vdok .dkc .mt{font-size:11px;color:#6b7488;margin-bottom:6px}
-#vdok .dkc .ke{font-size:12px;color:#44506b;margin-bottom:8px}
-#vdok .dkc .ac{display:flex;gap:6px;flex-wrap:wrap}
-#vdok .dkc button,#vdok .dkc a.o{margin:0;padding:5px 8px;font-size:11.5px}
-</style>
-<script id="dokjs">
-(function(){
-if(!$("devfoot")||$("vdok"))return;
-var KAT=["Kegiatan","Pengamanan","Sosialisasi / Binmas","Penyuluhan","Olahraga / Internal","Lainnya"];
-var v=document.createElement("div");v.id="vdok";v.style.display="none";
-v.innerHTML='<div class="dash"><div class="card">'
-+'<h3 id="dk_ttl">Dokumentasi Kegiatan</h3>'
-+'<input type="hidden" id="dk_id">'
-+'<div class="row2"><div><label>Judul Kegiatan</label><input id="dk_judul" placeholder="Contoh: Pengamanan Tago Festival"></div>'
-+'<div><label>Tanggal</label><input id="dk_tgl" type="date"></div></div>'
-+'<div class="row2"><div><label>Kategori</label><select id="dk_kat">'+KAT.map(function(k){return "<option>"+k+"</option>"}).join("")+'</select></div>'
-+'<div><label>Keterangan (opsional)</label><input id="dk_ket" placeholder="catatan singkat"></div></div>'
-+'<label>Foto (bisa pilih lebih dari satu)</label>'
-+'<input type="file" id="dk_file" accept="image/*" multiple style="display:none">'
-+'<button type="button" class="o" id="dk_pick">Pilih Foto</button> <span id="dk_fn" style="font-size:12px;color:#6b7488"></span>'
-+'<div id="dk_prev" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>'
-+'<div style="margin-top:10px"><button type="button" id="dk_up">Simpan Dokumentasi</button> <button type="button" class="o" id="dk_cancel" style="display:none">Batal</button></div>'
-+'<hr><div class="dkbar"><input id="dk_q" placeholder="Cari judul / kategori / keterangan..."><button class="o" id="dk_retry" type="button">Coba Unggah Foto Tertunda</button></div>'
-+'<div id="dk_note" style="font-size:12px;margin-bottom:10px"></div>'
-+'<div class="dkgrid" id="dk_grid"></div></div></div>';
-document.body.insertBefore(v,$("devfoot"));
-var tb=document.createElement("button");tb.id="tdok";tb.type="button";
-tb.innerHTML='<svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg>Dokumentasi';
-$("tuser").parentNode.insertBefore(tb,$("tuser"));
-tb.onclick=function(){show("dok")};
-var qa=$("qa");
-if(qa)qa.insertAdjacentHTML("beforeend",'<div role="button" tabindex="0" data-go="dok"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><b>Dokumentasi</b><span>Unggah &amp; cari foto kegiatan</span></div>');
-var _show=window.show;
-window.show=function(k){_show(k);var on=k==="dok";$("vdok").style.display=on?"":"none";tb.className=on?"on":"";if(on)dkList()};
-
-var DK=[],dkFiles=[],dkEditing=null;
-try{DK=JSON.parse(store("stpl_doc")||"[]")}catch(x){DK=[]}
-function dkSaveLS(){try{localStorage.setItem("stpl_doc",JSON.stringify(DK));return true}catch(x){alert("Dokumentasi gagal disimpan (penyimpanan browser penuh).");return false}}
-function dkGet(id){var r=null;DK.forEach(function(x){if(x.id===id)r=x});return r}
-function dkNote(t,er){var n=$("dk_note");n.textContent=t||"";n.style.color=er?"#b3261e":"#128a3d"}
-function dkTodayIso(){var n=new Date();return n.getFullYear()+"-"+pad(n.getMonth()+1)+"-"+pad(n.getDate())}
-function dkThumb(file){return new Promise(function(res,rej){var rd=new FileReader();rd.onload=function(){var im=new Image();im.onload=function(){var sc=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*sc));c.height=Math.max(1,Math.round(im.height*sc));var cx=c.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,c.width,c.height);cx.drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",0.72))};im.onerror=function(){rej(new Error("Bukan file gambar"))};im.src=rd.result};rd.onerror=function(){rej(new Error("Gagal membaca file"))};rd.readAsDataURL(file)})}
-function dkB64(file){return new Promise(function(res,rej){var rd=new FileReader();rd.onload=function(){res(String(rd.result).split("base64,")[1]||"")};rd.onerror=function(){rej(new Error("Gagal membaca file"))};rd.readAsDataURL(file)})}
-
-function dkReset(){dkEditing=null;dkFiles=[];$("dk_id").value="";$("dk_judul").value="";$("dk_ket").value="";$("dk_kat").selectedIndex=0;$("dk_tgl").value=dkTodayIso();$("dk_fn").textContent="";$("dk_prev").innerHTML="";$("dk_cancel").style.display="none";$("dk_ttl").textContent="Dokumentasi Kegiatan";dkNote("")}
-function dkOpenAdd(rec){dkEditing=rec.id;dkFiles=[];$("dk_id").value=rec.id;$("dk_judul").value=rec.judul;$("dk_ket").value=rec.ket||"";$("dk_kat").value=rec.kat||KAT[0];$("dk_tgl").value=rec.tgl||dkTodayIso();$("dk_fn").textContent="";$("dk_prev").innerHTML="";$("dk_cancel").style.display="";$("dk_ttl").textContent="Tambah Foto ke: "+rec.judul;dkNote("Foto baru akan ditambahkan ke kegiatan ini.");window.scrollTo(0,0)}
-$("dk_cancel").onclick=dkReset;
-$("dk_pick").onclick=function(){$("dk_file").click()};
-$("dk_file").onchange=function(){
-var fs=Array.prototype.slice.call(this.files||[]);this.value="";
-fs.forEach(function(f){
-if(f.size>8*1024*1024){alert(f.name+" lebih dari 8 MB, dilewati.");return}
-dkFiles.push(f);
-dkThumb(f).then(function(du){var im=document.createElement("img");im.src=du;im.className="dkpvw";$("dk_prev").appendChild(im)}).catch(function(){})
-});
-$("dk_fn").textContent=dkFiles.length+" foto dipilih"
-};
-
-function dkTok(){var i=0;var ts=Date.now()+"";while(i<4){i++}return ts+Math.floor(Math.random()*9000+1000)}
-
-$("dk_up").onclick=function(){
-var judul=$("dk_judul").value.trim();
-if(!judul){alert("Judul kegiatan wajib diisi.");return}
-if(!dkEditing&&!dkFiles.length){alert("Pilih minimal satu foto.");return}
-var rec=dkEditing?dkGet(dkEditing):null;
-if(!rec){rec={id:"dok"+dkTok(),files:[],oleh:who()}}
-rec.judul=judul;rec.tgl=$("dk_tgl").value||dkTodayIso();rec.kat=$("dk_kat").value;rec.ket=$("dk_ket").value.trim();
-if(!DK.some(function(x){return x.id===rec.id}))DK.push(rec);
-var files=dkFiles.slice();$("dk_up").disabled=true;dkNote(files.length?"Memproses "+files.length+" foto...":"Menyimpan...");
-var chain=Promise.resolve();
-files.forEach(function(f){
-chain=chain.then(function(){return dkThumb(f)}).then(function(th){
-if(cfg().url&&navigator.onLine){
-return dkB64(f).then(function(data){return api({action:"docUpload",name:f.name,type:f.type||"image/jpeg",data:data})})
-.then(function(j){rec.files.push({name:f.name,type:f.type||"image/jpeg",thumb:th,fileId:j.fileId,url:j.url});})
-.catch(function(x){rec.files.push({name:f.name,type:f.type||"image/jpeg",thumb:th,pending:true});return dqPut(rec.id,f);});
-}else{rec.files.push({name:f.name,type:f.type||"image/jpeg",thumb:th,pending:true});return dqPut(rec.id,f)}
-})
-});
-chain.then(function(){
-rec.saved=Date.now();rec.sy=false;dkSaveLS();dkList();dkReset();
-if(cfg().url&&navigator.onLine){
-dkNote("Menyimpan data ke Drive...");
-return api({action:"docSave",record:rec}).then(function(){rec.sy=true;dkSaveLS();dkNote("Dokumentasi tersimpan dan tersinkron.")},function(x){dkNote("Foto tersimpan, tapi data gagal sinkron ke Drive: "+x.message,1)})
-}else{dkNote("Tersimpan di perangkat ini. Buka menu Database untuk menyambungkan ke Google Drive.",1)}
-}).then(function(){$("dk_up").disabled=false},function(){$("dk_up").disabled=false})
-};
-
-function dqdb(){return new Promise(function(res,rej){var q=indexedDB.open("kspkt_dok",1);q.onupgradeneeded=function(){q.result.createObjectStore("pend",{keyPath:"key"})};q.onsuccess=function(){res(q.result)};q.onerror=function(){rej(q.error)}})}
-function dqtx(mode,fn){return dqdb().then(function(d){return new Promise(function(res,rej){var t=d.transaction("pend",mode),out=fn(t.objectStore("pend"));t.oncomplete=function(){res(out&&out.result!==undefined?out.result:undefined)};t.onerror=function(){rej(t.error)}})})}
-function dqPut(recId,file){return dkB64(file).then(function(data){return dqtx("readwrite",function(st){return st.put({key:recId+"|"+file.name+"|"+Date.now(),recId:recId,name:file.name,type:file.type||"image/jpeg",data:data})})}).catch(function(){})}
-function dkFlushPending(){
-if(!cfg().url||!navigator.onLine)return Promise.resolve();
-return dqtx("readonly",function(st){return st.getAll()}).then(function(all){
-var items=all||[];if(!items.length)return;
-var chain=Promise.resolve();
-items.forEach(function(it){
-chain=chain.then(function(){
-var rec=dkGet(it.recId);if(!rec)return dqtx("readwrite",function(st){return st.delete(it.key)});
-return api({action:"docUpload",name:it.name,type:it.type,data:it.data}).then(function(j){
-rec.files.forEach(function(f){if(f.pending&&f.name===it.name&&!f.fileId){f.fileId=j.fileId;f.url=j.url;delete f.pending}});
-rec.saved=Date.now();rec.sy=false;dkSaveLS();
-return api({action:"docSave",record:rec})
-}).then(function(){rec.sy=true;dkSaveLS();dkList();return dqtx("readwrite",function(st){return st.delete(it.key)})}).catch(function(){})
-})
-});
-return chain
-}).catch(function(){})
-}
-$("dk_retry").onclick=function(){dkNote("Mencoba mengunggah foto yang tertunda...");dkFlushPending().then(function(){dkNote("Selesai.")})};
-window.addEventListener("online",function(){if(cfg().url)dkFlushPending()});
-
-$("dk_q").addEventListener("input",dkList);
-function dkList(){
-var q=($("dk_q").value||"").toLowerCase(),h="";
-DK.slice().sort(function(a,b){return (b.saved||0)-(a.saved||0)}).forEach(function(r){
-var t=(r.judul+" "+(r.kat||"")+" "+(r.ket||"")).toLowerCase();if(q&&t.indexOf(q)<0)return;
-var fs=r.files||[],show=fs.slice(0,4),ph="";
-show.forEach(function(f){var src=f.url||f.thumb;ph+='<img src="'+(f.thumb||f.url)+'" data-full="'+(src)+'" alt="">'});
-if(fs.length>4)ph+='<div class="more">+'+(fs.length-4)+'</div>';
-if(!fs.length)ph='<div class="more" style="grid-column:1/-1">Belum ada foto</div>';
-h+='<div class="dkc"><div class="ph">'+ph+'</div><div class="b"><div class="jd">'+e(r.judul)+'</div>'
-+'<div class="mt">'+e(r.kat||"-")+' &middot; '+(r.tgl?e(r.tgl):'-')+' &middot; '+e(r.oleh||"-")+(fs.some(function(f){return f.pending})?' &middot; <span style="color:#b3261e">ada foto belum sinkron</span>':'')+'</div>'
-+(r.ket?'<div class="ke">'+e(r.ket)+'</div>':'')
-+'<div class="ac"><button class="o" data-tambah="'+r.id+'">+ Tambah Foto</button>'
-+fs.filter(function(f){return f.fileId}).map(function(f){return '<a class="o" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="https://drive.google.com/uc?export=download&id='+encodeURIComponent(f.fileId)+'">Unduh</a>'}).join("")
-+(canDel(r)?'<button class="o" data-del="'+r.id+'">Hapus</button>':'')+'</div></div></div>'
-});
-$("dk_grid").innerHTML=h||'<div class="empty" style="grid-column:1/-1">Belum ada dokumentasi'+(q?' yang cocok.':'.')+'</div>'
-}
-$("dk_grid").onclick=function(ev){
-var img=ev.target.closest(".ph img");if(img){window.open(img.getAttribute("data-full"),"_blank");return}
-var t=ev.target.closest("[data-tambah]");if(t){var r=dkGet(t.getAttribute("data-tambah"));if(r)dkOpenAdd(r);return}
-var b=ev.target.closest("[data-del]");if(!b)return;var r2=dkGet(b.getAttribute("data-del"));if(!r2)return;
-if(!canDel(r2)){alert("Dokumentasi hanya dapat dihapus oleh Admin atau yang mengunggahnya.");return}
-if(!confirm('Hapus dokumentasi "'+r2.judul+'" beserta semua fotonya?'))return;
-DK=DK.filter(function(x){return x.id!==r2.id});dkSaveLS();dkList();
-if(cfg().url&&navigator.onLine)api({action:"docDelete",id:r2.id}).catch(function(){})
-};
-function dkSync(){
-if(!cfg().url||!navigator.onLine)return Promise.resolve();
-return fetch(curl("&action=doclist")).then(function(r){return r.json()}).then(function(j){
-if(!j||!Array.isArray(j.docs))return;
-var S={},Lc={},out=[];j.docs.forEach(function(s){S[s.id]=s});DK.forEach(function(r){Lc[r.id]=1});
-DK.forEach(function(r){var s=S[r.id];if(!s){if(!r.sy)out.push(r)}else if((r.saved||0)>(s.saved||0)){out.push(r)}else{s.sy=true;out.push(s)}});
-j.docs.forEach(function(s){if(!Lc[s.id]){s.sy=true;out.push(s)}});
-DK=out;dkSaveLS();if($("vdok").style.display!=="none")dkList()
-}).catch(function(){})
-}
-var _ds=window.doSync;window.doSync=function(){return _ds().then(dkSync).then(dkFlushPending)};
-dkReset();
-if(cfg().url)enq(dkSync);
 })();
 </script>
 
