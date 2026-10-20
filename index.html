@@ -417,7 +417,7 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <div style="font-size:13px;margin-top:4px"><label style="display:inline;color:#111"><input type="checkbox" id="cttd2" autocomplete="off" style="width:auto"> TTD penerima (otomatis sesuai nama yang dipilih)</label></div>
 <div style="font-size:11px;color:#777;margin-top:4px">Tanda tangan tersedia: Kapolsek (M. Arif Nugroho), Wiris Ari Wijaya, dan Bambang Himawan (penerima). Stempel hanya dipasang di bagian mengetahui.</div>
 
-<div class="actions"><button id="cetak">Cetak + PDF + Arsip</button><button class="o" id="pdf">Unduh PDF</button><button class="o" id="simpan">Simpan ke Arsip</button><button class="o" id="baru">Surat baru</button>
+<div class="actions"><button id="cetak">Cetak + PDF + Arsip</button><button class="o" id="pdf">Unduh PDF</button><button class="o" id="docx">Unduh Word (.docx)</button><button class="o" id="simpan">Simpan ke Arsip</button><button class="o" id="baru">Surat baru</button>
 <div id="msg"></div></div>
 </div>
 <div class="wrap"><div id="kertas"></div></div>
@@ -705,6 +705,35 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 function loadLib(u){var i=0;(function n(){if(i>=u.length)return;var s=document.createElement("script");s.src=u[i++];s.onerror=n;document.head.appendChild(s)})()}
 loadLib(["lib/html2pdf.bundle.min.js","https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"]);
 loadLib(["lib/xlsx.full.min.js","https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"]);
+// Pustaka DOCX dimuat saat tombol Word dipakai agar halaman utama tetap ringan.
+window.ensureDocxLib = function () {
+  if (window.docx && window.docx.Document && window.docx.Packer) return Promise.resolve(window.docx);
+  if (window.__docxLibPromise) return window.__docxLibPromise;
+  window.__docxLibPromise = new Promise(function (resolve, reject) {
+    var urls = [
+      "https://unpkg.com/docx@9.12.0/dist/index.umd.cjs",
+      "https://cdn.jsdelivr.net/npm/docx@9.12.0/dist/index.umd.cjs"
+    ];
+    function tryUrl(i) {
+      if (i >= urls.length) { reject(new Error("Pustaka Word tidak berhasil dimuat. Periksa koneksi internet.")); return; }
+      var sc = document.createElement("script");
+      sc.src = urls[i]; sc.async = true;
+      sc.onload = function () {
+        if (window.docx && window.docx.Document && window.docx.Packer) resolve(window.docx);
+        else { sc.remove(); tryUrl(i + 1); }
+      };
+      sc.onerror = function () { sc.remove(); tryUrl(i + 1); };
+      document.head.appendChild(sc);
+    }
+    tryUrl(0);
+  }).catch(function (err) { window.__docxLibPromise = null; throw err; });
+  return window.__docxLibPromise;
+};
+window.downloadWordBlob = function (blob, filename) {
+  var url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+};
 </script>
 <script>
 var H=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"],B=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"],RM=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
@@ -868,6 +897,57 @@ if(a==="pdf"){makePDF().then(function(o){if(o){upsert({pdf:true});msg("PDF diund
 $("cetak").onclick=function(){if(!ok())return;upsert({});makePDF().then(function(o){if(o)upsert({pdf:true});window.print();upsert({cetak:true});nextUrut();$("baru").click();msg("Surat dicetak, PDF diunduh, dan tersimpan di Arsip.")})};
 $("pdf").onclick=function(){if(!ok())return;upsert({});makePDF().then(function(o){if(o){upsert({pdf:true});msg("PDF diunduh dan surat tersimpan di Arsip.")}})};
 $("simpan").onclick=function(){if(!ok())return;upsert({});msg("Surat tersimpan di Arsip.")};
+$("docx").onclick=function(){
+  if(!ok())return;
+  render();
+  var rec=upsert({});
+  window.ensureDocxLib().then(function(DX){
+    function para(text,opt){opt=opt||{};return new DX.Paragraph({
+      alignment:opt.align||DX.AlignmentType.LEFT,
+      spacing:{before:opt.before||0,after:opt.after===undefined?100:opt.after},
+      children:[new DX.TextRun({text:String(text==null?"-":text),bold:!!opt.bold,underline:opt.underline?{}:undefined,size:opt.size||22})]
+    });}
+    var C=[];
+    C.push(para("POLRI DAERAH JAWA TIMUR",{align:DX.AlignmentType.CENTER,bold:true}));
+    C.push(para("RESOR KOTA TUBAN",{align:DX.AlignmentType.CENTER,bold:true}));
+    C.push(para("SEKTOR JATIROGO",{align:DX.AlignmentType.CENTER,bold:true,after:20}));
+    C.push(para("Jalan Raya Barat 277, Jatirogo, Tuban 62362",{align:DX.AlignmentType.CENTER,after:220}));
+    C.push(para("SURAT KETERANGAN TANDA LAPORAN KEHILANGAN",{align:DX.AlignmentType.CENTER,bold:true,underline:true,after:70}));
+    C.push(para("Nomor : "+noText(),{align:DX.AlignmentType.CENTER,after:220}));
+    var w=$("waktu").value, tgl=w?(new Date(w)).toLocaleString("id-ID"):"-";
+    C.push(para("Yang bertanda tangan di bawah ini menerangkan bahwa telah diterima laporan kehilangan dengan data pelapor sebagai berikut:",{after:150}));
+    [
+      ["Nama pelapor",$("nama").value],
+      ["Jenis kelamin",$("jk").value],
+      ["NIK",$("nik").value],
+      ["Tempat / tanggal lahir",$("ttl").value],
+      ["Agama",$("agama").value],
+      ["Kewarganegaraan",$("wn").value],
+      ["Pekerjaan",$("kerja").value],
+      ["No. telepon",$("tel").value],
+      ["Alamat",ALM()]
+    ].forEach(function(r){C.push(para(r[0]+" : "+(r[1]||"-"),{after:55}));});
+    C.push(para("Tanggal dan jam laporan : "+tgl,{before:100,after:140}));
+    C.push(para("Melaporkan kehilangan barang / surat berupa :",{bold:true,after:70}));
+    var items=($("barang").value||"").split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean);
+    if(!items.length)items=["-"];
+    items.forEach(function(x,i){C.push(para((i+1)+". "+x,{after:50}));});
+    C.push(para("Tempat kehilangan : "+($("tempat").value||"-"),{before:90,after:110}));
+    C.push(para("Keterangan: Surat Keterangan Tanda Laporan Kehilangan ini bukan sebagai pengganti dokumen yang hilang, melainkan sebagai syarat untuk mengurus dokumen baru pada instansi yang berwenang.",{after:120}));
+    C.push(para("Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.",{after:220}));
+    C.push(para("Jatirogo, "+(w?new Date(w).toLocaleDateString("id-ID"):new Date().toLocaleDateString("id-ID")),{align:DX.AlignmentType.RIGHT,after:80}));
+    C.push(para("Petugas Penerima Laporan",{align:DX.AlignmentType.RIGHT,after:20}));
+    C.push(para("",{align:DX.AlignmentType.RIGHT,after:650}));
+    C.push(para(($("petugas").value||"-").toUpperCase(),{align:DX.AlignmentType.RIGHT,bold:true,underline:true,after:30}));
+    C.push(para($("nrp").value||"",{align:DX.AlignmentType.RIGHT,after:160}));
+    C.push(para("Mengetahui,",{align:DX.AlignmentType.CENTER,after:20}));
+    C.push(para($("fmt").value==="kapolsek"?"KEPALA KEPOLISIAN SEKTOR JATIROGO":"KEPALA SENTRA PELAYANAN KEPOLISIAN TERPADU",{align:DX.AlignmentType.CENTER,after:500}));
+    C.push(para(($("kspkt").value||"-").toUpperCase(),{align:DX.AlignmentType.CENTER,bold:true,underline:true,after:30}));
+    C.push(para($("knrp").value||"",{align:DX.AlignmentType.CENTER}));
+    var doc=new DX.Document({sections:[{properties:{page:{size:{width:12240,height:18720},margin:{top:950,right:950,bottom:850,left:1250}}},children:C}]});
+    return DX.Packer.toBlob(doc).then(function(blob){var nm=(fname().replace(/\.pdf$/i,"")||"Surat_Keterangan")+".docx";window.downloadWordBlob(blob,nm);msg("Dokumen Word berhasil diunduh.")});
+  }).catch(function(err){alert("Gagal membuat DOCX: "+err.message);});
+};
 $("bak").onclick=function(){var a=document.createElement("a"),d=new Date();a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(DB));a.download="arsip-stpl-"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";document.body.appendChild(a);a.click();a.remove()};
 $("rst").onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var arr=JSON.parse(rd.result),n=0;arr.forEach(function(x){if(x&&x.id&&x.d&&!DB.some(function(y){return y.id===x.id})){DB.push(x);n++}});saveDB();refreshArsip();alert(n+" surat dipulihkan ke arsip.")}catch(x){alert("File backup tidak valid.")}};rd.readAsText(f)};
 var _baru=$("baru").onclick;$("baru").onclick=function(){curId=null;_baru();$("urut").value=store("stpl_urut")||1;render()};
@@ -2429,6 +2509,17 @@ if (cfg().url) enq(smSync);
   var ST = null, dirty = false;
 
   function keyOf(y, m) { return y + "-" + (m + 1); }
+  function alignRecap(previous) {
+    var byKey = {};
+    (previous || []).forEach(function (r) {
+      byKey[String(r.n || "").trim().toUpperCase() + "|" + String(r.p || "").trim().toUpperCase()] = r;
+    });
+    return ROS.map(function (o) {
+      var key = String(o.n || "").trim().toUpperCase() + "|" + String(o.p || "").trim().toUpperCase();
+      var r = byKey[key] || {};
+      return { n: o.n, p: o.p, j: o.j, hari: r.hari || "", jam: r.jam || "", jumlah: r.jumlah || "" };
+    });
+  }
 
   function mk(y, m) {
     var days = [], n = new Date(y, m + 1, 0).getDate();
@@ -2436,7 +2527,7 @@ if (cfg().url) enq(smSync);
       var w = new Date(y, m, d).getDay();
       if (w >= 1 && w <= 5) days.push({ d: d, on: true, rows: clone(ROS) });
     }
-    return { y: y, m: m, days: days, cv: defCV(y, m) };
+    return { y: y, m: m, days: days, cv: defCV(y, m), rekap: alignRecap([]) };
   }
   var ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
   function defCV(y, m) {
@@ -2458,22 +2549,24 @@ if (cfg().url) enq(smSync);
   v.id = "vdh";
   v.style.display = "none";
   v.innerHTML =
-    '<div class="dash dhno" style="padding-bottom:0"><div class="card"><h3>Daftar Hadir Anggota</h3>' +
+    '<div class="dash dhno" style="padding-bottom:0"><div class="card"><h3>Daftar Hadir Anggota &amp; Arsip Bulanan</h3>' +
     '<div class="dhctl">' +
     '<select id="dh_bln"></select><input id="dh_thn" type="number" min="2000" max="2100">' +
     '<button id="dh_simpan" type="button">Simpan</button>' +
     '<button id="dh_cetak" type="button" class="o">Cetak / PDF</button>' +
+    '<button id="dh_docx" type="button" class="o">Unduh DOCX</button>' +
     '<button id="dh_ulang" type="button" class="o">Buat Ulang</button>' +
     '<button id="dh_hapus" type="button" class="o">Hapus Bulan Ini</button></div>' +
     '<div class="dhinfo" id="dh_info"></div>' +
+    '<div class="dhhint"><span class="dhhint-ic">✓</span><div><b>Format F4 terbaru</b><span>Lembar hadir memakai kop kiri, judul dan tanggal di tengah, tabel 8 kolom, serta satu halaman rekapitulasi di akhir. Untuk rekap, klik kolom Hari/Jam/Jumlah dan isi anggota yang tidak hadir; bila kosong, akan dicetak NIHIL.</span></div></div>' +
     '<div class="dhchips" id="dh_chips"></div>' +
     '<details class="dhdet" id="dh_dros"><summary>Daftar Anggota (nama, pangkat/NRP, jabatan, jam)</summary>' +
-    '<div class="dhinfo">Perubahan di sini langsung berlaku ke seluruh halaman bulan yang sedang dibuka (dan dipakai untuk bulan baru). Jangan lupa tekan <b>Simpan</b> di atas. Untuk mengubah satu hari saja, klik langsung isi tabel di bawah.</div>' +
+    '<div class="dhinfo">Tersedia 18 anggota bawaan. Data nama, pangkat/NRP, jabatan, dan jam dapat diedit atau ditambah di sini. Perubahan berlaku ke seluruh hari pada bulan yang sedang dibuka; tekan <b>Simpan Daftar Anggota</b> untuk menyimpannya. Untuk mengubah data harian, klik langsung isi tabel di bawah.</div>' +
     '<div style="overflow-x:auto"><table class="dhrost"><thead><tr><th>No. Urut</th><th>Nama</th><th>Pangkat / NRP</th><th>Jabatan</th><th>Datang</th><th>Pulang</th><th></th></tr></thead><tbody id="dh_rb"></tbody></table></div>' +
     '<input id="dh_addpos" type="number" min="1" placeholder="No. urut" title="Kosongkan = paling bawah" style="width:92px;margin:8px 4px 0 0;padding:8px 6px;box-sizing:border-box"> <button id="dh_add" type="button" class="o" style="margin-top:8px">+ Tambah Anggota</button> ' +
     '<button id="dh_rsave" type="button" style="margin-top:8px">Simpan Daftar Anggota</button> ' +
     '<button id="dh_rdef" type="button" class="o" style="margin-top:8px">Kembalikan Bawaan</button></details>' +
-    '<details class="dhdet"><summary>Pejabat Pengetahui &amp; Tanda Tangan</summary><div class="dhpj" id="dh_pj"></div>' +
+    '<details class="dhdet"><summary>Pejabat Penandatangan &amp; Tanda Tangan</summary><div class="dhpj" id="dh_pj"></div>' +
     '<button id="dh_psave" type="button" style="margin-top:8px">Simpan Pejabat</button></details>' +
     '</div></div>' +
     '<div class="wrap" style="padding:16px"><div id="dhpages"></div></div>';
@@ -2525,13 +2618,13 @@ if (cfg().url) enq(smSync);
       '<div class="dhkop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<div class="ln">SEKTOR JATIROGO</div></div>' +
       '<div class="dhjd">DAFTAR HADIR POLSEK JATIROGO</div>' +
       '<div class="dhhari">Hari : ' + HARI[dt.getDay()] + " / " + tg + "</div>" +
-      '<table><colgroup><col style="width:9.2mm"><col style="width:41.3mm"><col style="width:30.1mm"><col style="width:20.3mm"><col style="width:17.2mm"><col style="width:20.1mm"><col style="width:22.8mm"><col style="width:19.9mm"></colgroup>' +
+      '<table><colgroup><col style="width:8mm"><col style="width:32mm"><col style="width:25mm"><col style="width:21mm"><col style="width:15mm"><col style="width:15mm"><col style="width:24.5mm"><col style="width:24.5mm"></colgroup>' +
       '<thead><tr><th rowspan="2">NO</th><th rowspan="2">NAMA</th><th rowspan="2">PANGKAT / NRP</th><th rowspan="2">JABATAN</th><th colspan="2">JAM KEHADIRAN</th><th colspan="2">TANDA TANGAN</th></tr>' +
       '<tr><th>DATANG</th><th>PULANG</th><th>DATANG</th><th>PULANG</th></tr>' +
       '<tr class="num"><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr></thead>' +
       "<tbody>" + rows + "</tbody></table>" +
-      '<div class="dhft"><div>Mengetahui<br>' + esc(PJ.k1j) + '<div class="sp"></div><u>' + esc(PJ.k1n) + "</u><br>" + esc(PJ.k1p) + "</div>" +
-      "<div>" + esc(PJ.kota) + ", " + tg + "<br>" + esc(PJ.k2j) + '<div class="sp"></div><u>' + esc(PJ.k2n) + "</u><br>" + esc(PJ.k2p) + "</div></div>" +
+      '<div class="dhft dhft-daily"><div>Mengetahui<br>' + esc(PJ.k1j) + '<div class="sp"></div><u>' + esc(PJ.k1n) + '</u><br>' + esc(PJ.k1p) + '</div>' +
+      '<div>' + esc(PJ.kota) + ', ' + tg + '<br>' + esc(PJ.k2j) + '<div class="sp"></div><u>' + esc(PJ.k2n) + '</u><br>' + esc(PJ.k2p) + '</div></div>' +
       "</div></div>";
   }
 
@@ -2577,9 +2670,36 @@ if (cfg().url) enq(smSync);
       "</div>";
   }
 
+  function recapHTML() {
+    ST.rekap = alignRecap(ST.rekap || []);
+    var any = ST.rekap.some(function (r) { return String(r.hari || "").trim() || String(r.jam || "").trim() || String(r.jumlah || "").trim(); });
+    var rows = ST.rekap.map(function (r, i) {
+      var filled = String(r.hari || "").trim() || String(r.jam || "").trim() || String(r.jumlah || "").trim();
+      return '<tr class="' + (filled ? 'dh-recap-filled' : 'dh-recap-empty') + '" data-recap-row="' + i + '">' +
+        '<td>' + (i + 1) + '.</td><td class="l">' + esc(r.n) + '</td><td>' + esc(r.p) + '</td><td class="l">' + esc(r.j) + '</td>' +
+        '<td contenteditable="true" data-rec-i="' + i + '" data-rec-f="hari">' + esc(r.hari) + '</td>' +
+        '<td contenteditable="true" data-rec-i="' + i + '" data-rec-f="jam">' + esc(r.jam) + '</td>' +
+        '<td contenteditable="true" data-rec-i="' + i + '" data-rec-f="jumlah">' + esc(r.jumlah) + '</td></tr>';
+    }).join("");
+    var last = new Date(ST.y, ST.m + 1, 0).getDate();
+    var tg = last + " " + BLN[ST.m] + " " + ST.y;
+    return '<div class="dhpg dhrecap"><div class="dhbox">' +
+      '<div class="dhkop">POLRI DAERAH JAWA TIMUR<br>RESOR KOTA TUBAN<div class="ln">SEKTOR JATIROGO</div></div>' +
+      '<div class="dhjd">REKAPITULASI DAFTAR HADIR POLSEK JATIROGO</div>' +
+      '<div class="dhhari">BULAN ' + BLN[ST.m].toUpperCase() + ' ' + ST.y + '</div>' +
+      '<table><colgroup><col style="width:8mm"><col style="width:35mm"><col style="width:25mm"><col style="width:25mm"><col style="width:18mm"><col style="width:18mm"><col style="width:36mm"></colgroup>' +
+      '<thead><tr><th rowspan="2">NO</th><th rowspan="2">NAMA</th><th rowspan="2">PANGKAT / NRP</th><th rowspan="2">JABATAN</th><th colspan="2">TIDAK MASUK</th><th rowspan="2">JUMLAH</th></tr>' +
+      '<tr><th>HARI</th><th>JAM</th></tr><tr class="num"><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr></thead>' +
+      '<tbody>' + rows + '<tr class="dhnihil"' + (any ? ' style="display:none"' : '') + '><td colspan="7" style="height:12mm;font-weight:700">NIHIL</td></tr></tbody></table>' +
+      '<div class="dhft"><div>Mengetahui<br>' + esc(PJ.k1j) + '<div class="sp"></div><u>' + esc(PJ.k1n) + '</u><br>' + esc(PJ.k1p) + '</div>' +
+      '<div>' + esc(PJ.kota) + ', ' + tg + '<br>' + esc(PJ.k2j) + '<div class="sp"></div><u>' + esc(PJ.k2n) + '</u><br>' + esc(PJ.k2p) + '</div></div>' +
+      '</div></div>';
+  }
+
   function render() {
     var h = suratHTML() + sampulHTML();
     for (var i = 0; i < ST.days.length; i++) h += pageHTML(ST.days[i], i);
+    h += recapHTML();
     $("dhpages").innerHTML = h;
     info();
   }
@@ -2598,7 +2718,7 @@ if (cfg().url) enq(smSync);
       return (x[0] - y[0]) || (x[1] - y[1]);
     });
     var cur = keyOf(ST.y, ST.m);
-    $("dh_chips").innerHTML = ks.length ? "Tersimpan: " + ks.map(function (k) {
+    $("dh_chips").innerHTML = ks.length ? "Arsip bulanan (klik untuk membuka): " + ks.map(function (k) {
       var p = k.split("-");
       return '<span class="dhchip' + (k === cur ? " on" : "") + '" data-k="' + k + '">' + BLN[p[1] - 1] + " " + p[0] + "</span>";
     }).join("") : "";
@@ -2610,6 +2730,7 @@ if (cfg().url) enq(smSync);
     var sv = jget(KB, {})[keyOf(y, m)];
     ST = sv ? clone(sv) : mk(y, m);
     if (!ST.cv) ST.cv = defCV(ST.y, ST.m);
+    ST.rekap = alignRecap(ST.rekap || []);
     dirty = false;
     render();
   }
@@ -2652,6 +2773,16 @@ if (cfg().url) enq(smSync);
     if (t.getAttribute && t.getAttribute("data-f")) {
       ST.days[+t.getAttribute("data-i")].rows[+t.getAttribute("data-r")][t.getAttribute("data-f")] = t.textContent;
       if (!dirty) { dirty = true; info(); }
+      return;
+    }
+    if (t.getAttribute && t.getAttribute("data-rec-f")) {
+      var ri = +t.getAttribute("data-rec-i"), rf = t.getAttribute("data-rec-f");
+      ST.rekap[ri][rf] = t.textContent;
+      var rr = t.closest("tr"), filled = String(ST.rekap[ri].hari || "").trim() || String(ST.rekap[ri].jam || "").trim() || String(ST.rekap[ri].jumlah || "").trim();
+      rr.classList.toggle("dh-recap-filled", !!filled); rr.classList.toggle("dh-recap-empty", !filled);
+      var any = ST.rekap.some(function (r) { return String(r.hari || "").trim() || String(r.jam || "").trim() || String(r.jumlah || "").trim(); });
+      var nihil = $("dhpages").querySelector(".dhnihil"); if (nihil) nihil.style.display = any ? "none" : "table-row";
+      if (!dirty) { dirty = true; info(); }
     }
   });
   $("dhpages").addEventListener("change", function (e) {
@@ -2677,6 +2808,153 @@ if (cfg().url) enq(smSync);
   $("dhpages").addEventListener("keydown", function (e) {
     if (e.key === "Enter" && e.target.getAttribute && (e.target.getAttribute("data-f") || e.target.getAttribute("data-cv"))) e.preventDefault();
   });
+
+  /* ---------- Unduh Word bulanan (surat pengantar, sampul, dan lembar hadir) ---------- */
+  function docPara(DX, text, opt) {
+    opt = opt || {};
+    return new DX.Paragraph({
+      alignment: opt.align || DX.AlignmentType.LEFT,
+      pageBreakBefore: !!opt.pageBreakBefore,
+      indent: opt.indent || undefined,
+      spacing: { before: opt.before || 0, after: opt.after === undefined ? 80 : opt.after },
+      children: [new DX.TextRun({ text: String(text == null ? "" : text), bold: !!opt.bold,
+        underline: opt.underline ? {} : undefined, size: opt.size || 20 })]
+    });
+  }
+  function docBorder(DX) {
+    var b = { style: DX.BorderStyle.SINGLE, size: 3, color: "000000" };
+    return { top: b, bottom: b, left: b, right: b, insideHorizontal: b, insideVertical: b };
+  }
+  function docTable(DX, heads, data, widths) {
+    var border = docBorder(DX);
+    var rows = [heads].concat(data).map(function (values, ri) {
+      return new DX.TableRow({ children: values.map(function (value, ci) {
+        return new DX.TableCell({
+          width: { size: widths[ci], type: DX.WidthType.DXA },
+          margins: { top: 35, bottom: 35, left: 35, right: 35 },
+          borders: border,
+          children: [new DX.Paragraph({
+            alignment: (ri === 0 || ci !== 1) ? DX.AlignmentType.CENTER : DX.AlignmentType.LEFT,
+            spacing: { before: 0, after: 0 },
+            children: [new DX.TextRun({ text: String(value == null ? "" : value), bold: ri === 0, size: ri === 0 ? 14 : 15 })]
+          })]
+        });
+      }) });
+    });
+    return new DX.Table({ rows: rows, width: { size: widths.reduce(function (sum, w) { return sum + w; }, 0), type: DX.WidthType.DXA }, columnWidths: widths, borders: border });
+  }
+  function docDailySignatures(DX, tg) {
+    var nil = { style: DX.BorderStyle.NIL || DX.BorderStyle.NONE, size: 0, color: "FFFFFF" };
+    var borders = { top: nil, bottom: nil, left: nil, right: nil, insideHorizontal: nil, insideVertical: nil };
+    function cell(lines) {
+      return new DX.TableCell({
+        width: { size: 4680, type: DX.WidthType.DXA },
+        margins: { top: 0, bottom: 0, left: 90, right: 90 },
+        borders: borders,
+        children: lines.map(function (line) {
+          return new DX.Paragraph({
+            alignment: DX.AlignmentType.CENTER,
+            spacing: { before: 0, after: line.gap || 0 },
+            children: [new DX.TextRun({ text: line.text || "", bold: !!line.bold, underline: line.underline ? {} : undefined, size: 18 })]
+          });
+        })
+      });
+    }
+    return new DX.Table({
+      rows: [new DX.TableRow({ children: [
+        cell([
+          { text: "Mengetahui" }, { text: PJ.k1j }, { text: "", gap: 1050 },
+          { text: PJ.k1n, bold: true, underline: true }, { text: PJ.k1p }
+        ]),
+        cell([
+          { text: PJ.kota + ", " + tg }, { text: PJ.k2j }, { text: "", gap: 1050 },
+          { text: PJ.k2n, bold: true, underline: true }, { text: PJ.k2p }
+        ])
+      ] })],
+      width: { size: 9360, type: DX.WidthType.DXA },
+      columnWidths: [4680, 4680],
+      borders: borders
+    });
+  }
+
+  function saveMonthBeforeWord() {
+    var all = jget(KB, {});
+    all[keyOf(ST.y, ST.m)] = clone(ST);
+    if (!jset(KB, all)) { alert("Arsip bulan ini tidak bisa disimpan. Penyimpanan browser penuh."); return false; }
+    dirty = false; info(); return true;
+  }
+  function downloadAttendanceDocx() {
+    if (!ST) { pilih(); }
+    if (!ST) { alert("Daftar hadir belum siap."); return; }
+    if (!saveMonthBeforeWord()) return;
+    window.ensureDocxLib().then(function (DX) {
+      var C = [], started = false, cv = ST.cv;
+      function pageBreak() { if (started) C.push(new DX.Paragraph({ children: [new DX.PageBreak()] })); started = true; }
+      if (cv.sOn) {
+        pageBreak();
+        C.push(docPara(DX, "POLRI DAERAH JAWA TIMUR", { align: DX.AlignmentType.CENTER, bold: true }));
+        C.push(docPara(DX, "RESOR KOTA TUBAN", { align: DX.AlignmentType.CENTER, bold: true }));
+        C.push(docPara(DX, "SEKTOR JATIROGO", { align: DX.AlignmentType.CENTER, bold: true, after: 220 }));
+        C.push(docPara(DX, cv.tgl, { align: DX.AlignmentType.RIGHT, after: 180 }));
+        C.push(docPara(DX, "Nomor : " + cv.nomor));
+        C.push(docPara(DX, "Klasifikasi : " + cv.kls));
+        C.push(docPara(DX, "Kepada Yth. " + cv.yth));
+        C.push(docPara(DX, "u.p. " + cv.up, { after: 220 }));
+        C.push(docPara(DX, "SURAT PENGANTAR", { align: DX.AlignmentType.CENTER, bold: true, underline: true, after: 180 }));
+        C.push(docTable(DX, ["NOMOR", "ISI", "BANYAKNYA", "KETERANGAN"], [["-", cv.isi, cv.jml, cv.ket]], [650, 4050, 1450, 3210]));
+        C.push(docPara(DX, "", { after: 400 }));
+        C.push(docPara(DX, PJ.k1j, { align: DX.AlignmentType.RIGHT }));
+        C.push(docPara(DX, "", { after: 500 }));
+        C.push(docPara(DX, PJ.k1n, { align: DX.AlignmentType.RIGHT, bold: true, underline: true }));
+        C.push(docPara(DX, PJ.k1p, { align: DX.AlignmentType.RIGHT }));
+      }
+      if (cv.cOn) {
+        pageBreak();
+        C.push(docPara(DX, "POLRI DAERAH JAWA TIMUR", { align: DX.AlignmentType.CENTER, bold: true }));
+        C.push(docPara(DX, "RESOR KOTA TUBAN", { align: DX.AlignmentType.CENTER, bold: true }));
+        C.push(docPara(DX, "SEKTOR JATIROGO", { align: DX.AlignmentType.CENTER, bold: true, after: 900 }));
+        C.push(docPara(DX, cv.t1 || "DAFTAR HADIR", { align: DX.AlignmentType.CENTER, bold: true, size: 32, after: 100 }));
+        C.push(docPara(DX, cv.t2 || "POLSEK JATIROGO", { align: DX.AlignmentType.CENTER, bold: true, size: 32, after: 100 }));
+        C.push(docPara(DX, cv.t3 || ("BULAN " + BLN[ST.m].toUpperCase() + " " + ST.y), { align: DX.AlignmentType.CENTER, bold: true, size: 32, after: 900 }));
+        C.push(docPara(DX, cv.ctgl || (PJ.kota + ", 1 " + BLN[ST.m] + " " + ST.y), { align: DX.AlignmentType.CENTER, after: 100 }));
+      }
+      ST.days.filter(function (day) { return day.on; }).forEach(function (day) {
+        pageBreak();
+        var dt = new Date(ST.y, ST.m, day.d);
+        var tg = day.d + " " + BLN[ST.m] + " " + ST.y;
+        C.push(docPara(DX, "POLRI DAERAH JAWA TIMUR", { align: DX.AlignmentType.CENTER, indent: { right: 4680 }, bold: true, after: 0 }));
+        C.push(docPara(DX, "RESOR KOTA TUBAN", { align: DX.AlignmentType.CENTER, indent: { right: 4680 }, bold: true, after: 0 }));
+        C.push(docPara(DX, "SEKTOR JATIROGO", { align: DX.AlignmentType.CENTER, indent: { right: 4680 }, bold: true, underline: true, after: 220 }));
+        C.push(docPara(DX, "DAFTAR HADIR POLSEK JATIROGO", { align: DX.AlignmentType.CENTER, bold: true, underline: true, size: 24, after: 80 }));
+        C.push(docPara(DX, "Hari : " + HARI[dt.getDay()] + " / " + tg, { align: DX.AlignmentType.CENTER, after: 180 }));
+        var data = [["1", "2", "3", "4", "5", "6", "7", "8"]].concat(day.rows.map(function (o, i) { return [String(i + 1) + ".", o.n, o.p, o.j, o.a, o.b, "", ""]; }));
+        C.push(docTable(DX, ["NO", "NAMA", "PANGKAT / NRP", "JABATAN", "JAM KEHADIRAN - DATANG", "JAM KEHADIRAN - PULANG", "TANDA TANGAN - DATANG", "TANDA TANGAN - PULANG"], data, [450, 1800, 1450, 1200, 850, 850, 1380, 1380]));
+        C.push(docPara(DX, "", { after: 160 }));
+        C.push(docDailySignatures(DX, tg));
+      });
+      pageBreak();
+      C.push(docPara(DX, "POLRI DAERAH JAWA TIMUR", { bold: true, after: 0 }));
+      C.push(docPara(DX, "RESOR KOTA TUBAN", { bold: true, after: 0 }));
+      C.push(docPara(DX, "SEKTOR JATIROGO", { bold: true, after: 220 }));
+      C.push(docPara(DX, "REKAPITULASI DAFTAR HADIR POLSEK JATIROGO", { align: DX.AlignmentType.CENTER, bold: true, underline: true, size: 22, after: 100 }));
+      C.push(docPara(DX, "BULAN " + BLN[ST.m].toUpperCase() + " " + ST.y, { align: DX.AlignmentType.CENTER, after: 180 }));
+      var recapRows = alignRecap(ST.rekap || []).filter(function (r) { return String(r.hari || "").trim() || String(r.jam || "").trim() || String(r.jumlah || "").trim(); });
+      var recapData = recapRows.length ? recapRows.map(function (r, i) { return [String(i + 1) + ".", r.n, r.p, r.j, r.hari, r.jam, r.jumlah]; }) : [["", "", "", "NIHIL", "", "", ""]];
+      C.push(docTable(DX, ["NO", "NAMA", "PANGKAT / NRP", "JABATAN", "TIDAK MASUK (HARI)", "TIDAK MASUK (JAM)", "JUMLAH"], recapData, [450, 1850, 1500, 1500, 1300, 1200, 1560]));
+      C.push(docPara(DX, "", { after: 500 }));
+      C.push(docPara(DX, "Mengetahui", { align: DX.AlignmentType.CENTER, after: 0 }));
+      C.push(docPara(DX, PJ.k1j, { align: DX.AlignmentType.CENTER, after: 300 }));
+      C.push(docPara(DX, PJ.k1n, { align: DX.AlignmentType.CENTER, bold: true, underline: true }));
+      C.push(docPara(DX, PJ.k1p, { align: DX.AlignmentType.CENTER }));
+      if (!C.length) C.push(docPara(DX, "Tidak ada halaman daftar hadir untuk bulan ini."));
+      var doc = new DX.Document({ sections: [{ properties: { page: { size: { width: 12240, height: 18720 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children: C }] });
+      return DX.Packer.toBlob(doc).then(function (blob) {
+        window.downloadWordBlob(blob, "Daftar_Hadir_Polsek_Jatirogo_" + ST.y + "-" + String(ST.m + 1).padStart(2, "0") + ".docx");
+        animOK("DOCX bulanan berhasil diunduh dan arsip bulan ini tersimpan", 2000);
+      });
+    }).catch(function (err) { alert("Gagal membuat DOCX: " + err.message); });
+  }
+  $("dh_docx").onclick = downloadAttendanceDocx;
 
   /* ---------- Tombol ---------- */
   $("dh_simpan").onclick = function () {
@@ -2738,6 +3016,7 @@ if (cfg().url) enq(smSync);
   function rosterApply() {
     jset(KA, ROS);
     if (!ST) return;
+    ST.rekap = alignRecap(ST.rekap || []);
     dirty = true;
     clearTimeout(rT);
     rT = setTimeout(render, 120);
@@ -2805,5 +3084,184 @@ if (cfg().url) enq(smSync);
 })();
 </script>
 
+<style id="f4-weather-upgrade">
+/* ----- Polesan navigasi dan dashboard ----- */
+header.top .tabs{gap:5px!important;padding:8px 22px 10px!important;background:linear-gradient(100deg,#071735dd,#102b68cc)!important}
+header.top .tabs button{border:1px solid #ffffff10!important;border-radius:10px!important;padding:9px 13px!important;font-size:12.8px!important;transition:background .18s,transform .18s,box-shadow .18s!important}
+header.top .tabs button:hover{transform:translateY(-1px);background:#ffffff20!important}
+header.top .tabs button.on{background:linear-gradient(135deg,#fff,#e8efff)!important;color:#102b68!important;border-color:#ffffffa8!important;box-shadow:0 5px 14px #020b2440!important}
+#vdash .hero{box-shadow:0 12px 30px #0b1f4d20}
+#vdash .card,#vdh .card{transition:box-shadow .2s,transform .2s}
+#vdash .card:hover,#vdh .card:hover{box-shadow:0 10px 26px #0b1f4d16}
+#vdash .qa>div{border-radius:14px!important;border:1px solid #e1e8f5!important;box-shadow:0 4px 13px #0b1f4d0c!important;transition:transform .18s,box-shadow .18s,border-color .18s!important}
+#vdash .qa>div:hover{transform:translateY(-3px);box-shadow:0 9px 22px #0b1f4d18!important;border-color:#b8c8ef!important}
+#vdh .dhhint{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:linear-gradient(120deg,#edf4ff,#fbfdff);border:1px solid #dce7fa;border-radius:12px;margin-top:12px;font-size:12px;color:#53617b;line-height:1.55}
+#vdh .dhhint b{display:block;color:#112958;font-size:13px;margin-bottom:2px}
+#vdh .dhhint span:not(.dhhint-ic){display:block}
+#vdh .dhhint-ic{display:grid;place-items:center;flex:0 0 28px;height:28px;border-radius:9px;background:#dbeafe;color:#1d4ed8;font-weight:800;font-size:16px}
+#vdh .dhctl{align-items:end;padding:3px 0}
+#vdh .dhctl select,#vdh .dhctl input{min-height:38px;padding:8px 10px}
+#vdh .dhctl button{min-height:38px}
+#vdh .dhchips{margin-top:12px}
+#vdh .dhchip{padding:6px 12px;border:1px solid #dce6fb;transition:all .15s}
+#vdh .dhchip:hover{transform:translateY(-1px);box-shadow:0 4px 10px #1d3a8a20}
+#vdh .dhdet{background:#fcfdff;border-color:#e2e9f5;padding:11px 13px}
+#vdh .dhdet summary{padding:2px 0}
+
+/* ----- Pratinjau dan cetak Daftar Hadir: F4 215,9 x 330,2 mm ----- */
+@page{size:215.9mm 330.2mm;margin:0}
+#vdh #dhpages{overflow-x:auto;padding:4px 0}
+#vdh .dhpg{width:215.9mm;height:330.2mm;min-height:330.2mm;box-sizing:border-box;padding:25.4mm 25.4mm 18mm 25.4mm;margin:0 auto 18px;overflow:hidden;background:#fff;border:0;box-shadow:0 1px 6px #0002;font-family:Arial,Helvetica,sans-serif;font-size:10pt;color:#000;position:relative}
+#vdh .dhpg.off{opacity:.35}
+#vdh .dhpg:not(.cvp) .dhbox{border:0;min-height:0;height:auto;padding:0;margin:0;display:block;align-items:initial}
+#vdh .dhpg:not(.cvp) .dhbox>*{align-self:initial}
+#vdh .dhpg:not(.cvp) .dhkop{display:block;width:76mm;max-width:100%;white-space:normal;margin:0;padding:0;text-align:center;line-height:1.22;font-family:Arial,Helvetica,sans-serif;font-size:10pt;font-weight:700}
+#vdh .dhpg:not(.cvp) .dhkop .ln{border:0;padding:0}
+#vdh .dhpg:not(.cvp) .dhjd{text-align:center;font-size:11.5pt;font-weight:700;line-height:1.2;text-decoration:underline;margin:8mm 0 2mm}
+#vdh .dhpg:not(.cvp) .dhhari{text-align:center;font-size:10pt;margin:0 0 5mm}
+#vdh .dhpg:not(.cvp) table{width:100%;border-collapse:collapse;table-layout:fixed;margin:0}
+#vdh .dhpg:not(.cvp) th,#vdh .dhpg:not(.cvp) td{border:1px solid #000;padding:.8mm .45mm;font-family:Arial,Helvetica,sans-serif;font-size:7.2pt;line-height:1.12;font-weight:400;vertical-align:middle;text-align:center;white-space:normal;overflow:visible;overflow-wrap:anywhere;word-break:normal}
+#vdh .dhpg:not(.cvp) th{font-size:8.2pt;font-weight:700;padding:1mm .4mm}
+#vdh .dhpg:not(.cvp) td.l{text-align:left;padding-left:1.2mm}
+#vdh .dhpg:not(.cvp) tr.num td{font-size:7.6pt;font-weight:700;padding:.3mm}
+#vdh .dhpg:not(.cvp) tbody tr{height:8.2mm}
+#vdh .dhpg:not(.cvp) [contenteditable]:focus{outline:1px solid #d7a300;background:#fffbe6}
+#vdh .dhpg:not(.cvp) .dhft-daily{display:flex;justify-content:space-between;gap:4mm;width:100%;box-sizing:border-box;margin:10mm 0 0;padding:0 2mm;font-size:9pt;line-height:1.25;break-inside:avoid;page-break-inside:avoid}
+#vdh .dhpg:not(.cvp) .dhft-daily>div{flex:1;min-width:0;text-align:center}
+#vdh .dhpg:not(.cvp) .dhft-daily .sp{height:14mm}
+#vdh .dhpg:not(.cvp) .dhft-daily u{font-weight:700}
+#vdh .dhpg.dhrecap .dhjd{margin-top:8mm}
+#vdh .dhpg.dhrecap .dhft{display:flex;justify-content:space-between;gap:4mm;margin-top:15mm;padding:0;line-height:1.3;font-size:9pt;page-break-inside:avoid}
+#vdh .dhpg.dhrecap .dhft>div{width:48%;min-width:0;text-align:center}
+#vdh .dhpg.dhrecap .dhft .sp{height:20mm}
+#vdh .dhpg.dhrecap .dhft u{font-weight:700}
+#vdh .dhpg.dhrecap .dh-recap-empty{color:#6b7488}
+#vdh .dhpg.cvp{width:215.9mm;height:330.2mm;min-height:330.2mm;padding:0;margin:0 auto 18px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;font-size:11pt;line-height:1.3}
+#vdh .dhpg.cvp.off{opacity:.35}
+#vdh .dhpg.cvp .dhtool{position:absolute;top:3px;right:8px}
+@media print{
+  @page{size:215.9mm 330.2mm;margin:0}
+  html,body{width:215.9mm!important;min-width:215.9mm!important;margin:0!important;padding:0!important;background:#fff!important}
+  body.printdh>*:not(#vdh){display:none!important}
+  body.printdh #vdh{display:block!important;width:215.9mm!important;margin:0!important;padding:0!important;background:#fff!important}
+  body.printdh #vdh .dhno,body.printdh #vdh .dhtool{display:none!important}
+  body.printdh #vdh #dhpages{display:block!important;width:215.9mm!important;overflow:visible!important;padding:0!important;margin:0!important}
+  body.printdh #vdh .dhpg{display:block;width:215.9mm!important;height:330.2mm!important;min-height:330.2mm!important;max-height:330.2mm!important;padding:25.4mm 25.4mm 18mm 25.4mm!important;margin:0!important;border:0!important;box-shadow:none!important;overflow:hidden!important;page-break-after:always!important;break-after:page!important;opacity:1!important}
+  body.printdh #vdh .dhpg.cvp{padding:0!important}
+  body.printdh #vdh .dhpg.off{display:none!important}
+  body.printdh #vdh .dhpg [contenteditable]{outline:none!important;background:transparent!important}
+  body.printdh #vdh .dhpg.dhrecap .dh-recap-empty{display:none!important}
+  body.printdh #vdh .dhpg:last-child{page-break-after:auto!important;break-after:auto!important}
+}
+
+/* ----- Kartu cuaca ringkas di samping statistik dasbor ----- */
+#vdash .dash-overview{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(250px,.9fr);gap:12px;align-items:start;margin:12px 0 16px}
+#vdash #stats{min-width:0;margin:0;align-content:start}
+#vdash .wx-panel{min-width:0;box-sizing:border-box;}
+.wx-panel{position:relative;overflow:hidden;background:linear-gradient(120deg,#0b1f4d,#173d83 63%,#2862c2);color:#fff;border-radius:14px;padding:12px 13px;box-shadow:0 8px 18px #0b1f4d20}
+.wx-panel:after{content:"";position:absolute;right:-40px;top:-55px;width:150px;height:150px;border-radius:50%;background:#ffffff0b;border:1px solid #ffffff13;pointer-events:none}
+.wx-head{display:flex;justify-content:space-between;align-items:flex-start;gap:7px;position:relative;z-index:1}
+.wx-kicker{font-size:8px;font-weight:800;letter-spacing:.7px;color:#ffdc70;text-transform:uppercase}
+.wx-title{margin:3px 0 2px;font-size:14px;color:#fff;font-weight:800}
+.wx-sub{margin:0;font-size:9px;color:#d8e4ff}
+.wx-refresh{background:#ffffff18!important;border:1px solid #ffffff45!important;color:#fff!important;border-radius:8px!important;box-shadow:none!important;padding:5px 7px!important;font-size:9px!important;margin:0!important;white-space:nowrap}
+.wx-main{display:flex;align-items:center;gap:10px;margin-top:10px;position:relative;z-index:1}
+.wx-icon{font-size:30px;line-height:1;filter:drop-shadow(0 3px 8px #0002)}
+.wx-temp{font-size:29px;font-weight:800;line-height:1;letter-spacing:-.6px}
+.wx-desc{font-size:10px;font-weight:700;margin-top:4px}
+.wx-feels{font-size:9px;color:#d8e4ff;margin-top:2px}
+.wx-metrics{display:flex;flex-wrap:wrap;gap:4px;margin:9px 0 8px;position:relative;z-index:1}
+.wx-metric{display:flex;gap:4px;align-items:center;background:#ffffff11;border:1px solid #ffffff20;border-radius:8px;padding:5px 6px;font-size:8px;color:#eaf0ff}
+.wx-metric b{font-size:9px;color:#fff}
+.wx-days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;position:relative;z-index:1}
+.wx-day{padding:6px 3px;background:#ffffff10;border:1px solid #ffffff1b;border-radius:8px;text-align:center;min-width:0}
+.wx-day .wd{font-size:7.5px;color:#d6e4ff;font-weight:700}
+.wx-day .wi{font-size:16px;margin:3px 0}
+.wx-day .wt{font-size:7.5px;color:#f0f4ff;white-space:nowrap}
+.wx-day .wr{font-size:7.5px;color:#ffdf83;margin-top:3px}
+.wx-source{position:relative;z-index:1;color:#c5d7ff;font-size:8px;margin-top:8px}
+.wx-error{font-size:9px;color:#ffdfad;margin-top:7px}
+@media(max-width:900px){#vdash .dash-overview{grid-template-columns:1fr}}
+@media(max-width:700px){.wx-days{grid-template-columns:repeat(3,minmax(0,1fr))}.wx-panel{padding:12px}.wx-temp{font-size:26px}.wx-icon{font-size:28px}}
+</style>
+
+<script id="wx-and-final-tweaks">
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var stats = $("stats");
+  if (stats && !$("wx-panel")) {
+    var overview = $("dash-overview");
+    if (!overview) {
+      overview = document.createElement("div");
+      overview.id = "dash-overview";
+      overview.className = "dash-overview";
+      stats.parentNode.insertBefore(overview, stats);
+      overview.appendChild(stats);
+    }
+    overview.insertAdjacentHTML("beforeend",
+      '<section id="wx-panel" class="wx-panel" aria-label="Ramalan cuaca Jatirogo">' +
+        '<div class="wx-head"><div><div class="wx-kicker">Info Cuaca • Jatirogo, Tuban</div><h3 class="wx-title">Ramalan Cuaca</h3><p class="wx-sub" id="wx-updated">Mengambil data prakiraan terbaru…</p></div><button type="button" class="wx-refresh" id="wx-refresh">↻ Perbarui</button></div>' +
+        '<div class="wx-main"><div class="wx-icon" id="wx-icon">🌤️</div><div><div class="wx-temp" id="wx-temp">--°C</div><div class="wx-desc" id="wx-desc">Memuat cuaca…</div><div class="wx-feels" id="wx-feels">Terasa seperti --°C</div></div></div>' +
+        '<div class="wx-metrics"><div class="wx-metric">💧 <span>Kelembapan <b id="wx-humidity">--%</b></span></div><div class="wx-metric">🌬️ <span>Angin <b id="wx-wind">-- km/j</b></span></div><div class="wx-metric">🌧️ <span>Curah saat ini <b id="wx-rain">-- mm</b></span></div></div>' +
+        '<div id="wx-days" class="wx-days"><div class="wx-day">Memuat ramalan…</div></div>' +
+        '<div class="wx-source">Sumber prakiraan: Open-Meteo · Pembaruan otomatis saat dasbor dibuka.</div><div id="wx-error" class="wx-error" hidden></div>' +
+      '</section>');
+  }
+  function desc(code){
+    code = Number(code);
+    if(code===0) return ['Cerah','☀️'];
+    if(code===1) return ['Cerah sebagian','🌤️'];
+    if(code===2) return ['Cerah berawan','⛅'];
+    if(code===3) return ['Berawan','☁️'];
+    if(code===45||code===48) return ['Kabut','🌫️'];
+    if([51,53,55,56,57].indexOf(code)>=0) return ['Gerimis','🌦️'];
+    if([61,63,65,66,67].indexOf(code)>=0) return ['Hujan','🌧️'];
+    if([71,73,75,77,85,86].indexOf(code)>=0) return ['Salju','❄️'];
+    if([80,81,82].indexOf(code)>=0) return ['Hujan lokal','🌦️'];
+    if([95,96,99].indexOf(code)>=0) return ['Hujan petir','⛈️'];
+    return ['Kondisi cuaca berubah-ubah','🌤️'];
+  }
+  function number(v, unit){ return v===null||v===undefined||Number.isNaN(Number(v)) ? '--' : Math.round(Number(v))+unit; }
+  function fmtDate(iso, today){
+    var d=new Date(iso+'T12:00:00');
+    return d.toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short'}).replace(/\./g,'') + (today?' · Hari ini':'');
+  }
+  function loadWeather(){
+    var up=$("wx-updated"), err=$("wx-error"), days=$("wx-days"), btn=$("wx-refresh");
+    if(!up||!days) return;
+    if(!navigator.onLine){up.textContent='Tidak ada koneksi internet'; if(err){err.hidden=false;err.textContent='Hubungkan internet untuk memuat prakiraan terbaru.';} return;}
+    if(btn){btn.disabled=true;btn.textContent='Memuat…';}
+    if(err){err.hidden=true;err.textContent='';}
+    up.textContent='Mengambil data prakiraan terbaru…';
+    var url='https://api.open-meteo.com/v1/forecast?latitude=-6.8859&longitude=111.6584&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FJakarta&forecast_days=5';
+    fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){
+      var c=d.current||{},du=d.daily||{}, w=desc(c.weather_code);
+      $("wx-icon").textContent=w[1]; $("wx-temp").textContent=number(c.temperature_2m,'°C');
+      $("wx-desc").textContent=w[0]; $("wx-feels").textContent='Terasa seperti '+number(c.apparent_temperature,'°C');
+      $("wx-humidity").textContent=number(c.relative_humidity_2m,'%');
+      $("wx-wind").textContent=number(c.wind_speed_10m,' km/j');
+      $("wx-rain").textContent=(c.precipitation===null||c.precipitation===undefined?'--':Number(c.precipitation).toFixed(1))+' mm';
+      var html='';
+      (du.time||[]).forEach(function(day,i){
+        var dw=desc(du.weather_code[i]);
+        html+='<div class="wx-day"><div class="wd">'+fmtDate(day,i===0)+'</div><div class="wi">'+dw[1]+'</div><div class="wt"><b>'+number(du.temperature_2m_max[i],'°')+'</b> / '+number(du.temperature_2m_min[i],'°')+'</div><div class="wr">🌧 '+number(du.precipitation_probability_max[i],'%')+'</div></div>';
+      });
+      days.innerHTML=html||'<div class="wx-day">Data prakiraan belum tersedia.</div>';
+      var stamp=c.time?new Date(c.time).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'baru saja';
+      up.textContent='Kondisi sekarang · '+stamp+' WIB';
+    }).catch(function(){
+      up.textContent='Prakiraan belum dapat dimuat';
+      days.innerHTML='<div class="wx-day" style="grid-column:1/-1">Periksa koneksi internet, lalu tekan Perbarui.</div>';
+      if(err){err.hidden=false;err.textContent='Data cuaca memerlukan internet. Menu surat dan arsip tetap bisa digunakan.';}
+    }).finally(function(){if(btn){btn.disabled=false;btn.textContent='↻ Perbarui';}});
+  }
+  if($("wx-refresh")) $("wx-refresh").addEventListener('click',loadWeather);
+  loadWeather();
+  window.addEventListener('online',loadWeather);
+  // Menjaga pemilihan menu daftar hadir tetap benar pada kombinasi wrapper menu lama.
+  var dhTab=$("tdh");
+  if(dhTab){dhTab.style.order='7';dhTab.title='Kelola absensi, rekap dan arsip per bulan';}
+})();
+</script>
 </body>
 </html>
