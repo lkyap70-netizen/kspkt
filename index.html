@@ -310,9 +310,20 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 #ohkertas .ohfoto{flex:none;width:30mm;height:40mm;object-fit:cover;border:1px solid #000}
 #ohkertas.c3 .ohfoto,#ohkertas.c4 .ohfoto,#ohkertas.c5 .ohfoto{width:24mm;height:32mm}
 #ohkertas .jd{line-height:1.3}
+
+/* Welcome, profile, and operation feedback */
+#toastHost{position:fixed;right:18px;top:18px;z-index:99999;display:grid;gap:8px;max-width:min(360px,calc(100vw - 36px))}
+.toastx{padding:12px 16px;border-radius:12px;color:#fff;background:#173b82;box-shadow:0 10px 28px #0003;font-size:13px;animation:toastin .2s ease-out}.toastx.ok{background:#16794b}.toastx.err{background:#a52b2b}.toastx.wait{background:#26364f}
+@keyframes toastin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.modalx{position:fixed;inset:0;background:#07152dcc;z-index:99990;display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}
+.modalx.show{display:flex}.modalcard{background:#fff;border-radius:20px;padding:26px;width:min(500px,100%);box-shadow:0 24px 80px #0005;color:#15213b}.modalcard h2{margin:8px 0;font-size:23px}.modalcard p{color:#5d6b82;line-height:1.55}.modalicon{width:54px;height:54px;border-radius:16px;background:#e7efff;color:#1d3a8a;display:grid;place-items:center;font-size:27px}.modalactions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}.profilebtn{border:1px solid #d5def0!important;background:#fff!important;color:#1d3a8a!important;margin:0 6px!important;padding:7px 10px!important}
+@media(max-width:600px){.modalcard{padding:20px}.modalcard h2{font-size:20px}}
 </style>
 </head>
 <body class="locked">
+<div id="toastHost" aria-live="polite"></div>
+<div id="welcomeModal" class="modalx" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle"><div class="modalcard"><div class="modalicon">✦</div><h2 id="welcomeTitle">Selamat datang di KSPKT</h2><p id="welcomeText">Sistem Administrasi KSPKT Polsek Jatirogo membantu petugas mengelola surat laporan kehilangan, arsip, rekap bulanan, dan buku register dalam satu tempat.</p><p><b>Pengingat:</b> periksa kembali data pelapor sebelum mencetak surat, dan lakukan sinkronisasi/backup arsip secara berkala.</p><div class="modalactions"><button id="welcomeClose" type="button">Mulai bekerja</button></div></div></div>
+<div id="profileModal" class="modalx" role="dialog" aria-modal="true" aria-labelledby="profileTitle"><div class="modalcard"><div class="modalicon">♙</div><h2 id="profileTitle">Profil Akun</h2><p>Perbarui nama tampilan dan NRP login akun Anda.</p><label>Nama lengkap</label><input id="profileName" autocomplete="name"><label>NRP login (4–10 angka)</label><input id="profileNrp" inputmode="numeric" maxlength="10" autocomplete="off"><div id="profileMsg" style="font-size:12px;margin-top:8px"></div><div class="modalactions"><button class="o" id="profileCancel" type="button">Batal</button><button id="profileSave" type="button">Simpan profil</button></div></div></div>
 <div id="login"><div class="lbox">
 <div class="lhead"><img id="llogo" alt=""><div><div class="b1l">POLSEK JATIROGO</div><div class="b2l">Sistem Administrasi KSPKT</div></div></div>
 <div id="pl"><h3>Masuk</h3>
@@ -332,7 +343,7 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <button id="lcon" type="button" class="o" style="margin-top:8px">Sambungkan &amp; ambil akun</button></details>
 <div class="lsw" style="margin-top:14px">Dikembangkan oleh <b>MasLuki.id</b></div>
 </div></div>
-<header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div><div class="hr"><span id="syncpill" class="sp0 off">Belum tersambung</span><span id="who" class="sp0"></span><button id="keluar" class="ub"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Keluar</button></div><nav class="tabs"><button id="tdash"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Dashboard</button><button id="tbuat"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15h6"/></svg>Buat Surat</button><button id="tarsip"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg>Arsip <span class="badge" id="cnt">0</span></button><button id="trekap"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Rekap</button><button id="treg"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>Register</button><button id="toh"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7.5" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 11-4.6"/><circle cx="17" cy="16" r="3"/><path d="M19.2 18.2l2.3 2.3"/></svg>Orang Hilang <span class="badge" id="ohcnt">0</span></button><button id="tuser" style="display:none"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>Pengguna</button></nav></header>
+<header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div><div class="hr"><span id="syncpill" class="sp0 off">Belum tersambung</span><span id="who" class="sp0"></span><button id="profileOpen" class="profilebtn" type="button">Profil Akun</button><button id="keluar" class="ub"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Keluar</button></div><nav class="tabs"><button id="tdash"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Dashboard</button><button id="tbuat"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15h6"/></svg>Buat Surat</button><button id="tarsip"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg>Arsip <span class="badge" id="cnt">0</span></button><button id="trekap"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Rekap</button><button id="treg"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>Register</button><button id="toh"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7.5" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 11-4.6"/><circle cx="17" cy="16" r="3"/><path d="M19.2 18.2l2.3 2.3"/></svg>Orang Hilang <span class="badge" id="ohcnt">0</span></button><button id="tuser" style="display:none"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>Pengguna</button></nav></header>
 <div id="offbar"></div>
 <div id="vdash" class="dash">
 <div class="hero"><div class="hl"><p class="hgreet" id="hgreet"></p><h1>Sistem Administrasi KSPKT</h1><p id="hdate"></p><p>Sentra Pelayanan Kepolisian Terpadu &middot; Polsek Jatirogo, Polresta Tuban</p><p class="motto">Melindungi, Mengayomi, dan Melayani</p></div><div class="hbtn"><div class="ctile"><small>WAKTU SETEMPAT</small><p class="clock" id="hclock"></p></div><div class="hb2"><button id="dnew">+ Buat Surat Baru</button><button class="o2" id="dars">Buka Arsip</button></div></div></div>
@@ -859,7 +870,8 @@ var FL=["gaya","urut","waktu","nama","jk","nik","ttl","agama","wn","kerja","tel"
 var DB=[],curId=null;
 try{DB=JSON.parse(store("stpl_arsip")||"[]")}catch(x){DB=[]}
 function saveDB(){try{localStorage.setItem("stpl_arsip",JSON.stringify(DB));return true}catch(x){alert("Arsip gagal disimpan (penyimpanan browser penuh atau diblokir). Segera lakukan Backup.");return false}}
-function msg(t){$("msg").textContent=t;setTimeout(function(){if($("msg").textContent===t)$("msg").textContent=""},4000)}
+function toast(t,type,duration){var host=$("toastHost"),el=document.createElement("div");el.className="toastx "+(type||"ok");el.textContent=t;host.appendChild(el);setTimeout(function(){el.style.opacity="0";el.style.transform="translateY(-6px)";setTimeout(function(){el.remove()},250)},duration||3500);return el}
+function msg(t){$("msg").textContent=t;toast(t,/gagal|error|tidak bisa/i.test(t)?"err":"ok");setTimeout(function(){if($("msg").textContent===t)$("msg").textContent=""},4000)}
 function noText(){var n=$("kertas").querySelector(".nm");return n?n.textContent.replace(/^Nomor\s*:\s*/,"").trim():""}
 function ok(){if(_skip)return true;if(!$("nama").value.trim()){alert("Nama pelapor wajib diisi.");return false}
 var n=$("nik").value.trim();
@@ -894,11 +906,12 @@ if(a==="hapus"){if(!canDel(rec)){alert("Surat hanya dapat dihapus oleh Admin ata
 loadRec(rec);
 if(a==="cetak"){setTimeout(function(){window.print();upsert({cetak:true})},200)}
 if(a==="pdf"){makePDF().then(function(o){if(o){upsert({pdf:true});msg("PDF diunduh.")}})}}
-$("cetak").onclick=function(){if(!ok())return;upsert({});makePDF().then(function(o){if(o)upsert({pdf:true});window.print();upsert({cetak:true});nextUrut();$("baru").click();msg("Surat dicetak, PDF diunduh, dan tersimpan di Arsip.")})};
-$("pdf").onclick=function(){if(!ok())return;upsert({});makePDF().then(function(o){if(o){upsert({pdf:true});msg("PDF diunduh dan surat tersimpan di Arsip.")}})};
+$("cetak").onclick=function(){if(!ok())return;var busy=toast("Memproses surat, membuat PDF, dan menyimpan arsip…","wait",12000);upsert({});makePDF().then(function(o){busy.remove();if(o)upsert({pdf:true});window.print();upsert({cetak:true});nextUrut();msg("Surat dicetak dan tersimpan di Arsip. Isian tetap tersedia untuk diedit.")})};
+$("pdf").onclick=function(){if(!ok())return;var busy=toast("Sedang membuat PDF…","wait",12000);upsert({});makePDF().then(function(o){busy.remove();if(o){upsert({pdf:true});msg("PDF diunduh dan surat tersimpan di Arsip.")}})};
 $("simpan").onclick=function(){if(!ok())return;upsert({});msg("Surat tersimpan di Arsip.")};
 $("docx").onclick=function(){
   if(!ok())return;
+  var busy=toast("Sedang menyiapkan dokumen Word…","wait",15000);
   render();
   var rec=upsert({});
   window.ensureDocxLib().then(function(DX){
@@ -945,8 +958,8 @@ $("docx").onclick=function(){
     C.push(para(($("kspkt").value||"-").toUpperCase(),{align:DX.AlignmentType.CENTER,bold:true,underline:true,after:30}));
     C.push(para($("knrp").value||"",{align:DX.AlignmentType.CENTER}));
     var doc=new DX.Document({sections:[{properties:{page:{size:{width:12240,height:18720},margin:{top:950,right:950,bottom:850,left:1250}}},children:C}]});
-    return DX.Packer.toBlob(doc).then(function(blob){var nm=(fname().replace(/\.pdf$/i,"")||"Surat_Keterangan")+".docx";window.downloadWordBlob(blob,nm);msg("Dokumen Word berhasil diunduh.")});
-  }).catch(function(err){alert("Gagal membuat DOCX: "+err.message);});
+    return DX.Packer.toBlob(doc).then(function(blob){var nm=(fname().replace(/\.pdf$/i,"")||"Surat_Keterangan")+".docx";window.downloadWordBlob(blob,nm);busy.remove();msg("Dokumen Word berhasil diunduh.")});
+  }).catch(function(err){busy.remove();toast("Gagal membuat DOCX: "+err.message,"err",6000);});
 };
 $("bak").onclick=function(){var a=document.createElement("a"),d=new Date();a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(DB));a.download="arsip-stpl-"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";document.body.appendChild(a);a.click();a.remove()};
 $("rst").onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var arr=JSON.parse(rd.result),n=0;arr.forEach(function(x){if(x&&x.id&&x.d&&!DB.some(function(y){return y.id===x.id})){DB.push(x);n++}});saveDB();refreshArsip();alert(n+" surat dipulihkan ke arsip.")}catch(x){alert("File backup tidak valid.")}};rd.readAsText(f)};
@@ -1121,7 +1134,19 @@ $("tuser").style.display=u.role==="admin"?"":"none";
 var nm=u.nama.toUpperCase(),m="lain";for(var k in PT){if(k!=="lain"&&(PT[k][0]===nm||PT[k][1].indexOf(" "+u.user)>-1))m=k}
 if(m!=="lain")nm=PT[m][0];
 $("pilih").value=m;$("petugas").value=nm;$("nrp").value=m!=="lain"?PT[m][1]:(u.nrp||"");
-if(cfg().url)sync();show("dash");render()}
+if(cfg().url)sync();show("dash");render();if(!store("stpl_welcome_seen")){setTimeout(function(){$("welcomeModal").classList.add("show")},250)}}
+function openProfile(){var u=curU();if(!u)return;$("profileName").value=u.nama||"";$("profileNrp").value=u.user||"";$("profileMsg").textContent="";$("profileModal").classList.add("show")}
+$("profileOpen").onclick=openProfile;$("profileCancel").onclick=function(){$("profileModal").classList.remove("show")};
+$("profileModal").addEventListener("click",function(ev){if(ev.target===$("profileModal"))$("profileModal").classList.remove("show")});
+$("profileSave").onclick=function(){var u=curU(),nm=$("profileName").value.trim(),nrp=$("profileNrp").value.trim(),m=$("profileMsg");if(!u)return;
+if(!nm){m.style.color="#b3261e";m.textContent="Nama tidak boleh kosong.";return}
+if(!/^\d{4,10}$/.test(nrp)){m.style.color="#b3261e";m.textContent="NRP harus 4–10 angka.";return}
+if(US.some(function(x){return x.id!==u.id&&x.user===nrp})){m.style.color="#b3261e";m.textContent="NRP tersebut sudah digunakan akun lain.";return}
+var oldName=u.nama;u.nama=nm;u.user=nrp;u.nrp="NRP "+nrp;if(RANK[nrp]){u.pangkat=RANK[nrp];u.nrp=RANK[nrp]+" NRP "+nrp}u.upd=Date.now();u.sy=false;saveUS();pushUser(u);$("who").textContent=u.nama+(u.role==="admin"?" (Admin)":"");
+// Update the default officer fields only when they still match the previous account.
+if($("petugas").value===oldName.toUpperCase()||$("petugas").value===oldName)$("petugas").value=nm.toUpperCase();
+$("profileModal").classList.remove("show");toast("Profil akun berhasil diperbarui.","ok");if($("tuser"))userRender();};
+$("welcomeClose").onclick=function(){$("welcomeModal").classList.remove("show");store("stpl_welcome_seen","1")};
 function startSes(u){SES={id:u.id};store("stpl_ses",JSON.stringify({id:u.id,exp:Date.now()+12*3600*1000}));$("lu").value="";enter(u)}
 
 function doLogin(){var un=$("lu").value.trim();
