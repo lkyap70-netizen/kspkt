@@ -227,6 +227,71 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 #kertas.e2 .mg{margin-top:20px}
 @page{size:215.9mm 330mm;margin:0}
 @media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas,#ohkertas{box-shadow:none;margin:0}}
+
+/* ===== LOGIN REFRESH: MODERN, RESPONSIF, TANPA MENGUBAH ALUR LOGIN ===== */
+#login{padding:clamp(14px,3vw,38px);background:radial-gradient(ellipse at 12% 8%,#23479c 0,transparent 34%),radial-gradient(ellipse at 88% 94%,#12327b 0,transparent 35%),linear-gradient(135deg,#06122f 0%,#0c2050 54%,#102b69 100%);isolation:isolate}
+#login:before,#login:after{z-index:-1;filter:blur(80px);opacity:.2}
+#login:before{background:#dc3545;width:45vmax;height:45vmax;left:-25vmax;top:-20vmax}
+#login:after{background:#3974ff;width:50vmax;height:50vmax;right:-28vmax;bottom:-26vmax}
+.login-shell{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(360px,.88fr);width:min(1060px,100%);min-height:620px;overflow:hidden;border:1px solid #ffffff40;border-radius:28px;background:#fff;box-shadow:0 32px 90px #0006,0 8px 24px #0002;animation:loginEnter .65s cubic-bezier(.2,.8,.2,1) both}
+.login-intro{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:34px;padding:clamp(28px,4vw,48px);color:#fff;background:linear-gradient(150deg,#071637 0%,#10295e 52%,#173d8c 100%)}
+.login-intro:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.14;background-image:linear-gradient(#ffffff18 1px,transparent 1px),linear-gradient(90deg,#ffffff18 1px,transparent 1px);background-size:35px 35px;mask-image:linear-gradient(to bottom right,#000,transparent 90%)}
+.login-brand{display:flex;align-items:center;gap:13px;position:relative;z-index:2}
+.login-brandmark{width:58px;height:58px;display:grid;place-items:center;flex:0 0 58px;border-radius:18px;background:#ffffff14;border:1px solid #ffffff32;box-shadow:inset 0 1px 0 #ffffff2b;backdrop-filter:blur(8px)}
+.login-brandmark img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 5px #0003)}
+.login-brand strong{display:block;font-size:14px;font-weight:850;letter-spacing:1.2px}
+.login-brand small{display:block;margin-top:5px;color:#c7d5f4;font-size:9px;letter-spacing:1.05px;line-height:1.5}
+.login-intro-main{position:relative;z-index:2;max-width:450px;margin:auto 0}
+.login-eyebrow{display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;border:1px solid #ffffff30;border-radius:99px;padding:8px 12px;background:#ffffff0d;color:#d8e3ff;font-size:10px;font-weight:800;letter-spacing:1.5px}
+.login-dot{width:7px;height:7px;border-radius:50%;background:#f4bd32;box-shadow:0 0 0 4px #f4bd3225}
+.login-intro h1{margin:0;max-width:430px;color:#fff;font-size:clamp(31px,4vw,47px);letter-spacing:-1.7px;line-height:1.1;font-weight:800;font-family:Bahnschrift,"Arial Narrow",Arial,sans-serif}
+.login-intro h1 em{font-style:normal;color:#ffd66f}
+.login-intro-main>p{max-width:380px;margin:18px 0 27px;color:#d0dcf6;font-size:13px;line-height:1.8}
+.login-highlights{display:grid;gap:13px;max-width:405px}
+.login-highlight{display:flex;align-items:flex-start;gap:12px;padding:13px;border:1px solid #ffffff1d;border-radius:14px;background:#ffffff0b;backdrop-filter:blur(8px)}
+.login-highlight-icon{display:grid;place-items:center;flex:0 0 32px;height:32px;border-radius:10px;background:#f4bd3221;color:#ffda7c;font-size:17px;font-weight:900}
+.login-highlight b{display:block;color:#fff;font-size:12px;margin:0 0 4px}
+.login-highlight small{display:block;color:#c4d2ef;font-size:11px;line-height:1.5}
+.login-intro-foot{position:relative;z-index:2;display:flex;align-items:center;gap:10px;color:#b7c8ed;font-size:9px;font-weight:800;letter-spacing:1.4px}
+.login-foot-line{width:28px;height:2px;background:#f4bd32;border-radius:9px}
+.login-orbit{position:absolute;z-index:0;pointer-events:none;border:1px solid #ffffff12;border-radius:50%}
+.orbit-one{width:390px;height:390px;right:-220px;top:80px;box-shadow:0 0 0 35px #ffffff06,0 0 0 72px #ffffff04}
+.orbit-two{width:245px;height:245px;right:-146px;top:153px;border-color:#f4bd3230;box-shadow:0 0 0 24px #f4bd3208}
+.lbox{align-self:stretch;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2;width:100%;max-width:none;min-width:0;margin:0;padding:clamp(28px,4vw,52px);border:0;border-radius:0;background:linear-gradient(160deg,#fff 0%,#fbfcff 100%);box-shadow:none;animation:none}
+.lhead{gap:13px;margin-bottom:34px;padding-bottom:22px;border-bottom:1px solid #e9edf5}
+.lhead img{width:52px;height:52px;padding:5px;border:1px solid #e8edf7;border-radius:15px;background:#fff;box-shadow:0 6px 17px #10295e12;animation:none}
+.b1l{font-size:16px;letter-spacing:.4px;color:#102654}
+.b2l{margin-top:5px;font-size:11px;line-height:1.5;color:#7b879e}
+.lbox h3{margin:0 0 5px;color:#15284d;font-size:25px;letter-spacing:-.5px;font-family:Bahnschrift,"Arial Narrow",Arial,sans-serif}
+#pl>h3:after,#pr>h3:after{content:"";display:block;width:36px;height:3px;margin-top:11px;border-radius:4px;background:#edb82f}
+#pl>h3,#pr>h3{margin-bottom:10px}
+.lbox label{margin:18px 0 7px;color:#4b5871;font-size:12px;font-weight:700}
+.lbox input{width:100%;height:49px;padding:0 14px;border:1px solid #dce3ef;border-radius:12px;background:#f8faff;color:#15284d;font-size:14px;transition:border .2s,box-shadow .2s,background .2s}
+.lbox input:hover{border-color:#b8c7e4;background:#fff}
+.lbox input:focus{outline:none;border-color:#315cbb;background:#fff;box-shadow:0 0 0 4px #315cbb19}
+#lgo,#rgo{height:49px;margin:22px 0 0!important;border:0;border-radius:12px;background:linear-gradient(110deg,#12377f,#2455b8 65%,#356bd0);box-shadow:0 9px 19px #173d8c2e;color:#fff;font-size:14px;font-weight:800;letter-spacing:.2px;transition:transform .2s,box-shadow .2s,filter .2s}
+#lgo:hover,#rgo:hover{transform:translateY(-2px);box-shadow:0 13px 24px #173d8c3a;filter:brightness(1.06)}
+#lgo:active,#rgo:active{transform:translateY(0)}
+.lsw{margin-top:19px;color:#78849a;font-size:12px;line-height:1.6}
+.lsw a{color:#19499e;text-decoration:none;border-bottom:1px solid #b9caed;padding-bottom:1px}
+.lsw a:hover{color:#0b2560;border-color:#0b2560}
+#lmsg{font-weight:600;font-size:12px;line-height:1.5}
+#lmsg:not(:empty){padding:9px 12px;border-radius:10px;background:#f2f6ff}
+.ldrv{margin-top:26px;padding-top:16px;border-top:1px solid #e8edf5;color:#66738b;font-size:11px}
+.ldrv summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#52627f;font-size:11px;font-weight:700;cursor:pointer}
+.ldrv summary::-webkit-details-marker{display:none}
+.ldrv summary:after{content:"＋";display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#eef3fc;color:#234c9e;font-size:14px}
+.ldrv[open] summary:after{content:"−"}
+.ldrv label{margin-top:13px!important}
+.ldrv input{height:42px;font-size:12px}
+#lcon{height:40px;border-radius:10px!important;color:#234c9e!important;background:#fff!important;border:1px solid #cad6ec!important;box-shadow:none!important}
+#lcon:hover{background:#f3f7ff!important}
+.lnote{border:1px solid #f5dd92;border-radius:11px;background:#fff8e4;color:#7d5e13;padding:11px 12px;line-height:1.5}
+@keyframes loginEnter{from{opacity:0;transform:translateY(15px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:760px){#login{padding:14px;align-items:flex-start;overflow:auto}.login-shell{grid-template-columns:1fr;min-height:0;max-width:500px;border-radius:22px}.login-intro{gap:24px;padding:24px 25px 21px}.login-brandmark{width:48px;height:48px;flex-basis:48px;border-radius:14px}.login-brandmark img{width:37px;height:37px}.login-intro-main{margin:0}.login-eyebrow{margin-bottom:11px;padding:7px 10px;font-size:9px}.login-intro h1{font-size:30px;letter-spacing:-1px}.login-intro-main>p{margin:12px 0 0;font-size:12px;line-height:1.65}.login-highlights{display:none}.login-intro-foot{font-size:8px}.orbit-one{width:240px;height:240px;right:-150px;top:20px}.orbit-two{width:150px;height:150px;right:-95px;top:65px}.lbox{padding:25px 25px 27px}.lhead{margin-bottom:25px;padding-bottom:18px}.lbox h3{font-size:23px}.ldrv{margin-top:22px}}
+@media(max-width:390px){.login-intro{padding:20px}.login-intro h1{font-size:27px}.login-brand strong{font-size:12px}.login-brand small{font-size:8px}.lbox{padding:22px 20px}.login-eyebrow{letter-spacing:1px}}
+@media(prefers-reduced-motion:reduce){.login-shell{animation:none}}
+
 </style>
 <style id="uiplus">
 /* ===== HEADER ===== */
@@ -324,7 +389,22 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <div id="toastHost" aria-live="polite"></div>
 <div id="welcomeModal" class="modalx" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle"><div class="modalcard"><div class="modalicon">✦</div><h2 id="welcomeTitle">Selamat datang di KSPKT</h2><p id="welcomeText">Sistem Administrasi KSPKT Polsek Jatirogo membantu petugas mengelola surat laporan kehilangan, arsip, rekap bulanan, dan buku register dalam satu tempat.</p><p><b>Pengingat:</b> periksa kembali data pelapor sebelum mencetak surat, dan lakukan sinkronisasi/backup arsip secara berkala.</p><div class="modalactions"><button id="welcomeClose" type="button">Mulai bekerja</button></div></div></div>
 <div id="profileModal" class="modalx" role="dialog" aria-modal="true" aria-labelledby="profileTitle"><div class="modalcard"><div class="modalicon">♙</div><h2 id="profileTitle">Profil Akun</h2><p>Perbarui nama tampilan dan NRP login akun Anda.</p><label>Nama lengkap</label><input id="profileName" autocomplete="name"><label>NRP login (4–10 angka)</label><input id="profileNrp" inputmode="numeric" maxlength="10" autocomplete="off"><div id="profileMsg" style="font-size:12px;margin-top:8px"></div><div class="modalactions"><button class="o" id="profileCancel" type="button">Batal</button><button id="profileSave" type="button">Simpan profil</button></div></div></div>
-<div id="login"><div class="lbox">
+<div id="login"><div class="login-shell">
+<aside class="login-intro">
+  <div class="login-brand"><div class="login-brandmark"><img id="llogoHero" alt="Lambang Polri"></div><div><strong>POLSEK JATIROGO</strong><small>POLRESTA TUBAN · POLDA JAWA TIMUR</small></div></div>
+  <div class="login-intro-main">
+    <div class="login-eyebrow"><span class="login-dot"></span> PORTAL PELAYANAN PETUGAS</div>
+    <h1>Pelayanan cepat,<br><em>administrasi tepat.</em></h1>
+    <p>Satu ruang kerja untuk membantu pengelolaan administrasi KSPKT secara lebih rapi, praktis, dan terorganisir.</p>
+    <div class="login-highlights">
+      <div class="login-highlight"><span class="login-highlight-icon">✓</span><div><b>Administrasi terpusat</b><small>Surat, arsip, dan buku register dalam satu aplikasi.</small></div></div>
+      <div class="login-highlight"><span class="login-highlight-icon">▦</span><div><b>Data lebih terorganisir</b><small>Pantau catatan pelayanan dengan lebih mudah.</small></div></div>
+    </div>
+  </div>
+  <div class="login-intro-foot"><span class="login-foot-line"></span><span>MELINDUNGI · MENGAYOMI · MELAYANI</span></div>
+  <div class="login-orbit orbit-one"></div><div class="login-orbit orbit-two"></div>
+</aside>
+<div class="lbox">
 <div class="lhead"><img id="llogo" alt=""><div><div class="b1l">POLSEK JATIROGO</div><div class="b2l">Sistem Administrasi KSPKT</div></div></div>
 <div id="pl"><h3>Masuk</h3>
 <label>NRP</label><input id="lu" inputmode="numeric" maxlength="10" autocomplete="username">
@@ -342,7 +422,7 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <label>Kode rahasia</label><input id="ltok" type="password" autocomplete="off">
 <button id="lcon" type="button" class="o" style="margin-top:8px">Sambungkan &amp; ambil akun</button></details>
 <div class="lsw" style="margin-top:14px">Dikembangkan oleh <b>MasLuki.id</b></div>
-</div></div>
+</div></div></div>
 <header class="top"><div class="brand"><img id="hlogo" alt=""><div><div class="b1">POLSEK JATIROGO</div><div class="b2">POLRESTA TUBAN &middot; POLDA JAWA TIMUR</div></div></div><div class="hr"><span id="syncpill" class="sp0 off">Belum tersambung</span><span id="who" class="sp0"></span><button id="profileOpen" class="profilebtn" type="button">Profil Akun</button><button id="keluar" class="ub"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Keluar</button></div><nav class="tabs"><button id="tdash"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Dashboard</button><button id="tbuat"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15h6"/></svg>Buat Surat</button><button id="tarsip"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg>Arsip <span class="badge" id="cnt">0</span></button><button id="trekap"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Rekap</button><button id="treg"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>Register</button><button id="toh"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7.5" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 11-4.6"/><circle cx="17" cy="16" r="3"/><path d="M19.2 18.2l2.3 2.3"/></svg>Orang Hilang <span class="badge" id="ohcnt">0</span></button><button id="tuser" style="display:none"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>Pengguna</button></nav></header>
 <div id="offbar"></div>
 <div id="vdash" class="dash">
@@ -1194,7 +1274,7 @@ var add=false;
 SEED.forEach(function(r){if(done.indexOf(r[1])<0){if(!findU(r[1])){US.push({id:"s"+r[1],nama:r[0],user:r[1],nrp:r[3]||("NRP "+r[1]),role:r[2]||"operator",created:1,upd:1});add=true}done.push(r[1])}});
 store("stpl_seeded2",JSON.stringify(done));store("stpl_seeded","1");
 if(add){saveUS();US.forEach(pushUser)}fixRanks()}
-function initAuth(){$("llogo").src=LOGO;
+function initAuth(){$("llogo").src=LOGO;if($("llogoHero"))$("llogoHero").src=LOGO;
 if(cfg().url){$("lurl").value=cfg().url;$("ltok").value=cfg().token;
 syncUsers().then(function(){seedUsers();panel(US.length?"l":"r")},function(){seedUsers();panel(US.length?"l":"r")})}
 else seedUsers();
