@@ -4152,5 +4152,260 @@ header.top .tabs button.on{background:linear-gradient(135deg,#fff,#e8efff)!impor
 })();
 </script>
 
+
+<style id="kspkt-db-click-fix-and-database-menu">
+/* ===== FIX: dekorasi 3D tidak boleh menutupi tombol ===== */
+#vdash > .hero,
+#vdash > .hero * { box-sizing: border-box; }
+#vdash > .hero::before,
+#vdash > .hero::after,
+#vdash > .hero .hl::before,
+#vdash > .hero .hl::after,
+#vdash .stats .st2::before,
+#vdash .qa > div::before,
+#vdash .grid2 > .card::before {
+  pointer-events: none !important;
+}
+#vdash > .hero { isolation: isolate !important; }
+#vdash > .hero .hl { position: relative !important; z-index: 1 !important; }
+#vdash > .hero .hbtn {
+  position: relative !important;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+  transform: translateZ(32px) !important;
+}
+#vdash > .hero .hbtn .hb2,
+#vdash > .hero .hbtn .hb2 button,
+#vdash > .hero .hbtn #dnew,
+#vdash > .hero .hbtn #dars {
+  position: relative !important;
+  z-index: 101 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  cursor: pointer !important;
+}
+#vdash > .hero .hbtn .hb2 button:disabled { cursor: not-allowed !important; }
+
+/* ===== Halaman DATABASE: konfigurasi URL Apps Script ===== */
+#vdatabase.dash { max-width: 1180px !important; gap: 18px !important; }
+#vdatabase .db-hero {
+  position: relative; overflow: hidden; isolation: isolate;
+  padding: 26px !important; border-radius: 22px !important;
+  color: white !important; border: 1px solid rgba(255,255,255,.24) !important;
+  border-bottom: 5px solid #061534 !important;
+  background: radial-gradient(circle at 88% 12%,rgba(86,143,255,.38),transparent 30%),
+              linear-gradient(125deg,#071735 0%,#123879 58%,#285fc1 100%) !important;
+  box-shadow: 0 7px 0 rgba(8,28,70,.11),0 18px 35px rgba(8,28,70,.16) !important;
+}
+#vdatabase .db-hero::after {
+  content:""; position:absolute; width:190px;height:190px;right:-40px;top:-55px;
+  border-radius:50%; border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 0 0 14px rgba(255,255,255,.035),0 0 0 31px rgba(255,255,255,.025);
+  pointer-events:none; animation:kspktDbOrbit 28s linear infinite;
+}
+#vdatabase .db-hero h1 { margin: 0 0 8px; font-size: clamp(24px,3vw,34px); color:#fff; }
+#vdatabase .db-hero p { margin:0; max-width:760px; line-height:1.7; color:#dbe7ff; font-size:13px; }
+#vdatabase .db-chip { display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;padding:7px 11px;border:1px solid #f5d36d55;border-radius:30px;background:#e7b93319;color:#ffe28a;font-size:11px;font-weight:800;letter-spacing:.5px; }
+#vdatabase .db-grid { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:18px;align-items:start; }
+#vdatabase .db-card { min-width:0;padding:22px !important;border-radius:19px !important;border:1px solid #dfe7f4 !important;border-bottom:4px solid #d0ddef !important;background:linear-gradient(145deg,#fff,#f7faff) !important;box-shadow:0 5px 0 rgba(22,52,108,.045),0 14px 27px rgba(22,52,108,.07) !important; }
+#vdatabase .db-card h2 { margin:0 0 8px;font-size:17px;color:#142f61; }
+#vdatabase .db-card .db-desc { margin:0 0 16px;color:#71809a;font-size:12.5px;line-height:1.65; }
+#vdatabase .db-card label { margin:14px 0 7px;color:#344a6d;font-weight:800;font-size:12px; }
+#vdatabase .db-card input { width:100%;min-width:0;height:46px;padding:11px 13px;background:#edf3ff !important;border:1.5px solid #b8c9e5 !important;border-radius:11px !important;color:#142b52 !important;font-size:13px; }
+#vdatabase .db-card input:focus { background:#fff !important;border-color:#275eb9 !important;box-shadow:0 0 0 4px #275eb91a !important; }
+#vdatabase .db-actions { display:flex;flex-wrap:wrap;gap:8px;margin-top:17px; }
+#vdatabase .db-actions button { margin:0;min-height:42px;border-radius:11px !important; }
+#vdatabase #dbsave { background:linear-gradient(120deg,#e8b32b,#ffdc73) !important;color:#102653 !important;border:0 !important;box-shadow:0 5px 0 #b98b1f,0 9px 16px #c18e2227 !important;font-weight:800; }
+#vdatabase #dbsync { background:linear-gradient(120deg,#153b80,#2e65c8) !important;color:#fff !important; }
+#vdatabase .db-note { margin-top:14px;padding:12px 13px;border-radius:11px;background:#eef4ff;border:1px solid #d8e5fa;color:#445c80;font-size:12px;line-height:1.7; }
+#vdatabase .db-state { display:flex;align-items:flex-start;gap:11px;margin:12px 0;padding:13px;border-radius:13px;border:1px solid #dce6f4;background:#fff; }
+#vdatabase .db-state-icon { display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:12px;background:#e6efff;color:#2555a6;font-size:18px; }
+#vdatabase .db-state b { display:block;color:#183662;font-size:13px;margin-bottom:3px; }
+#vdatabase .db-state span { display:block;color:#72809a;font-size:12px;line-height:1.6;overflow-wrap:anywhere; }
+#vdatabase .db-code { display:block;max-width:100%;overflow-wrap:anywhere;margin-top:9px;padding:10px;border-radius:9px;background:#101f3b;color:#d9e7ff;font:12px/1.6 Consolas,monospace; }
+#tdatabase { white-space:nowrap; }
+@keyframes kspktDbOrbit { to { transform:rotate(360deg); } }
+@media(max-width:800px) {
+  #vdatabase .db-grid { grid-template-columns:minmax(0,1fr); }
+  #vdatabase .db-hero { padding:21px !important; }
+  #vdatabase .db-card { padding:17px !important; }
+  #vdash > .hero .hbtn { z-index:100 !important; transform:none !important; }
+}
+@media(prefers-reduced-motion:reduce) {
+  #vdatabase .db-hero::after { animation:none !important; }
+}
+</style>
+
+<script id="kspkt-database-menu-and-click-fix">
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  if (!$('tdatabase')) {
+    var nav = document.querySelector('nav.tabs');
+    if (nav) {
+      var tab = document.createElement('button');
+      tab.id = 'tdatabase'; tab.type = 'button';
+      tab.innerHTML = '<svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>Database';
+      nav.insertBefore(tab, $('tuser') || null);
+    }
+  }
+
+  if (!$('vdatabase')) {
+    var page = document.createElement('section');
+    page.id = 'vdatabase'; page.className = 'dash'; page.style.display = 'none';
+    page.innerHTML =
+      '<div class="db-hero">' +
+        '<div class="db-chip">◆ PUSAT KONEKSI &amp; PENYIMPANAN</div>' +
+        '<h1>Database &amp; Google Drive</h1>' +
+        '<p>Kelola alamat Web App Google Apps Script yang digunakan aplikasi KSPKT untuk menyimpan dan menyinkronkan data lintas perangkat. Menu ini menggunakan koneksi database aplikasi yang sudah ada.</p>' +
+      '</div>' +
+      '<div class="db-grid">' +
+        '<div class="db-card">' +
+          '<h2>Pengaturan koneksi</h2>' +
+          '<p class="db-desc">Masukkan URL Web App Apps Script yang sudah di-deploy, beserta kode rahasia yang sesuai dengan konfigurasi script.</p>' +
+          '<label for="dburl">URL Web App Google Apps Script</label>' +
+          '<input id="dburl" type="url" autocomplete="url" placeholder="https://script.google.com/macros/s/.../exec">' +
+          '<label for="dbtoken">Kode rahasia / token</label>' +
+          '<div style="display:flex;gap:8px;align-items:center"><input id="dbtoken" type="password" autocomplete="off" placeholder="Masukkan kode rahasia" style="flex:1"><button id="dbshowtoken" type="button" class="o" style="margin:0;flex:0 0 auto;height:46px">Lihat</button></div>' +
+          '<div class="db-actions"><button id="dbsave" type="button">Simpan &amp; Sambungkan</button><button id="dbsync" type="button">Sinkronkan Sekarang</button><button id="dbopen" type="button" class="o">Buka URL</button></div>' +
+          '<div id="dbstatus" role="status" aria-live="polite" class="db-note">Isi URL dan kode rahasia, lalu pilih Simpan &amp; Sambungkan.</div>' +
+          '<div class="db-note"><b>Catatan:</b> gunakan URL Web App dari Apps Script yang berakhiran <code>/exec</code>, bukan URL folder Google Drive biasa. Konfigurasi tersimpan di browser/perangkat ini; perangkat lain perlu dihubungkan satu kali juga.</div>' +
+        '</div>' +
+        '<div class="db-card">' +
+          '<h2>Status database</h2>' +
+          '<p class="db-desc">Ringkasan koneksi aplikasi saat ini.</p>' +
+          '<div class="db-state"><div class="db-state-icon">↔</div><div><b id="dbstatustitle">Belum tersambung</b><span id="dbstatusdetail">URL Apps Script belum disiapkan.</span></div></div>' +
+          '<div class="db-state"><div class="db-state-icon">▤</div><div><b>Data yang memakai koneksi ini</b><span>Arsip surat kehilangan, data laporan terkait, akun pengguna, dan fitur aplikasi yang mendukung sinkronisasi.</span></div></div>' +
+          '<div class="db-state"><div class="db-state-icon">⚠</div><div><b>Keamanan dan cadangan</b><span>Jangan bagikan token secara publik. Tetap lakukan backup JSON secara berkala, terutama sebelum mengubah script atau konfigurasi.</span></div></div>' +
+          '<span class="db-code">Contoh URL: https://script.google.com/macros/s/ID_DEPLOYMENT/exec</span>' +
+        '</div>' +
+      '</div>';
+    var foot = $('devfoot');
+    if (foot && foot.parentNode) foot.parentNode.insertBefore(page, foot);
+    else document.body.appendChild(page);
+  }
+
+  function getCfgValue(key, alt) {
+    try { return (localStorage.getItem(key) || alt || '').trim(); } catch (err) { return (alt || '').trim(); }
+  }
+  function currentUrl() { return getCfgValue('stpl_gurl', ''); }
+  function currentToken() { return getCfgValue('stpl_gtok', ''); }
+  function updateDbStatus(message) {
+    var u = currentUrl();
+    var pill = $('syncpill');
+    var title = $('dbstatustitle');
+    var detail = $('dbstatusdetail');
+    if (title && detail) {
+      if (!u) { title.textContent = 'Belum tersambung'; detail.textContent = 'Belum ada URL Web App Apps Script yang tersimpan.'; }
+      else if (pill && /\bok\b/.test(pill.className)) { title.textContent = 'Koneksi tersambung'; detail.textContent = pill.textContent || 'Sinkronisasi terakhir berhasil.'; }
+      else if (pill && /\berr\b/.test(pill.className)) { title.textContent = 'Perlu pemeriksaan'; detail.textContent = pill.textContent || 'Koneksi mengalami kendala. Periksa URL, token, dan izin Apps Script.'; }
+      else { title.textContent = 'URL tersimpan'; detail.textContent = 'URL sudah tersimpan. Jalankan sinkronisasi untuk memeriksa koneksi.'; }
+    }
+    if (message && $('dbstatus')) $('dbstatus').textContent = message;
+  }
+  function loadDbFields() {
+    if ($('dburl')) $('dburl').value = currentUrl();
+    if ($('dbtoken')) $('dbtoken').value = currentToken();
+    updateDbStatus();
+  }
+  function validUrl(u) { return /^https:\/\/script\.google\.com\/.+\/exec(?:\?.*)?$/.test(u); }
+  function syncFromDb() {
+    var u = currentUrl();
+    if (!u) {
+      updateDbStatus('Belum ada URL tersimpan. Isi URL Web App dan kode rahasia terlebih dahulu.');
+      if ($('dburl')) $('dburl').focus();
+      return;
+    }
+    if (!navigator.onLine) {
+      updateDbStatus('Perangkat sedang offline. Sambungkan internet sebelum menguji koneksi.');
+      return;
+    }
+    updateDbStatus('Sedang menghubungi Apps Script dan menyinkronkan database…');
+    var b = $('dbsync'); if (b) { b.disabled = true; b.textContent = 'Menyinkronkan…'; }
+    var task = (typeof window.sync === 'function') ? window.sync() : Promise.reject(new Error('Fungsi sinkronisasi tidak ditemukan.'));
+    Promise.resolve(task).then(function () {
+      var pill = $('syncpill');
+      var failed = pill && /\berr\b/.test(pill.className);
+      updateDbStatus(failed ? ((pill.textContent || 'Sinkronisasi gagal.') + ' Periksa kembali URL dan kode rahasia pada Apps Script.') : ((pill && pill.textContent ? pill.textContent : 'Proses sinkronisasi selesai.') + '.'));
+    }).catch(function (err) {
+      updateDbStatus('Koneksi gagal: ' + (err && err.message ? err.message : String(err)));
+    }).then(function () {
+      if (b) { b.disabled = false; b.textContent = 'Sinkronkan Sekarang'; }
+      updateDbStatus();
+    });
+  }
+
+  if ($('dbsave')) $('dbsave').addEventListener('click', function () {
+    var u = ($('dburl').value || '').trim();
+    var t = ($('dbtoken').value || '').trim();
+    if (!validUrl(u)) {
+      updateDbStatus('URL tidak sesuai format. Gunakan URL Web App Apps Script yang diawali https://script.google.com/ dan berakhiran /exec.');
+      $('dburl').focus(); return;
+    }
+    if (!t) {
+      updateDbStatus('Kode rahasia wajib diisi sesuai token pada Apps Script.');
+      $('dbtoken').focus(); return;
+    }
+    try {
+      localStorage.setItem('stpl_gurl', u);
+      localStorage.setItem('stpl_gtok', t);
+    } catch (err) {
+      updateDbStatus('Browser tidak mengizinkan penyimpanan pengaturan: ' + err.message); return;
+    }
+    /* Samakan nilai dengan pengaturan lama di halaman Arsip dan login. */
+    ['gurl','lurl'].forEach(function (id) { if ($(id)) $(id).value = u; });
+    ['gtok','ltok'].forEach(function (id) { if ($(id)) $(id).value = t; });
+    if (typeof window.lastSync !== 'undefined') window.lastSync = 0;
+    updateDbStatus('Pengaturan tersimpan. Menguji koneksi sekarang…');
+    if (typeof window.sync === 'function') syncFromDb();
+    else updateDbStatus('Pengaturan tersimpan, tetapi fungsi sinkronisasi belum tersedia. Muat ulang aplikasi dan coba lagi.');
+  });
+  if ($('dbsync')) $('dbsync').addEventListener('click', syncFromDb);
+  if ($('dbshowtoken')) $('dbshowtoken').addEventListener('click', function () {
+    var field = $('dbtoken'); if (!field) return;
+    field.type = field.type === 'password' ? 'text' : 'password';
+    this.textContent = field.type === 'password' ? 'Lihat' : 'Sembunyikan';
+  });
+  if ($('dbopen')) $('dbopen').addEventListener('click', function () {
+    var u = ($('dburl').value || currentUrl()).trim();
+    if (!validUrl(u)) { updateDbStatus('Masukkan URL Web App Apps Script yang valid terlebih dahulu.'); $('dburl').focus(); return; }
+    window.open(u, '_blank', 'noopener,noreferrer');
+  });
+
+  /* Pasang menu Database ke sistem navigasi lama tanpa mengubah urutan menu lain. */
+  var prevShow = window.show;
+  window.show = function (view) {
+    if (typeof prevShow === 'function') prevShow(view);
+    if ($('vdatabase')) $('vdatabase').style.display = view === 'database' ? '' : 'none';
+    if ($('tdatabase')) $('tdatabase').className = view === 'database' ? 'on' : '';
+    if (view === 'database') loadDbFields();
+  };
+  if ($('tdatabase')) $('tdatabase').addEventListener('click', function () { window.show('database'); });
+
+  /* Pintasan Database juga tersedia dari dashboard. */
+  if ($('qa') && !$('qa').querySelector('[data-go="database"]')) {
+    $('qa').insertAdjacentHTML('beforeend',
+      '<div role="button" tabindex="0" data-go="database"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><b>Database</b><span>Atur link Google Apps Script dan sinkronisasi</span></div>');
+  }
+
+  /* Klik tombol kuning membuka halaman lebih dahulu, lalu menyiapkan surat baru. */
+  if ($('dnew')) $('dnew').onclick = function (ev) {
+    if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+    window.show('buat');
+    var newBtn = $('baru');
+    if (newBtn) newBtn.click();
+    var nameField = $('nama');
+    if (nameField && typeof nameField.focus === 'function') {
+      try { nameField.focus({ preventScroll: true }); } catch (err) { nameField.focus(); }
+    }
+  };
+
+  loadDbFields();
+  if (window.MutationObserver && $('syncpill')) {
+    new MutationObserver(function () { updateDbStatus(); }).observe($('syncpill'), { attributes: true, childList: true, characterData: true, subtree: true });
+  }
+})();
+</script>
+
 </body>
 </html>
