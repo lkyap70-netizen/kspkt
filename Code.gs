@@ -1,423 +1,554 @@
 /**
- * ARSIP SURAT + DOKUMENTASI KSPKT POLSEK JATIROGO
- * Semua data disimpan LANGSUNG di folder Google Drive berikut:
- *   - Database  : file Google Sheets "Arsip KSPKT Jatirogo (Database)"
- *                 (sheet "Arsip" = surat, sheet "Dokumentasi" = kegiatan)
- *   - PDF surat : subfolder "PDF Surat"
- *   - File dokumentasi kegiatan : subfolder "Dokumentasi"
- *   - Laporan orang hilang      : sheet "Orang Hilang" (PDF-nya ikut masuk subfolder "PDF Surat")
+ * KSPKT POLSEK JATIROGO - GOOGLE APPS SCRIPT API
+ * Kompatibel dengan index.html KSPKT yang memakai aksi:
+ * save/delete/pdf/claimNo, userSave/userDelete/userlist,
+ * ohSave/ohDelete/ohlist, smSave/smDelete/smlist, smUpload/smTrash.
  *
- * PENTING: kalau kamu menempel kode ini ke proyek yang sudah ada, PERTAHANKAN
- * nilai TOKEN milikmu sendiri. Setelah menempel: Ctrl+S, jalankan fungsi "setup"
- * sekali, lalu Terapkan > Kelola penerapan > pensil > Versi baru > Terapkan.
+ * LANGKAH AWAL:
+ * 1. Jika project ini sudah terhubung ke Spreadsheet lama, biarkan SPREADSHEET_ID kosong.
+ * 2. Jika project berdiri sendiri dan database lama ada di Spreadsheet tertentu,
+ *    isi SPREADSHEET_ID dengan ID Spreadsheet tersebut sebelum menjalankan setup().
+ * 3. Jalankan setup() satu kali dari editor Apps Script.
+ * 4. Buka Execution log untuk melihat URL Spreadsheet dan TOKEN API.
+ * 5. Deploy > Manage deployments > Edit > New version > Deploy.
+ * 6. Masukkan URL /exec dan TOKEN yang sama pada menu Database di aplikasi.
+ *
+ * Catatan keamanan: file di Drive tetap privat mengikuti izin akun pemilik.
+ * Jangan aktifkan sharing publik untuk data laporan/identitas.
  */
-var TOKEN = 'jatirogo2026';
-var FOLDER_ID = '14NzbERuRjDaHzmUKoCEk1tEEAyJJ_2K3';
-var DB_NAME = 'Arsip KSPKT Jatirogo (Database)';
-var SHEET_NAME = 'Arsip';
-var PDF_FOLDER = 'PDF Surat';
-var DOC_SHEET = 'Dokumentasi';
-var DOC_FOLDER = 'Dokumentasi';
-var USER_SHEET = 'Pengguna';
-var OH_SHEET = 'Orang Hilang';
-var SM_SHEET = 'Surat Masuk';
-var SM_FOLDER = 'Surat Masuk';
-var SM_HEAD = ['id', 'No Agenda', 'Tgl Terima', 'Asal Surat', 'Nomor Surat', 'Perihal', 'Sifat', 'Status', 'Disposisi', 'File', 'Link File', 'Disimpan', 'Data (JSON)'];
-var OH_HEAD = ['id', 'Nomor Surat', 'Dilaporkan', 'Orang Hilang', 'Pelapor', 'Terakhir Terlihat', 'Status', 'Petugas', 'Dicetak', 'PDF', 'Link PDF', 'Disimpan', 'Data (JSON)'];
-var USER_HEAD = ['id', 'Nama', 'Username', 'Peran', 'Pangkat / NRP', 'Dibuat', 'Data (JSON)'];
-var HEAD = ['id', 'Nomor Surat', 'Tanggal', 'Pelapor', 'Barang / Surat', 'Petugas', 'Dicetak', 'PDF', 'Link PDF', 'Disimpan', 'Data (JSON)'];
-var DOC_HEAD = ['id', 'Tanggal', 'Judul Kegiatan', 'Kategori', 'Keterangan', 'Jumlah File', 'Disimpan', 'Data (JSON)'];
 
-function root_() {
-  return DriveApp.getFolderById(FOLDER_ID);
-}
+var KSPKT_CONFIG = {
+  // Kosongkan untuk mempertahankan token lama dari Script Properties.
+  // Untuk project baru boleh isi token rahasia sendiri, lalu jalankan setup().
+  API_TOKEN: '',
 
-function ss_() {
-  var props = PropertiesService.getScriptProperties();
-  var id = props.getProperty('DB_ID');
-  if (id) {
-    try { return SpreadsheetApp.openById(id); } catch (x) {}
+  // Jika ingin memakai Spreadsheet tertentu, isi ID-nya di sini.
+  // ID adalah bagian di antara /d/ dan /edit pada URL Spreadsheet.
+  SPREADSHEET_ID: '',
+
+  // Opsional: ID folder induk Google Drive yang sudah ada.
+  // Kosongkan untuk memakai folder KSPKT Polsek Jatirogo yang dibuat otomatis.
+  DRIVE_FOLDER_ID: ''
+};
+
+var KSPKT_VERSION = '2026.10.21-1';
+var KSPKT_PROP = PropertiesService.getScriptProperties();
+
+var KSPKT_COLLECTIONS = {
+  records: {
+    preferred: 'Records',
+    aliases: ['Records', 'Arsip', 'Arsip Surat', 'Data', 'KSPKT_Arsip', 'Database']
+  },
+  users: {
+    preferred: 'Users',
+    aliases: ['Users', 'Petugas', 'Pengguna', 'Akun', 'KSPKT_Petugas']
+  },
+  oh: {
+    preferred: 'Orang_Hilang',
+    aliases: ['Orang_Hilang', 'Orang Hilang', 'Laporan_Orang_Hilang', 'KSPKT_Orang_Hilang']
+  },
+  sm: {
+    preferred: 'Surat_Masuk',
+    aliases: ['Surat_Masuk', 'Surat Masuk', 'Agenda_Surat_Masuk', 'KSPKT_Surat_Masuk']
+  },
+  claims: {
+    preferred: 'Nomor',
+    aliases: ['Nomor', 'Klaim_Nomor', 'KSPKT_Nomor']
   }
-  var it = root_().getFilesByType(MimeType.GOOGLE_SHEETS);
-  while (it.hasNext()) {
-    var f = it.next();
-    if (f.getName() === DB_NAME) {
-      props.setProperty('DB_ID', f.getId());
-      return SpreadsheetApp.openById(f.getId());
-    }
-  }
-  var ss = SpreadsheetApp.create(DB_NAME);
-  DriveApp.getFileById(ss.getId()).moveTo(root_());
-  props.setProperty('DB_ID', ss.getId());
-  return ss;
-}
+};
 
-function sheet_() {
-  var ss = ss_();
-  var sh = ss.getSheetByName(SHEET_NAME);
-  if (!sh) {
-    sh = ss.getSheets()[0];
-    sh.setName(SHEET_NAME);
-  }
-  if (sh.getLastRow() === 0) {
-    sh.appendRow(HEAD);
-    sh.setFrozenRows(1);
-  }
-  return sh;
-}
-
-function docSheet_() {
-  var ss = ss_();
-  var sh = ss.getSheetByName(DOC_SHEET) || ss.insertSheet(DOC_SHEET);
-  if (sh.getLastRow() === 0) {
-    sh.appendRow(DOC_HEAD);
-    sh.setFrozenRows(1);
-  }
-  return sh;
-}
-
-function userSheet_() {
-  var ss = ss_();
-  var sh = ss.getSheetByName(USER_SHEET) || ss.insertSheet(USER_SHEET);
-  if (sh.getLastRow() === 0) {
-    sh.appendRow(USER_HEAD);
-    sh.setFrozenRows(1);
-  }
-  return sh;
-}
-
-function ohSheet_() {
-  var ss = ss_();
-  var sh = ss.getSheetByName(OH_SHEET) || ss.insertSheet(OH_SHEET);
-  if (sh.getLastRow() === 0) {
-    sh.appendRow(OH_HEAD);
-    sh.setFrozenRows(1);
-  }
-  return sh;
-}
-
-function smSheet_() {
-  var ss = ss_();
-  var sh = ss.getSheetByName(SM_SHEET) || ss.insertSheet(SM_SHEET);
-  if (sh.getLastRow() === 0) {
-    sh.appendRow(SM_HEAD);
-    sh.setFrozenRows(1);
-  }
-  return sh;
-}
-
-function numSheet_() {
-  var ss = ss_();
-  var sh = ss.getSheetByName('Nomor') || ss.insertSheet('Nomor');
-  if (sh.getLastRow() === 0) {
-    sh.appendRow(['Tahun', 'Nomor', 'Diklaim', 'Oleh']);
-    sh.setFrozenRows(1);
-  }
-  return sh;
-}
-
-function sub_(name) {
-  var r = root_();
-  var it = r.getFoldersByName(name);
-  return it.hasNext() ? it.next() : r.createFolder(name);
-}
-
-function folder_() { return sub_(PDF_FOLDER); }
-function docFolder_() { return sub_(DOC_FOLDER); }
-function smFolder_() { return sub_(SM_FOLDER); }
-
-// File surat masuk hanya boleh dihapus kalau ada di folder "Surat Masuk"
-function inSmFolder_(file) {
-  var want = smFolder_().getId();
-  var ps = file.getParents();
-  while (ps.hasNext()) {
-    if (ps.next().getId() === want) return true;
-  }
-  return false;
-}
-
-// File hanya boleh diakses/dihapus kalau ada di folder "Dokumentasi"
-function inDocFolder_(file) {
-  var want = docFolder_().getId();
-  var ps = file.getParents();
-  while (ps.hasNext()) {
-    if (ps.next().getId() === want) return true;
-  }
-  return false;
-}
-
-// Jalankan SEKALI untuk memberi izin dan membuat database + folder
+/** Jalankan manual satu kali setelah Code.gs ditempel. Tidak menghapus tab lama. */
 function setup() {
-  sheet_();
-  docSheet_();
-  userSheet_();
-  ohSheet_();
-  smSheet_();
-  numSheet_();
-  folder_();
-  docFolder_();
-  smFolder_();
-  Logger.log('Siap. Database dan folder sudah dibuat di folder Drive.');
+  var ss = resolveSpreadsheetForSetup_();
+  KSPKT_PROP.setProperty('KSPKT_SPREADSHEET_ID', ss.getId());
+  var token = getToken_();
+  if (!token) {
+    token = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+    KSPKT_PROP.setProperty('KSPKT_API_TOKEN', token);
+  } else {
+    KSPKT_PROP.setProperty('KSPKT_API_TOKEN', token);
+  }
+
+  ensureCollectionSheet_(ss, 'records');
+  ensureCollectionSheet_(ss, 'users');
+  ensureCollectionSheet_(ss, 'oh');
+  ensureCollectionSheet_(ss, 'sm');
+  ensureCollectionSheet_(ss, 'claims');
+  ensureDriveFolders_();
+
+  Logger.log('KSPKT setup selesai.');
+  Logger.log('Spreadsheet: ' + ss.getUrl());
+  Logger.log('API TOKEN (samakan dengan menu Database aplikasi): ' + token);
+  Logger.log('Versi backend: ' + KSPKT_VERSION);
+  return { ok: true, spreadsheetUrl: ss.getUrl(), version: KSPKT_VERSION };
 }
 
-function out_(o) {
-  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
-}
-
-function rowOf_(sh, id) {
-  if (!id) return 0;
-  var ids = sh.getRange(1, 1, sh.getLastRow(), 1).getValues().map(function (r) { return r[0]; });
-  return ids.indexOf(id) + 1;
-}
-
-// Membaca data
+/** GET: mengembalikan arsip utama atau daftar khusus sesuai action. */
 function doGet(e) {
-  if (!e || !e.parameter || e.parameter.token !== TOKEN) return out_({ error: 'Kode rahasia salah' });
-  var act = e.parameter.action || '';
-
-  if (act === 'doclist') {
-    var drows = docSheet_().getDataRange().getValues();
-    var docs = [];
-    for (var j = 1; j < drows.length; j++) {
-      try { docs.push(JSON.parse(drows[j][7])); } catch (x) {}
+  try {
+    var p = (e && e.parameter) ? e.parameter : {};
+    requireToken_(p.token);
+    var action = String(p.action || '').trim().toLowerCase();
+    if (action === 'userlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, users: readCollection_('users') });
+    if (action === 'ohlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, oh: readCollection_('oh') });
+    if (action === 'smlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, sm: readCollection_('sm') });
+    if (action === 'ping' || action === 'status') {
+      return jsonOut_({ ok: true, version: KSPKT_VERSION, message: 'KSPKT Apps Script aktif.' });
     }
-    return out_({ docs: docs });
+    if (!action) return jsonOut_({ ok: true, version: KSPKT_VERSION, records: readCollection_('records') });
+    return jsonOut_({ error: 'Aksi GET tidak dikenal: ' + action, version: KSPKT_VERSION });
+  } catch (err) {
+    return jsonOut_({ error: safeMessage_(err), version: KSPKT_VERSION });
   }
-
-  if (act === 'userlist') {
-    var urows = userSheet_().getDataRange().getValues();
-    var users = [];
-    for (var k = 1; k < urows.length; k++) {
-      try { users.push(JSON.parse(urows[k][6])); } catch (x) {}
-    }
-    return out_({ users: users });
-  }
-
-  if (act === 'ohlist') {
-    var orows = ohSheet_().getDataRange().getValues();
-    var oh = [];
-    for (var m = 1; m < orows.length; m++) {
-      try { oh.push(JSON.parse(orows[m][12])); } catch (x) {}
-    }
-    return out_({ oh: oh });
-  }
-
-  if (act === 'smlist') {
-    var srows = smSheet_().getDataRange().getValues();
-    var sm = [];
-    for (var q = 1; q < srows.length; q++) {
-      try { sm.push(JSON.parse(srows[q][12])); } catch (x) {}
-    }
-    return out_({ sm: sm });
-  }
-
-  if (act === 'docget') {
-    try {
-      var f = DriveApp.getFileById(e.parameter.id);
-      if (!inDocFolder_(f)) return out_({ error: 'File tidak ditemukan' });
-      var b = f.getBlob();
-      return out_({ name: f.getName(), type: b.getContentType(), data: Utilities.base64Encode(b.getBytes()) });
-    } catch (x) {
-      return out_({ error: 'File tidak ditemukan' });
-    }
-  }
-
-  var rows = sheet_().getDataRange().getValues();
-  var recs = [];
-  for (var i = 1; i < rows.length; i++) {
-    try { recs.push(JSON.parse(rows[i][10])); } catch (x) {}
-  }
-  return out_({ records: recs });
 }
 
-// Menyimpan / menghapus
+/** POST: simpan/hapus data, klaim nomor, dan penanganan berkas Drive. */
 function doPost(e) {
-  var b;
-  try { b = JSON.parse(e.postData.contents); } catch (x) { return out_({ error: 'Data tidak valid' }); }
-  if (b.token !== TOKEN) return out_({ error: 'Kode rahasia salah' });
-
-  var lock = LockService.getScriptLock();
-  lock.waitLock(25000);
   try {
-    var act = b.action;
+    if (!e || !e.postData || !e.postData.contents) throw new Error('Isi permintaan kosong.');
+    var body = JSON.parse(e.postData.contents);
+    requireToken_(body.token);
+    var action = String(body.action || '').trim();
+    var result;
 
-    // ----- Nomor urut surat (anti ganda) -----
-    if (act === 'claimNo') {
-      var nsh = numSheet_();
-      var yr = +b.year;
-      var want = +b.urut || 1;
-      var used = {};
-      var mx = 0;
-      var nrows = nsh.getLastRow() > 1 ? nsh.getRange(2, 1, nsh.getLastRow() - 1, 2).getValues() : [];
-      nrows.forEach(function (r) {
-        if (+r[0] === yr) { used[+r[1]] = 1; if (+r[1] > mx) mx = +r[1]; }
-      });
-      var ash = sheet_();
-      var arows = ash.getLastRow() > 1 ? ash.getRange(2, 2, ash.getLastRow() - 1, 1).getValues() : [];
-      arows.forEach(function (r) {
-        var m = String(r[0]).match(/(?:B|SKTLK)\/\s*(\d+)\s*\/.*?\/\s*(\d{4})\s*\/\s*Polsek/);
-        if (m && +m[2] === yr) { used[+m[1]] = 1; if (+m[1] > mx) mx = +m[1]; }
-      });
-      var nn = (want > 0 && !used[want]) ? want : mx + 1;
-      nsh.appendRow([yr, nn, new Date(), b.by || '']);
-      return out_({ ok: true, no: nn, changed: nn !== want });
+    switch (action) {
+      case 'save':
+        result = saveRecord_('records', body.record);
+        break;
+      case 'delete':
+        result = deleteRecord_('records', body.id);
+        break;
+      case 'userSave':
+        result = saveRecord_('users', body.record);
+        break;
+      case 'userDelete':
+        result = deleteRecord_('users', body.id);
+        break;
+      case 'ohSave':
+        result = saveRecord_('oh', body.record);
+        break;
+      case 'ohDelete':
+        result = deleteRecord_('oh', body.id);
+        break;
+      case 'smSave':
+        result = saveRecord_('sm', body.record);
+        break;
+      case 'smDelete':
+        result = deleteRecord_('sm', body.id);
+        break;
+      case 'claimNo':
+        result = claimNo_(body.year, body.urut, body.by);
+        break;
+      case 'pdf':
+        result = uploadPdf_(body);
+        break;
+      case 'smUpload':
+        result = uploadSuratMasuk_(body);
+        break;
+      case 'smTrash':
+        result = trashDriveFile_(body.fileId);
+        break;
+      default:
+        throw new Error('Aksi tidak dikenal: ' + action);
     }
+    result = result || { ok: true };
+    result.ok = true;
+    result.version = KSPKT_VERSION;
+    return jsonOut_(result);
+  } catch (err) {
+    return jsonOut_({ error: safeMessage_(err), version: KSPKT_VERSION });
+  }
+}
 
-    // ----- Akun petugas -----
-    if (act === 'userSave') {
-      var ush = userSheet_();
-      var u = b.record;
-      var uvals = [u.id, u.nama, u.user, u.role, u.nrp || '', new Date(u.created || Date.now()), JSON.stringify(u)];
-      var urow = rowOf_(ush, u.id);
-      if (urow > 1) ush.getRange(urow, 1, 1, uvals.length).setValues([uvals]);
-      else ush.appendRow(uvals);
-      return out_({ ok: true });
-    }
-    if (act === 'userDelete') {
-      var ush2 = userSheet_();
-      var urow2 = rowOf_(ush2, b.id);
-      if (urow2 > 1) ush2.deleteRow(urow2);
-      return out_({ ok: true });
-    }
+/* ========================= TOKEN DAN DATABASE ========================= */
+function getToken_() {
+  var configured = String(KSPKT_CONFIG.API_TOKEN || '').trim();
+  var saved = KSPKT_PROP.getProperty('KSPKT_API_TOKEN') ||
+              KSPKT_PROP.getProperty('API_TOKEN') ||
+              KSPKT_PROP.getProperty('TOKEN') ||
+              KSPKT_PROP.getProperty('APIKEY') || '';
+  return String(configured || saved || '').trim();
+}
 
-    // ----- Dokumentasi kegiatan -----
-    if (act === 'docUpload') {
-      var blob0 = Utilities.newBlob(Utilities.base64Decode(b.data), b.type || 'application/octet-stream', b.name);
-      var f0 = docFolder_().createFile(blob0);
-      return out_({ ok: true, fileId: f0.getId(), url: f0.getUrl(), size: f0.getSize() });
+function requireToken_(provided) {
+  var expected = getToken_();
+  if (!expected) throw new Error('Token belum disiapkan. Jalankan setup() dari editor Apps Script.');
+  if (!provided || String(provided) !== expected) throw new Error('Token tidak sesuai. Samakan token pada menu Database dengan token Apps Script.');
+}
+
+function resolveSpreadsheetForSetup_() {
+  var configured = String(KSPKT_CONFIG.SPREADSHEET_ID || '').trim();
+  if (configured) return SpreadsheetApp.openById(configured);
+
+  // Prioritaskan ID yang sudah tersimpan agar setup tidak membuat database baru.
+  var existingId = KSPKT_PROP.getProperty('KSPKT_SPREADSHEET_ID') ||
+                   KSPKT_PROP.getProperty('SPREADSHEET_ID') ||
+                   KSPKT_PROP.getProperty('DATABASE_SPREADSHEET_ID') ||
+                   KSPKT_PROP.getProperty('DB_ID') ||
+                   KSPKT_PROP.getProperty('SHEET_ID') || '';
+  if (existingId) {
+    try { return SpreadsheetApp.openById(existingId); } catch (err) {
+      throw new Error('ID Spreadsheet tersimpan tidak dapat dibuka. Periksa izin akses atau isi KSPKT_CONFIG.SPREADSHEET_ID.');
     }
-    if (act === 'docSave') {
-      var dsh = docSheet_();
-      var d = b.record;
-      var dvals = [d.id, d.tgl, d.judul, d.kat, d.ket, (d.files || []).length, new Date(d.saved || Date.now()), JSON.stringify(d)];
-      var drow = rowOf_(dsh, d.id);
-      if (drow > 1) dsh.getRange(drow, 1, 1, dvals.length).setValues([dvals]);
-      else dsh.appendRow(dvals);
-      return out_({ ok: true });
+  }
+
+  // Jika project terikat langsung ke spreadsheet, gunakan spreadsheet aktif.
+  try {
+    var active = SpreadsheetApp.getActiveSpreadsheet();
+    if (active) return active;
+  } catch (ignore) {}
+
+  return SpreadsheetApp.create('Database KSPKT Polsek Jatirogo');
+}
+
+function getSpreadsheet_() {
+  var configured = String(KSPKT_CONFIG.SPREADSHEET_ID || '').trim();
+  var id = configured || KSPKT_PROP.getProperty('KSPKT_SPREADSHEET_ID') ||
+           KSPKT_PROP.getProperty('SPREADSHEET_ID') ||
+           KSPKT_PROP.getProperty('DATABASE_SPREADSHEET_ID') ||
+           KSPKT_PROP.getProperty('DB_ID') || KSPKT_PROP.getProperty('SHEET_ID') || '';
+  if (id) return SpreadsheetApp.openById(id);
+  var active = SpreadsheetApp.getActiveSpreadsheet();
+  if (active) return active;
+  throw new Error('Database Spreadsheet belum disiapkan. Jalankan setup() terlebih dahulu.');
+}
+
+function aliasesFor_(key) {
+  return KSPKT_COLLECTIONS[key].aliases || [KSPKT_COLLECTIONS[key].preferred];
+}
+
+function ensureCollectionSheet_(ss, key) {
+  var conf = KSPKT_COLLECTIONS[key];
+  var aliases = aliasesFor_(key);
+  var chosen = null;
+
+  // Utamakan tab lama yang sudah berisi data dengan kolom id + JSON.
+  for (var i = 0; i < aliases.length; i++) {
+    var existing = ss.getSheetByName(aliases[i]);
+    if (existing && getSchema_(existing, false)) { chosen = existing; break; }
+  }
+  // Jika belum ada format yang cocok, pakai tab kosong yang namanya dikenal.
+  if (!chosen) {
+    for (var j = 0; j < aliases.length; j++) {
+      var blankCandidate = ss.getSheetByName(aliases[j]);
+      if (blankCandidate && isEmptySheet_(blankCandidate)) { chosen = blankCandidate; break; }
     }
-    if (act === 'docTrash') {
-      try {
-        var tf = DriveApp.getFileById(b.fileId);
-        if (inDocFolder_(tf)) tf.setTrashed(true);
-      } catch (x) {}
-      return out_({ ok: true });
+  }
+
+  if (!chosen) {
+    var preferred = conf.preferred;
+    var sheet = ss.getSheetByName(preferred);
+    if (sheet && getSchema_(sheet, false)) chosen = sheet;
+    else if (!sheet) chosen = ss.insertSheet(preferred);
+    else {
+      // Jangan menimpa tab lama yang formatnya berbeda.
+      var safeName = 'KSPKT_' + preferred + '_JSON';
+      var n = 2;
+      while (ss.getSheetByName(safeName)) { safeName = 'KSPKT_' + preferred + '_JSON_' + n; n++; }
+      chosen = ss.insertSheet(safeName);
     }
-    if (act === 'docDelete') {
-      var dsh2 = docSheet_();
-      var drow2 = rowOf_(dsh2, b.id);
-      if (drow2 > 1) {
-        try {
-          var rec = JSON.parse(dsh2.getRange(drow2, 8).getValue());
-          (rec.files || []).forEach(function (fl) {
-            try {
-              var ff = DriveApp.getFileById(fl.fileId);
-              if (inDocFolder_(ff)) ff.setTrashed(true);
-            } catch (x) {}
-          });
-        } catch (x) {}
-        dsh2.deleteRow(drow2);
+  }
+
+  var schema = getSchema_(chosen, false);
+  if (!schema) {
+    if (isEmptySheet_(chosen)) {
+      chosen.getRange(1, 1, 1, 3).setValues([['id', 'saved', 'json']]);
+      chosen.setFrozenRows(1);
+      chosen.getRange(1, 1, 1, 3).setFontWeight('bold');
+    } else {
+      // Tab berisi data yang belum kompatibel: jangan ubah isinya.
+      throw new Error('Tab ' + chosen.getName() + ' berisi data dengan format berbeda. Tab lama tidak diubah.');
+    }
+  } else {
+    // Tambahkan kolom yang kurang tanpa menghapus kolom/tab lama.
+    ensureHeader_(chosen, 'id');
+    ensureHeader_(chosen, 'saved');
+    ensureHeader_(chosen, 'json');
+  }
+  return chosen;
+}
+
+function isEmptySheet_(sheet) {
+  return sheet.getLastRow() === 0 || (sheet.getLastRow() === 1 && sheet.getLastColumn() === 1 && String(sheet.getRange(1, 1).getValue() || '') === '');
+}
+
+function normHeader_(v) { return String(v || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+function getSchema_(sheet, ensure) {
+  if (!sheet || sheet.getLastRow() < 1) return null;
+  var hdr = sheet.getRange(1, 1, 1, Math.max(1, sheet.getLastColumn())).getDisplayValues()[0];
+  var map = {};
+  for (var i = 0; i < hdr.length; i++) {
+    var h = normHeader_(hdr[i]);
+    if (['id', 'recordid', 'key'].indexOf(h) >= 0) map.id = i + 1;
+    if (['saved', 'updated', 'updatedat', 'timestamp', 'waktuupdate'].indexOf(h) >= 0) map.saved = i + 1;
+    if (['json', 'datajson', 'recordjson', 'payload', 'record', 'data'].indexOf(h) >= 0) map.json = i + 1;
+  }
+  if (map.id && map.json) return map;
+  // Mendeteksi tab lama tanpa header JSON hanya jika ID dan JSON berada di kolom berbeda.
+  if (sheet.getLastRow() >= 2) {
+    var rows = sheet.getRange(2, 1, Math.min(sheet.getLastRow() - 1, 5), sheet.getLastColumn()).getValues();
+    for (var r = 0; r < rows.length; r++) {
+      for (var c = 0; c < rows[r].length; c++) {
+        if (typeof rows[r][c] === 'string' && String(rows[r][c]).trim().charAt(0) === '{') {
+          try {
+            var obj = JSON.parse(rows[r][c]);
+            if (obj && obj.id !== undefined) {
+              var idCol = map.id || 0;
+              if (!idCol) {
+                for (var c2 = 0; c2 < rows[r].length; c2++) {
+                  if (c2 !== c && String(rows[r][c2]) === String(obj.id)) { idCol = c2 + 1; break; }
+                }
+              }
+              if (idCol && idCol !== c + 1) return { id: idCol, saved: map.saved || 0, json: c + 1, detected: true };
+            }
+          } catch (ignore) {}
+        }
       }
-      return out_({ ok: true });
     }
+  }
+  return null;
+}
 
-    // ----- Surat masuk + disposisi -----
-    if (act === 'smUpload') {
-      var sblob = Utilities.newBlob(Utilities.base64Decode(b.data), b.type || 'application/octet-stream', b.name);
-      var sf = smFolder_().createFile(sblob);
-      return out_({ ok: true, fileId: sf.getId(), url: sf.getUrl(), size: sf.getSize() });
-    }
-    if (act === 'smTrash') {
-      try {
-        var stf = DriveApp.getFileById(b.fileId);
-        if (inSmFolder_(stf)) stf.setTrashed(true);
-      } catch (x) {}
-      return out_({ ok: true });
-    }
-    if (act === 'smSave') {
-      var ssh = smSheet_();
-      var m = b.record;
-      var mjs = JSON.stringify(m);
-      if (mjs.length > 49000) return out_({ error: 'Data surat terlalu besar. Persingkat ringkasan / catatan disposisi.' });
-      var mvals = [m.id, m.no || '', m.tglterima || '', m.asal || '', m.nomor || '', m.perihal || '', m.sifat || '',
-        m.status || 'baru', (m.dispo || []).length, m.file ? 'Ya' : 'Belum', (m.file && m.file.url) || '',
-        new Date(m.saved || Date.now()), mjs];
-      var mrow = rowOf_(ssh, m.id);
-      if (mrow > 1) ssh.getRange(mrow, 1, 1, mvals.length).setValues([mvals]);
-      else ssh.appendRow(mvals);
-      return out_({ ok: true });
-    }
-    if (act === 'smDelete') {
-      var ssh2 = smSheet_();
-      var mrow2 = rowOf_(ssh2, b.id);
-      if (mrow2 > 1) {
-        try {
-          var mrec = JSON.parse(ssh2.getRange(mrow2, 13).getValue());
-          var ids = [];
-          if (mrec.file && mrec.file.fileId) ids.push(mrec.file.fileId);
-          (mrec.dispo || []).forEach(function (dd) { if (dd.pdf && dd.pdf.fileId) ids.push(dd.pdf.fileId); });
-          ids.forEach(function (fid) {
-            try {
-              var mff = DriveApp.getFileById(fid);
-              if (inSmFolder_(mff)) mff.setTrashed(true);
-            } catch (x) {}
-          });
-        } catch (x) {}
-        ssh2.deleteRow(mrow2);
-      }
-      return out_({ ok: true });
-    }
+function ensureHeader_(sheet, header) {
+  var schema = getSchema_(sheet, false) || {};
+  if ((header === 'id' && schema.id) || (header === 'saved' && schema.saved) || (header === 'json' && schema.json)) return;
+  var col = sheet.getLastColumn() + 1;
+  if (sheet.getLastRow() === 0) col = 1;
+  sheet.getRange(1, col).setValue(header);
+}
 
-    // ----- Laporan orang hilang -----
-    if (act === 'ohSave') {
-      var osh = ohSheet_();
-      var o = b.record;
-      var ojs = JSON.stringify(o);
-      if (ojs.length > 49000) return out_({ error: 'Data laporan terlalu besar (kemungkinan foto). Perkecil foto lalu simpan lagi.' });
-      var ovals = [o.id, o.no, o.waktu, o.nama, o.pelapor || '', o.tlihat || '', o.status || 'cari', o.petugas || '',
-        o.cetak ? 'Ya' : 'Belum', o.pdf ? 'Ya' : 'Belum', o.pdfUrl || '', new Date(o.saved || Date.now()), ojs];
-      var orow = rowOf_(osh, o.id);
-      if (orow > 1) osh.getRange(orow, 1, 1, ovals.length).setValues([ovals]);
-      else osh.appendRow(ovals);
-      return out_({ ok: true });
-    }
-    if (act === 'ohDelete') {
-      var osh2 = ohSheet_();
-      var orow2 = rowOf_(osh2, b.id);
-      if (orow2 > 1) osh2.deleteRow(orow2);
-      return out_({ ok: true });
-    }
+function sheetFor_(key) {
+  var ss = getSpreadsheet_();
+  var conf = KSPKT_COLLECTIONS[key];
+  var aliases = aliasesFor_(key);
+  for (var i = 0; i < aliases.length; i++) {
+    var s = ss.getSheetByName(aliases[i]);
+    if (s && (getSchema_(s, false) || isEmptySheet_(s))) return ensureCollectionSheet_(ss, key);
+  }
+  var preferred = ss.getSheetByName(conf.preferred);
+  if (preferred && (getSchema_(preferred, false) || isEmptySheet_(preferred))) return ensureCollectionSheet_(ss, key);
+  // setup normally creates the sheet. If user skipped setup, create it safely now.
+  return ensureCollectionSheet_(ss, key);
+}
 
-    // ----- Arsip surat -----
-    var sh = sheet_();
-    var id = act === 'save' ? (b.record && b.record.id) : b.id;
-    var row = rowOf_(sh, id);
+function schemaMap_(sheet) {
+  var schema = getSchema_(sheet, false);
+  if (!schema) throw new Error('Struktur database pada tab ' + sheet.getName() + ' belum sesuai. Jalankan setup() atau periksa kolom id, saved, json.');
+  return schema;
+}
 
-    if (act === 'save') {
-      var r = b.record;
-      var vals = [r.id, r.no, r.waktu, r.nama, r.barang, r.petugas,
-        r.cetak ? 'Ya' : 'Belum', r.pdf ? 'Ya' : 'Belum', r.pdfUrl || '',
-        new Date(r.saved || Date.now()), JSON.stringify(r)];
-      if (row > 1) sh.getRange(row, 1, 1, vals.length).setValues([vals]);
-      else sh.appendRow(vals);
-      return out_({ ok: true });
-    }
+function readCollection_(key) {
+  var sheet = sheetFor_(key);
+  var schema = schemaMap_(sheet);
+  var last = sheet.getLastRow();
+  if (last < 2) return [];
+  var values = sheet.getRange(2, 1, last - 1, sheet.getLastColumn()).getValues();
+  var out = [];
+  values.forEach(function (row) {
+    var raw = row[schema.json - 1];
+    if (raw === '' || raw === null || typeof raw === 'undefined') return;
+    try {
+      var obj = (typeof raw === 'string') ? JSON.parse(raw) : raw;
+      if (obj && typeof obj === 'object' && obj.id !== undefined) out.push(obj);
+    } catch (ignore) {}
+  });
+  return out;
+}
 
-    if (act === 'delete') {
-      if (row > 1) sh.deleteRow(row);
-      return out_({ ok: true });
-    }
-
-    if (act === 'pdf') {
-      if (b.oldFileId) {
-        try { DriveApp.getFileById(b.oldFileId).setTrashed(true); } catch (x) {}
-      }
-      var blob = Utilities.newBlob(Utilities.base64Decode(b.data), 'application/pdf', b.filename);
-      var f = folder_().createFile(blob);
-      return out_({ ok: true, url: f.getUrl(), fileId: f.getId() });
-    }
-
-    return out_({ error: 'Aksi tidak dikenal' });
+function saveRecord_(key, record) {
+  if (!record || typeof record !== 'object') throw new Error('Data record tidak valid.');
+  if (record.id === undefined || record.id === null || String(record.id) === '') throw new Error('ID record wajib ada.');
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    return saveRecordUnlocked_(key, record);
   } finally {
     lock.releaseLock();
   }
+}
+
+// Versi internal tanpa mengambil Lock lagi; digunakan oleh claimNo_ yang sudah mengunci proses.
+function saveRecordUnlocked_(key, record) {
+  var sheet = sheetFor_(key);
+  var schema = schemaMap_(sheet);
+  var id = String(record.id);
+  var last = sheet.getLastRow();
+  var rowNum = 0;
+  if (last >= 2) {
+    var ids = sheet.getRange(2, schema.id, last - 1, 1).getDisplayValues();
+    for (var i = 0; i < ids.length; i++) { if (String(ids[i][0]) === id) { rowNum = i + 2; break; } }
+  }
+  if (!rowNum) rowNum = Math.max(2, last + 1);
+  if (!record.saved) record.saved = Date.now();
+  var width = Math.max(sheet.getLastColumn(), schema.id, schema.saved, schema.json);
+  var row = new Array(width).fill('');
+  row[schema.id - 1] = id;
+  row[schema.saved - 1] = Number(record.saved) || Date.now();
+  row[schema.json - 1] = JSON.stringify(record);
+  sheet.getRange(rowNum, 1, 1, width).setValues([row]);
+  return { ok: true, id: id, saved: Number(record.saved) || Date.now() };
+}
+
+function deleteRecord_(key, id) {
+  if (id === undefined || id === null || String(id) === '') throw new Error('ID untuk dihapus tidak valid.');
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var sheet = sheetFor_(key);
+    var schema = schemaMap_(sheet);
+    var last = sheet.getLastRow();
+    if (last < 2) return { ok: true, deleted: false };
+    var ids = sheet.getRange(2, schema.id, last - 1, 1).getDisplayValues();
+    for (var i = ids.length - 1; i >= 0; i--) {
+      if (String(ids[i][0]) === String(id)) sheet.deleteRow(i + 2);
+    }
+    return { ok: true, deleted: true, id: String(id) };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ========================= NOMOR SURAT ANTI-GANDA ========================= */
+function claimNo_(year, wanted, by) {
+  year = parseInt(year, 10);
+  wanted = parseInt(wanted, 10);
+  if (!year || !wanted || wanted < 1) throw new Error('Tahun atau nomor urut tidak valid.');
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var records = readCollection_('records');
+    var claims = readCollection_('claims');
+    var used = {};
+    var maxNo = 0;
+    records.forEach(function (r) {
+      var dt = String(r.waktu || '');
+      var y = parseInt(dt.slice(0, 4), 10);
+      var n = parseInt(r.urut, 10) || 0;
+      if (y === year && n > 0) { used[n] = true; maxNo = Math.max(maxNo, n); }
+    });
+    claims.forEach(function (c) {
+      if (Number(c.year) === year && Number(c.urut) > 0) {
+        used[Number(c.urut)] = true;
+        maxNo = Math.max(maxNo, Number(c.urut));
+      }
+    });
+    var assigned = wanted;
+    if (used[assigned]) assigned = maxNo + 1;
+    saveRecordUnlocked_('claims', {
+      id: String(year) + '_' + String(assigned),
+      year: year,
+      urut: assigned,
+      by: String(by || ''),
+      saved: Date.now()
+    });
+    return { no: assigned, year: year };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ========================= GOOGLE DRIVE ========================= */
+function ensureDriveFolders_() {
+  var rootId = String(KSPKT_CONFIG.DRIVE_FOLDER_ID || '').trim() ||
+               KSPKT_PROP.getProperty('KSPKT_DRIVE_FOLDER_ID') ||
+               KSPKT_PROP.getProperty('DRIVE_FOLDER_ID') ||
+               KSPKT_PROP.getProperty('FOLDER_ID') || '';
+  var root;
+  if (rootId) {
+    try { root = DriveApp.getFolderById(rootId); }
+    catch (err) { throw new Error('Folder Drive ID tidak dapat diakses. Periksa izin dan ID folder.'); }
+  } else {
+    root = DriveApp.createFolder('KSPKT Polsek Jatirogo');
+    KSPKT_PROP.setProperty('KSPKT_DRIVE_FOLDER_ID', root.getId());
+  }
+  KSPKT_PROP.setProperty('KSPKT_DRIVE_FOLDER_ID', root.getId());
+  getOrCreateChildFolder_(root, 'Arsip PDF Surat Kehilangan', 'KSPKT_PDF_FOLDER_ID');
+  getOrCreateChildFolder_(root, 'Berkas Surat Masuk', 'KSPKT_SM_FOLDER_ID');
+}
+
+function getOrCreateChildFolder_(root, name, propName) {
+  var savedId = KSPKT_PROP.getProperty(propName);
+  if (savedId) {
+    try { return DriveApp.getFolderById(savedId); } catch (ignore) {}
+  }
+  var iter = root.getFoldersByName(name);
+  var folder = iter.hasNext() ? iter.next() : root.createFolder(name);
+  KSPKT_PROP.setProperty(propName, folder.getId());
+  return folder;
+}
+
+function getDriveFolder_(kind) {
+  var prop = kind === 'sm' ? 'KSPKT_SM_FOLDER_ID' : 'KSPKT_PDF_FOLDER_ID';
+  var folderId = KSPKT_PROP.getProperty(prop);
+  if (folderId) {
+    try { return DriveApp.getFolderById(folderId); } catch (ignore) {}
+  }
+  ensureDriveFolders_();
+  folderId = KSPKT_PROP.getProperty(prop);
+  return DriveApp.getFolderById(folderId);
+}
+
+function decodeBase64_(data) {
+  var text = String(data || '').trim();
+  if (!text) throw new Error('Data berkas kosong.');
+  // Menoleransi data URI selain base64 mentah.
+  var marker = text.indexOf('base64,');
+  if (marker >= 0) text = text.slice(marker + 7);
+  text = text.replace(/\s/g, '');
+  try { return Utilities.base64Decode(text); }
+  catch (err) { throw new Error('Data base64 berkas tidak valid.'); }
+}
+
+function safeFilename_(name, fallback) {
+  var n = String(name || fallback || 'Berkas').replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').trim();
+  if (!n) n = fallback || 'Berkas';
+  return n.slice(0, 180);
+}
+
+function uploadPdf_(body) {
+  var id = String(body.id || '').trim();
+  if (!id) throw new Error('ID surat untuk PDF wajib ada.');
+  var filename = safeFilename_(body.filename, 'Surat_KSPKT.pdf');
+  if (!/\.pdf$/i.test(filename)) filename += '.pdf';
+  var bytes = decodeBase64_(body.data);
+  var blob = Utilities.newBlob(bytes, 'application/pdf', filename);
+  var folder = getDriveFolder_('pdf');
+  var file = folder.createFile(blob);
+  file.setDescription('PDF surat KSPKT Polsek Jatirogo. Record ID: ' + id);
+  var oldId = String(body.oldFileId || '').trim();
+  if (oldId && oldId !== file.getId()) trashDriveFileQuietly_(oldId);
+  return { ok: true, id: id, fileId: file.getId(), url: file.getUrl(), size: file.getSize(), name: file.getName() };
+}
+
+function uploadSuratMasuk_(body) {
+  var name = safeFilename_(body.name, 'Berkas_Surat_Masuk');
+  var type = String(body.type || 'application/octet-stream').trim();
+  var bytes = decodeBase64_(body.data);
+  var blob = Utilities.newBlob(bytes, type, name);
+  var folder = getDriveFolder_('sm');
+  var file = folder.createFile(blob);
+  file.setDescription('Lampiran surat masuk KSPKT Polsek Jatirogo.');
+  return { ok: true, fileId: file.getId(), url: file.getUrl(), size: file.getSize(), name: file.getName(), type: type };
+}
+
+function trashDriveFile_(fileId) {
+  fileId = String(fileId || '').trim();
+  if (!fileId) throw new Error('ID berkas Drive tidak ada.');
+  var file = DriveApp.getFileById(fileId);
+  file.setTrashed(true);
+  return { ok: true, fileId: fileId, trashed: true };
+}
+
+function trashDriveFileQuietly_(fileId) {
+  try { DriveApp.getFileById(fileId).setTrashed(true); } catch (ignore) {}
+}
+
+/* ========================= UTILITAS ========================= */
+function jsonOut_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function safeMessage_(err) {
+  if (!err) return 'Terjadi kesalahan yang tidak diketahui.';
+  return String(err.message || err).slice(0, 500);
 }
