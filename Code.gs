@@ -31,7 +31,7 @@ var KSPKT_CONFIG = {
   DRIVE_FOLDER_ID: ''
 };
 
-var KSPKT_VERSION = '2026.10.24-2';
+var KSPKT_VERSION = '2026.10.24-3';
 var KSPKT_PROP = PropertiesService.getScriptProperties();
 
 var KSPKT_COLLECTIONS = {
@@ -544,44 +544,79 @@ function trashDriveFileQuietly_(fileId) {
   try { DriveApp.getFileById(fileId).setTrashed(true); } catch (ignore) {}
 }
 
-/* ========================= BERITA POLRESTA TUBAN ========================= */
-// Pencarian berita dari Google News (RSS) untuk "Polresta Tuban" / "Polres Tuban".
-// Hasil di-cache 5 menit supaya tidak membebani sumber dan tetap terasa selalu terbaru.
-var KSPKT_NEWS_QUERY = '"Polresta Tuban" OR "Polres Tuban" when:14d';
-var KSPKT_NEWS_CACHE_KEY = 'kspkt_news_v1';
+/* ========================= BERITA POLRESTA TUBAN (detik.com) ========================= */
+// Sumber: RSS detik.com (langsung) dan pencarian Google News yang dibatasi ke site:detik.com.
+// Hanya berita yang menyebut Polres/Polresta Tuban. Hasil digabung, diurutkan terbaru, dan di-cache 5 menit.
+var KSPKT_NEWS_CACHE_KEY = 'kspkt_news_v2';
+var KSPKT_NEWS_FEEDS = [
+  'https://www.detik.com/jatim/rss',
+  'https://news.detik.com/berita/rss'
+];
+var KSPKT_NEWS_SEARCH = 'https://news.google.com/rss/search?q=' +
+  encodeURIComponent('site:detik.com Tuban when:14d') +
+  '&hl=id&gl=ID&ceid=ID:id';
+var KSPKT_NEWS_FILTER = /(polres(ta)?|kapolres(ta)?)\s+tuban/i;
 
 function getNews_() {
   var cache = CacheService.getScriptCache();
   var hit = cache.get(KSPKT_NEWS_CACHE_KEY);
   if (hit) return JSON.parse(hit);
 
-  var url = 'https://news.google.com/rss/search?q=' + encodeURIComponent(KSPKT_NEWS_QUERY) +
-            '&hl=id&gl=ID&ceid=ID:id';
-  var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true });
-  if (res.getResponseCode() !== 200) {
-    throw new Error('Sumber berita tidak dapat diakses (kode ' + res.getResponseCode() + ').');
+  var sources = [KSPKT_NEWS_SEARCH].concat(KSPKT_NEWS_FEEDS);
+  var items = [], seen = {}, errors = [];
+  for (var s = 0; s < sources.length; s++) {
+    try {
+      var list = readNewsRss_(sources[s]);
+      for (var i = 0; i < list.length; i++) {
+        var key = list[i].title.toLowerCase();
+        if (seen[key]) continue;          // buang judul yang sama dari sumber berbeda
+        seen[key] = true;
+        items.push(list[i]);
+      }
+    } catch (err) {
+      errors.push(String(err.message || err).slice(0, 160));
+    }
   }
+  if (!items.length && errors.length === sources.length) {
+    throw new Error('Berita detik.com belum dapat dimuat: ' + errors[0]);
+  }
+
+  items.sort(function (a, b) { return new Date(b.pubDate) - new Date(a.pubDate); });
+  var out = {
+    ok: true,
+    version: KSPKT_VERSION,
+    updated: new Date().toISOString(),
+    items: items.slice(0, 15)
+  };
+  cache.put(KSPKT_NEWS_CACHE_KEY, JSON.stringify(out), 300);
+  return out;
+}
+
+/** Membaca satu RSS dan mengembalikan item yang menyebut Polres/Polresta Tuban. */
+function readNewsRss_(url) {
+  var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true });
+  if (res.getResponseCode() !== 200) throw new Error('kode ' + res.getResponseCode() + ' dari ' + url);
 
   var channel = XmlService.parse(res.getContentText()).getRootElement().getChild('channel');
   var nodes = channel ? channel.getChildren('item') : [];
-  var items = [];
+  var out = [];
   for (var i = 0; i < nodes.length; i++) {
     var it = nodes[i];
-    var title = it.getChildText('title') || '';
+    var title = (it.getChildText('title') || '').replace(/\s+/g, ' ').trim();
+    var desc = it.getChildText('description') || '';
+    var link = (it.getChildText('link') || '').trim();
     var src = it.getChild('source');
-    var media = src ? src.getText() : '';
+    var media = src ? src.getText() : 'detik.com';
+
     // Google News menambahkan " - Nama Media" di ujung judul; dibuang agar rapi.
     var tail = ' - ' + media;
-    if (media && title.slice(-tail.length) === tail) title = title.slice(0, -tail.length);
-    var link = it.getChildText('link') || '';
-    if (title && link) {
-      items.push({ title: title, link: link, pubDate: it.getChildText('pubDate') || '', source: media });
-    }
-  }
-  items.sort(function (a, b) { return new Date(b.pubDate) - new Date(a.pubDate); });
+    if (src && title.slice(-tail.length) === tail) title = title.slice(0, -tail.length);
+    title = title.replace(/\s+-\s+detik(\.com|jatim| ?news)?$/i, '');
 
-  var out = { ok: true, version: KSPKT_VERSION, updated: new Date().toISOString(), items: items.slice(0, 15) };
-  cache.put(KSPKT_NEWS_CACHE_KEY, JSON.stringify(out), 300);
+    if (!title || !link) continue;
+    if (!KSPKT_NEWS_FILTER.test(title + ' ' + desc)) continue;
+    out.push({ title: title, link: link, pubDate: it.getChildText('pubDate') || '', source: 'detik.com' });
+  }
   return out;
 }
 
