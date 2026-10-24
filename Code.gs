@@ -31,7 +31,7 @@ var KSPKT_CONFIG = {
   DRIVE_FOLDER_ID: ''
 };
 
-var KSPKT_VERSION = '2026.10.21-1';
+var KSPKT_VERSION = '2026.10.24-2';
 var KSPKT_PROP = PropertiesService.getScriptProperties();
 
 var KSPKT_COLLECTIONS = {
@@ -92,6 +92,7 @@ function doGet(e) {
     if (action === 'userlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, users: readCollection_('users') });
     if (action === 'ohlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, oh: readCollection_('oh') });
     if (action === 'smlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, sm: readCollection_('sm') });
+    if (action === 'news') return jsonOut_(getNews_());
     if (action === 'ping' || action === 'status') {
       return jsonOut_({ ok: true, version: KSPKT_VERSION, message: 'KSPKT Apps Script aktif.' });
     }
@@ -541,6 +542,47 @@ function trashDriveFile_(fileId) {
 
 function trashDriveFileQuietly_(fileId) {
   try { DriveApp.getFileById(fileId).setTrashed(true); } catch (ignore) {}
+}
+
+/* ========================= BERITA POLRESTA TUBAN ========================= */
+// Pencarian berita dari Google News (RSS) untuk "Polresta Tuban" / "Polres Tuban".
+// Hasil di-cache 5 menit supaya tidak membebani sumber dan tetap terasa selalu terbaru.
+var KSPKT_NEWS_QUERY = '"Polresta Tuban" OR "Polres Tuban" when:14d';
+var KSPKT_NEWS_CACHE_KEY = 'kspkt_news_v1';
+
+function getNews_() {
+  var cache = CacheService.getScriptCache();
+  var hit = cache.get(KSPKT_NEWS_CACHE_KEY);
+  if (hit) return JSON.parse(hit);
+
+  var url = 'https://news.google.com/rss/search?q=' + encodeURIComponent(KSPKT_NEWS_QUERY) +
+            '&hl=id&gl=ID&ceid=ID:id';
+  var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true });
+  if (res.getResponseCode() !== 200) {
+    throw new Error('Sumber berita tidak dapat diakses (kode ' + res.getResponseCode() + ').');
+  }
+
+  var channel = XmlService.parse(res.getContentText()).getRootElement().getChild('channel');
+  var nodes = channel ? channel.getChildren('item') : [];
+  var items = [];
+  for (var i = 0; i < nodes.length; i++) {
+    var it = nodes[i];
+    var title = it.getChildText('title') || '';
+    var src = it.getChild('source');
+    var media = src ? src.getText() : '';
+    // Google News menambahkan " - Nama Media" di ujung judul; dibuang agar rapi.
+    var tail = ' - ' + media;
+    if (media && title.slice(-tail.length) === tail) title = title.slice(0, -tail.length);
+    var link = it.getChildText('link') || '';
+    if (title && link) {
+      items.push({ title: title, link: link, pubDate: it.getChildText('pubDate') || '', source: media });
+    }
+  }
+  items.sort(function (a, b) { return new Date(b.pubDate) - new Date(a.pubDate); });
+
+  var out = { ok: true, version: KSPKT_VERSION, updated: new Date().toISOString(), items: items.slice(0, 15) };
+  cache.put(KSPKT_NEWS_CACHE_KEY, JSON.stringify(out), 300);
+  return out;
 }
 
 /* ========================= UTILITAS ========================= */
