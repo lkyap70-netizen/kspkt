@@ -2901,17 +2901,17 @@ header.top .tabs button.on{background:linear-gradient(135deg,#fff,#e8efff)!impor
       overview.appendChild(stats);
     }
     overview.insertAdjacentHTML("beforeend",
-      '<section id="news-panel" class="card news-panel" aria-label="Berita terbaru Polresta Tuban">' +
-        '<h3>Berita Polresta Tuban</h3>' +
+      '<section id="news-panel" class="card news-panel" aria-label="Berita Polresta Tuban dari detik.com">' +
+        '<h3>Berita Polresta Tuban · detik.com</h3>' +
         '<div class="news-head"><span id="news-updated">Memuat berita…</span>' +
         '<button type="button" id="news-refresh" class="news-btn">↻ Perbarui</button></div>' +
         '<ul id="news-list" class="news-list"></ul>' +
-        '<div class="news-foot">Sumber: Google News (media daring). Diperbarui otomatis setiap 5 menit.</div>' +
+        '<div class="news-foot">Sumber: detik.com. Diperbarui otomatis setiap 5 menit.</div>' +
       '</section>');
   }
 
   /* Logika berita */
-  var NEWS_KEY = "kspkt_news_cache_v1";
+  var NEWS_KEY = "kspkt_news_cache_v2";
   var NEWS_EVERY = 5 * 60 * 1000;
   var BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
   var busy = false;
@@ -2940,11 +2940,11 @@ header.top .tabs button.on{background:linear-gradient(135deg,#fff,#e8efff)!impor
     if (items && items.length) {
       list.innerHTML = items.map(function (it) {
         return '<li class="news-item"><a href="' + esc(it.link) + '" target="_blank" rel="noopener noreferrer">' +
-               esc(it.title) + '</a><div class="news-meta">' + esc(it.source || "Media daring") +
+               esc(it.title) + '</a><div class="news-meta">' + esc(it.source || "detik.com") +
                (it.pubDate ? " · " + esc(waktu(it.pubDate)) : "") + "</div></li>";
       }).join("");
     } else {
-      list.innerHTML = '<li class="news-empty">' + esc(kosong || "Belum ada berita terbaru untuk Polresta Tuban.") + "</li>";
+      list.innerHTML = '<li class="news-empty">' + esc(kosong || "Belum ada berita Polresta Tuban dari detik.com dalam 14 hari terakhir.") + "</li>";
     }
     info.textContent = catatan || (updated ? "Diperbarui " + waktu(updated) : "");
   }
