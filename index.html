@@ -1970,7 +1970,7 @@ function smSync() {
     j.sm.forEach(function (s) { if (!Lc[s.id]) { s.sy = true; out.push(s); } });
     SM = out; smSaveLS(); smList(); if (smCur) smDispoUI(); smNote("");
     return Promise.all(ps.map(smPushNow));
-  }).then(flushPend).catch(function (x) { smNote("Sinkron surat masuk gagal: " + x.message, 1); });
+  }).then(flushPend).catch(function (x) { smNote(/tidak dikenal/i.test(x.message) ? "Google Apps Script belum diperbarui: tempel Code.gs terbaru di Apps Script, jalankan setup, lalu Deploy > Manage deployments > Edit > New version. Data tetap aman di perangkat ini." : "Sinkron surat masuk gagal: " + x.message, 1); });
 }
 
 // ---------- Ekspor ----------
