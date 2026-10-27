@@ -294,8 +294,9 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 
 .sstb{position:absolute;left:50%;top:50%;width:29mm;height:auto;max-width:none;transform:translate(-105%,-55%);opacity:.92;mix-blend-mode:multiply;pointer-events:none}
 @media print{#kertas{min-height:0!important;height:auto!important;padding-bottom:12mm!important}}
-.mg .sa{height:30mm!important}
-.sstb{width:24mm!important;transform:translate(-118%,-42%)!important}
+.mg .sa{height:21mm!important}
+.sstb{width:19mm!important;transform:translate(-120%,-50%)!important}
+#vdash .dash-overview{grid-template-columns:1fr!important}
 </style>
 <style id="uiplus">
 /* ===== HEADER ===== */
@@ -963,9 +964,10 @@ h+='<table class="d">';
 h+='</table><p>Melaporkan kehilangan sebuah barang / surat berupa :</p><ul>'+items+'</ul>';
 h+='<p>'+kataBarang()+' tersebut diketahui hilang pada '+(hl?H[hl.getDay()]+' tanggal '+tgl(hl):'Hari ... tanggal ...')+' '+tempatTeks()+'</p>';
 h+='<div class="ket"><p><b>KETERANGAN :</b></p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) ini bukan sebagai pengganti Surat/Dokumen yang hilang, melainkan sebagai syarat untuk mengurus surat-surat yang baru ke instansi yang berwenang.</p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) ini berlaku 14 ( Empat Belas) hari tanggal dikeluarkan.</p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) tidak berlaku apabila laporan/palsu, sebagaimana dimaksud dalam pasal 242 ayat (1) KUHP (barang siapa memberikan, membuat laporan atau keterangan palsu atau bohong diancam penjara paling lama tujuh tahun).</p></div>';
+h+='<p>&nbsp;</p><p style="text-align:right;margin:0 0 8px">Jatirogo, '+tgl(w)+'</p>';
 h+='<p>Demikian Surat Keterangan Tanda Laporan Kehilangan ini dibuat untuk dapat dipergunakan seperlunya</p>';
 h+='<div class="sigw">';
-h+='<table class="ttd"><tr><td><br>'+L("PELAPOR")+'<div class="sp"></div>'+N(e($("nama").value.toUpperCase()),1)+'</td><td>Jatirogo, '+tgl(w)+'<br>'+L("YANG MENERIMA")+'<div class="sp">'+pnImg()+'</div>'+N(e($("petugas").value))+'<br>'+e($("nrp").value)+'</td></tr></table>';
+h+='<table class="ttd"><tr><td><br>'+L("PELAPOR")+'<div class="sp"></div>'+N(e($("nama").value.toUpperCase()),1)+'</td><td>'+L("YANG MENERIMA")+'<div class="sp">'+pnImg()+'</div>'+N(e($("petugas").value))+'<br>'+e($("nrp").value)+'</td></tr></table>';
 h+='<div class="mg">MENGETAHUI<br>'+JUD()+'<div class="sa">'+mgImgs()+'</div>'+N(e($("kspkt").value))+'<br>'+e($("knrp").value)+'</div>';
 h+='</div>';
 $("kertas").innerHTML=h;fit()}
@@ -2895,7 +2897,7 @@ header.top .tabs button.on{background:linear-gradient(135deg,#fff,#e8efff)!impor
 
   /* Dasbor: bungkus statistik + panel berita berdampingan */
   var stats = $("stats");
-  if (stats && !$("news-panel")) {
+  if (false) { /* panel berita dihapus */
     var overview = $("dash-overview");
     if (!overview) {
       overview = document.createElement("div");
