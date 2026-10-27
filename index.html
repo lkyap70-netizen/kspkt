@@ -854,7 +854,7 @@ header.top .tabs{order:3;flex:0 0 calc(100% + 48px);display:flex;flex-wrap:wrap;
 <button class="o" id="sm_reauto" type="button" style="display:none;margin-top:8px">Baca ulang isi surat</button>
 </div>
 
-<button id="sm_simpan" type="button">Simpan surat masuk</button> <button class="o" id="sm_unduh" type="button">Unduh berkas</button> <button class="o" id="sm_cetak" type="button">Cetak surat + disposisi</button>
+<button id="sm_simpan" type="button">Simpan surat masuk</button> <button class="o" id="sm_lihat" type="button">Lihat berkas</button> <button class="o" id="sm_unduh" type="button">Unduh berkas</button> <button class="o" id="sm_cetak" type="button">Cetak surat + disposisi</button>
 <button class="o" id="sm_baru" type="button">Surat baru</button>
 </div>
 
@@ -1811,7 +1811,7 @@ function smList() {
     var t = (agenda(r) + " " + r.asal + " " + r.nomor + " " + r.perihal + " " + (r.ket || "")).toLowerCase(); if (q && t.indexOf(q) < 0) return;
     var S = SMS[st], nd = (r.dispo || []).length, sif = r.sifat && r.sifat !== "Biasa" ? ' <span class="pill ' + (r.sifat === "Rahasia" ? "k" : "r") + '">' + e(r.sifat) + "</span>" : '<span class="pill b">Biasa</span>';
     var u = r.file ? drvUrl(r.file.url) : "";
-    var fl = r.file ? (u ? "<a class='lnk' target='_blank' rel='noopener' href='" + u + "'>Surat</a>" : "<span class='pill y'>Surat menunggu unggah</span>") : "<span class='pill r'>Surat belum ada</span>";
+    var fl = r.file ? (u ? "<a class='lnk' target='_blank' rel='noopener' href='" + u + "'>Surat</a>" : "<span class='pill y'>Belum di Drive (lihat lokal)</span>") : "<span class='pill r'>Surat belum ada</span>";
     (r.dispo || []).forEach(function (d, i) { var du = d.pdf ? drvUrl(d.pdf.url) : ""; if (du) fl += "<br><a class='lnk' target='_blank' rel='noopener' href='" + du + "'>Disposisi" + ((r.dispo.length > 1) ? " " + (i + 1) : "") + "</a>"; });
     h += "<tr><td>" + e(agenda(r)) + "</td><td>" + e(fdt(r.tglterima)) + "</td><td><b>" + e(r.asal) + "</b></td>"
       + "<td>" + e(r.nomor || "-") + "<br><span style='color:#44506b;font-size:12.5px'>" + e(r.perihal) + "</span>" + (r.tglsurat ? "<br><span style='color:#6b7488;font-size:12px'>Tgl surat " + e(fdt(r.tglsurat)) + "</span>" : "") + "</td>"
@@ -1820,7 +1820,7 @@ function smList() {
       + "<td>" + fl + "</td>"
       + "<td><button data-a='buka' data-i='" + r.id + "'>Buka</button><button class='o' data-a='dispo' data-i='" + r.id + "'>Disposisi</button>"
       + (r.file && r.file.fileId ? "<a class='lnk' style='display:inline-block;margin:3px' target='_blank' rel='noopener' href='https://drive.google.com/uc?export=download&id=" + encodeURIComponent(r.file.fileId) + "'>Unduh</a>" : "")
-      + "<button class='o' data-a='cetak' data-i='" + r.id + "'>Cetak</button><button class='o' data-a='cetakfull' data-i='" + r.id + "'>Cetak + Disposisi</button><button class='o' data-a='unduh' data-i='" + r.id + "'>Unduh</button><button class='o' data-a='hapus' data-i='" + r.id + "'>Hapus</button></td></tr>";
+      + "<button class='o' data-a='cetak' data-i='" + r.id + "'>Cetak</button><button class='o' data-a='cetakfull' data-i='" + r.id + "'>Cetak + Disposisi</button>" + (r.file ? "<button class='o' data-a='lihat' data-i='" + r.id + "'>Lihat</button>" + (r.file.pending ? "<button class='o' data-a='ulang' data-i='" + r.id + "'>Unggah ulang</button>" : "") : "") + "<button class='o' data-a='unduh' data-i='" + r.id + "'>Unduh</button><button class='o' data-a='hapus' data-i='" + r.id + "'>Hapus</button></td></tr>";
   });
   $("smb").innerHTML = h || "<tr><td colspan='8'>Belum ada surat masuk.</td></tr>";
   var c = {}, dup = [];
@@ -2048,6 +2048,10 @@ $("sm_simpan").onclick = function () {
 };
 $("smd_simpan").onclick = dSave;
 $("sm_unduh").onclick = function () { if (smCur) smDownload(smGet(smCur)); };
+$("sm_lihat").onclick = function () {
+  if (smFile) { var w = window.open("", "_blank"); if (!w) { alert("Izinkan pop-up untuk melihat berkas."); return; } b64(smFile).then(function (d) { showFileIn(w, smFile.name, smFile.type, d); }).catch(function (x) { w.close(); smMsg("Gagal membuka berkas: " + x.message); }); return; }
+  if (smCur) smView(smGet(smCur));
+};
 $("sm_cetak").onclick = function () { if (smCur) smPrintFull(smGet(smCur)); else smMsg("Simpan surat masuk dulu sebelum mencetak."); };
 $("smd_batal").onclick = function () { dReset(null); };
 $("smpv_cetak").onclick = function () { if (!smPv) return; smMakePdf(smPv).then(function (ok) { smPv = smPv || null; if (ok !== false) smPrint(); }); };
@@ -2130,6 +2134,46 @@ function smPrintFull(r) {
     w.document.open(); w.document.write(html); w.document.close();
   }).catch(function (x) { w.document.body.innerHTML = "<p>Gagal menyiapkan cetakan: " + e(x.message) + "</p>"; });
 }
+function showFileIn(w, name, type, b64) {
+  var src = "data:" + (type || "application/octet-stream") + ";base64," + b64;
+  var isPdf = /pdf/i.test(type || "") || /\.pdf$/i.test(name || ""), isImg = /^image\//.test(type || "");
+  var body = isPdf ? "<iframe src=\"" + src + "\" style=\"border:0;width:100vw;height:100vh\"></iframe>"
+    : isImg ? "<div style=\"text-align:center\"><img src=\"" + src + "\" style=\"max-width:100%\"></div>"
+    : "<p style=\"padding:20px\">Berkas " + e(name) + " tidak bisa ditampilkan di sini. <a download=\"" + e(name) + "\" href=\"" + src + "\">Unduh berkas</a></p>";
+  w.document.open();
+  var bar = "<div style=\"padding:6px 10px;background:#0b1f4d;color:#fff;font:13px Arial\">" + e(name) + " &middot; <a style=\"color:#f2b705\" download=\"" + e(name) + "\" href=\"" + src + "\">Unduh berkas</a></div>";
+  w.document.write("<!doctype html><html><head><meta charset='utf-8'><title>" + e(name) + "</title><style>body{margin:0;font:14px Arial}</style></head><body>" + bar + body + "</body></html>");
+  w.document.close();
+}
+function smView(r) {
+  if (!r) return;
+  var w = window.open("", "_blank"); // dibuka langsung dari klik agar tidak diblokir pop-up
+  if (!w) { alert("Izinkan pop-up untuk melihat berkas."); return; }
+  w.document.write("<p style='font:14px Arial;padding:20px'>Memuat berkas...</p>");
+  fileCopy(r.id).then(function (d) {
+    if (d && d.data) { showFileIn(w, d.name, d.type, d.data); return; }
+    var u = r.file && drvUrl(r.file.url);
+    if (u) { w.location.href = u; return; }
+    w.close();
+    smNote("Berkas surat ini tidak ditemukan di perangkat ini. Hubungkan Drive lalu muat ulang arsip.", 1);
+  }).catch(function (x) { w.close(); smNote("Gagal membuka berkas: " + x.message, 1); });
+}
+function smRetry(r) {
+  if (!r) return;
+  if (!cfg().url) { smNote("Hubungkan Google Drive dulu di menu Database, lalu klik Unggah ulang.", 1); return; }
+  if (!navigator.onLine) { smNote("Sedang offline. Berkas akan diunggah otomatis saat internet kembali.", 1); return; }
+  smNote("Mengunggah ulang berkas ke Drive...");
+  qtx("readonly", function (st) { return st.get(r.id); }).then(function (d) {
+    if (!d || !d.data) {
+      if (r.file && r.file.fileId) return smPushNow(r.id).then(function () { smNote("Berkas sudah ada di Drive."); });
+      return fileCopy(r.id).then(function (c) {
+        if (!c || !c.data) throw new Error("salinan berkas tidak ada di perangkat");
+        return upload(r, c).then(function () { return smPushNow(r.id); }).then(function () { smNote("Berkas berhasil diunggah ke Drive."); });
+      });
+    }
+    return upload(r, d).then(function () { return smPushNow(r.id); }).then(function () { smNote("Berkas berhasil diunggah ke Drive."); smList(); });
+  }).catch(function (x) { smNote("Gagal mengunggah ulang: " + x.message + ". Coba lagi nanti; berkas tetap aman di perangkat.", 1); });
+}
 $("smreload").onclick = function () { smNote("Memuat arsip dari Google Drive..."); smSync().then(function(){smNote("Arsip Drive berhasil diperbarui.");}).catch(function(x){smNote("Gagal memuat arsip Drive: "+x.message,1);}); };
 $("smb").onclick = function (ev) {
   var b = ev.target.closest("button"); if (!b) return;
@@ -2142,6 +2186,8 @@ $("smb").onclick = function (ev) {
   if (a === "cetak") { smPrintRecord(rec); return; }
   if (a === "cetakfull") { smPrintFull(rec); return; }
   if (a === "unduh") { smDownload(rec); return; }
+  if (a === "lihat") { smView(rec); return; }
+  if (a === "ulang") { smRetry(rec); return; }
   smOpen(rec);
   if (a === "dispo") setTimeout(function () { $("smdcard").scrollIntoView({ behavior: "smooth", block: "start" }); }, 80);
 };
