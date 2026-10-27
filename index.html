@@ -2121,8 +2121,9 @@ function smPrintFull(r) {
     return pages.then(function (imgs) { return { imgs: imgs, note: blob ? (imgs.length || isPdf || isImg ? "" : "Format berkas ini tidak bisa ditampilkan. Hanya lembar disposisi yang dicetak.") : "Berkas surat tidak tersedia di perangkat ini. Hanya lembar disposisi yang dicetak." }; });
   }).then(function (x) {
     var css = (document.getElementById("smcss") || {}).textContent || "";
-    var body = x.imgs.map(function (s) { return "<div class='pgimg'><img src='" + s + "'></div>"; }).join("");
-    body += d ? '<div id="smkertas">' + dispoHtml(r, d.id) + "</div>" : "<p>Belum ada lembar disposisi untuk surat ini.</p>";
+    // Urutan cetak: lembar disposisi dulu (halaman 1), lalu surat yang diunggah (halaman 2 dst.)
+    var body = d ? '<div class="pgdisp" style="page-break-after:always"><div id="smkertas">' + dispoHtml(r, d.id) + "</div></div>" : "<p>Belum ada lembar disposisi untuk surat ini.</p>";
+    body += x.imgs.map(function (s) { return "<div class='pgimg'><img src='" + s + "'></div>"; }).join("");
     var html = "<!doctype html><html><head><meta charset='utf-8'><title>Surat masuk " + e(agenda(r)) + "</title><style>" + css +
       "@page{size:215.9mm 330mm;margin:0}body{margin:0;background:#fff}.pgimg{width:215.9mm;height:330mm;page-break-after:always;display:flex;align-items:center;justify-content:center;overflow:hidden}.pgimg img{max-width:100%;max-height:100%}#smkertas{width:215.9mm;margin:0 auto}" +
       "</style></head><body>" + (x.note ? "<p style='font:13px Arial;padding:10mm'>" + e(x.note) + "</p>" : "") + body + "</body></html>";
