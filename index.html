@@ -4124,5 +4124,542 @@ slRender();
 })();
 </script>
 
+<style id="fotocss">
+#vfoto .fp-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+#vfoto .fp-head h3,#vfoto .card>h3{margin:0 0 10px;color:var(--blue);font-size:16px}
+#vfoto .fp-sub{font-size:12.5px;color:var(--mut);margin-top:3px}
+#vfoto .fp-drop{display:flex;flex-direction:column;align-items:center;gap:4px;border:2px dashed #9db0dd;border-radius:12px;padding:18px 14px;text-align:center;background:#f5f8ff;font-size:13px;color:#44506b}
+#vfoto .fp-drop.on{background:#e3ecff;border-color:var(--blue)}
+#vfoto .fp-drop b{color:var(--blue)}
+#vfoto .fp-drop small{color:var(--mut);font-size:12px}
+#vfoto .fp-drop button{margin:6px 0 0}
+#vfoto .fp-form{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:12px}
+#vfoto .fp-form .w2{grid-column:1/-1}
+#vfoto .fp-row{display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;border:1px solid #e3e9f5;border-radius:10px;padding:8px;margin-top:8px;background:#fbfcff}
+#vfoto .fp-row img{width:86px;height:64px;object-fit:cover;border-radius:6px;background:#f2f5fb}
+#vfoto .fp-row button{margin:0}
+#vfoto .fp-st{font-size:12px;color:var(--mut);margin-top:4px}
+#vfoto .fp-st.ok{color:#128a3d;font-weight:700}
+#vfoto .fp-st.err{color:#b3261e;font-weight:600}
+#vfoto .fp-st.busy{color:#c98a00;font-weight:600}
+#vfoto .fp-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+#vfoto .fp-bar input,#vfoto .fp-bar select{width:auto;flex:1 1 170px;margin:0}
+#vfoto .fp-bar button{margin:0}
+#vfoto .fp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:12px}
+#vfoto .fp-card{border:1px solid #e3e9f5;border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+#vfoto .fp-card img,#vfoto .fp-noimg{width:100%;height:150px;object-fit:cover;background:#f2f5fb;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:12px}
+#vfoto .fp-body{padding:9px 10px 10px;display:flex;flex-direction:column;gap:4px;flex:1}
+#vfoto .fp-body b{font-size:13px;line-height:1.3;color:var(--ink);word-break:break-word}
+#vfoto .fp-meta{font-size:11.5px;color:var(--mut);line-height:1.45}
+#vfoto .fp-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+#vfoto .fp-acts button{margin:0;padding:6px 10px;font-size:12px}
+#vfoto .fp-note{font-size:12.5px;min-height:16px;margin-top:8px;color:#128a3d}
+#vfoto .fp-note.err{color:#b3261e}
+#vfoto .fp-empty{color:var(--mut);font-size:13px;padding:12px 0}
+#vfoto .fp-more{text-align:center;margin-top:12px}
+#vfoto .fp-more button{margin:0}
+@media(max-width:600px){
+  #vfoto .fp-form{grid-template-columns:1fr}
+  #vfoto .fp-row{grid-template-columns:70px 1fr}
+  #vfoto .fp-row img{width:70px;height:54px}
+  #vfoto .fp-row button{grid-column:1/-1;justify-self:start}
+}
+</style>
+
+<div id="vfoto" class="dash" style="display:none">
+  <div class="card fp-head">
+    <div>
+      <h3 style="margin:0">Dokumentasi Foto</h3>
+      <div class="fp-sub">Foto asli disimpan di Google Drive. Daftar dan pencarian disimpan di Spreadsheet.</div>
+    </div>
+    <button class="o" id="fp_reload" type="button">Muat ulang</button>
+  </div>
+
+  <div class="card">
+    <h3>Unggah Foto</h3>
+    <input type="file" id="fp_file" accept="image/*" multiple style="display:none">
+    <div class="fp-drop" id="fp_drop">
+      <b>Tarik dan lepas foto ke sini</b>
+      <small>JPG, PNG, atau WEBP. Foto dikecilkan otomatis agar hemat ruang.</small>
+      <button class="o" id="fp_pick" type="button">Pilih dari perangkat</button>
+    </div>
+    <div class="fp-form">
+      <div><label for="fp_tgl">Tanggal kegiatan</label><input type="date" id="fp_tgl"></div>
+      <div><label for="fp_kat">Kategori (opsional)</label><input id="fp_kat" list="fp_katlist" placeholder="mis. Patroli" maxlength="60"></div>
+      <div class="w2"><label for="fp_lok">Lokasi (opsional)</label><input id="fp_lok" placeholder="mis. Pasar Jatirogo" maxlength="150"></div>
+    </div>
+    <div id="fp_list"></div>
+    <div style="margin-top:10px">
+      <button id="fp_go" type="button">Unggah Foto</button>
+      <button class="o" id="fp_clear" type="button">Kosongkan</button>
+    </div>
+    <div class="fp-note" id="fp_upnote"></div>
+  </div>
+
+  <div class="card">
+    <div class="fp-head">
+      <h3 style="margin:0">Cari dan Unduh</h3>
+      <span id="fp_jumlah" class="fp-sub" style="margin:0"></span>
+    </div>
+    <div class="fp-bar">
+      <input id="fp_q" type="search" placeholder="Cari judul, kategori, lokasi, atau tanggal" autocomplete="off">
+      <select id="fp_fkat"><option value="">Semua kategori</option></select>
+      <input type="date" id="fp_dari" title="Dari tanggal">
+      <input type="date" id="fp_sampai" title="Sampai tanggal">
+      <button class="o" id="fp_reset" type="button">Atur ulang</button>
+      <button id="fp_dlall" type="button" disabled>Unduh semua hasil</button>
+    </div>
+    <div class="fp-note" id="fp_note"></div>
+    <div class="fp-grid" id="fp_grid"></div>
+    <div class="fp-more"><button class="o" id="fp_more" type="button" style="display:none"></button></div>
+  </div>
+  <datalist id="fp_katlist"></datalist>
+</div>
+
+<script id="fotojs">
+(function () {
+  "use strict";
+
+  var FP_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  var FP_PAGE = 48;      // jumlah kartu per halaman
+  var FP_DL_MAX = 50;    // batas unduh semua hasil sekali jalan
+
+  var FP = [];           // foto tersimpan (metadata + thumbnail) dari Spreadsheet
+  var fpItems = [];      // antrean unggah: { file, url, ket, status, msg }
+  var fpShow = FP_PAGE;
+  var fpBusy = false;
+
+  function $f(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function fpIso(d) {
+    d = d || new Date();
+    var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function fpTgl(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || "");
+    return m ? (+m[3]) + " " + FP_BULAN[+m[2] - 1] + " " + m[1] : "";
+  }
+  function fpKB(n) {
+    return n < 1048576 ? Math.max(1, Math.round(n / 1024)) + " KB" : (n / 1048576).toFixed(1) + " MB";
+  }
+  function fpSlug(s) {
+    var t = String(s || "").replace(/[\\\/:*?"<>|\u0000-\u001f]/g, " ").replace(/\s+/g, "-").replace(/^-+|-+$/g, "");
+    return t.slice(0, 80) || "foto";
+  }
+  function fpRnd() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 9); }
+  function fpPesan(x) {
+    var m = String((x && x.message) || x || "");
+    if (/tidak dikenal/i.test(m)) return "Google Apps Script belum diperbarui: tempel Code.gs terbaru, jalankan setup, lalu terapkan versi baru.";
+    if (/failed to fetch|networkerror|load failed/i.test(m)) return "Tidak bisa terhubung ke Google Apps Script. Periksa koneksi internet dan URL di menu Database.";
+    return m;
+  }
+  function fpCatat(el, t, err) { el.textContent = t || ""; el.className = "fp-note" + (err ? " err" : ""); }
+
+  /* ---------- Kompresi di browser ---------- */
+  function fpBaca(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () { resolve({ img: img, url: url }); };
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        reject(new Error("Foto tidak bisa dibaca. Gunakan JPG, PNG, atau WEBP."));
+      };
+      img.src = url;
+    });
+  }
+  function fpJpeg(img, sisi, kualitas) {
+    var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+    var s = Math.min(1, sisi / Math.max(w, h));
+    var c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(w * s));
+    c.height = Math.max(1, Math.round(h * s));
+    var x = c.getContext("2d");
+    x.fillStyle = "#fff";
+    x.fillRect(0, 0, c.width, c.height);
+    x.drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", kualitas);
+  }
+  function fpKompres(img) {
+    var full = fpJpeg(img, 2048, 0.85);
+    if (full.length > 4000000) full = fpJpeg(img, 1600, 0.75);
+    var thumb = fpJpeg(img, 240, 0.6);
+    if (thumb.length > 38000) thumb = fpJpeg(img, 200, 0.5);
+    if (thumb.length > 38000) thumb = fpJpeg(img, 160, 0.45);
+    if (thumb.length > 38000) thumb = "";   // tanpa pratinjau, foto tetap tersimpan
+    return { full: full, thumb: thumb };
+  }
+
+  /* ---------- Antrean unggah ---------- */
+  function fpTambah(list) {
+    var note = $f("fp_upnote");
+    var semua = Array.prototype.slice.call(list || []);
+    var foto = semua.filter(function (f) {
+      return /^image\//.test(f.type) || /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(f.name);
+    });
+    if (!foto.length) { fpCatat(note, "Pilih berkas foto (JPG, PNG, atau WEBP).", true); return; }
+    foto.forEach(function (f) {
+      fpItems.push({
+        file: f,
+        url: URL.createObjectURL(f),
+        ket: f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim(),
+        status: "idle",
+        msg: ""
+      });
+    });
+    var lewat = semua.length - foto.length;
+    fpCatat(note, foto.length + " foto ditambahkan. Isi keterangan tiap foto, lalu klik Unggah Foto." +
+      (lewat ? " " + lewat + " berkas bukan foto dilewati." : ""));
+    fpRenderItems();
+  }
+
+  function fpRenderItems() {
+    $f("fp_list").innerHTML = fpItems.map(function (it, i) {
+      var kunci = (it.status === "busy" || it.status === "ok") ? " disabled" : "";
+      var kelas = it.status === "ok" || it.status === "err" || it.status === "busy" ? it.status : "";
+      var keterangan = it.msg || (it.status === "idle" ? fpKB(it.file.size) + ", menunggu" : "");
+      return '<div class="fp-row">' +
+        '<img alt="" src="' + it.url + '">' +
+        '<div><input data-k="' + i + '" maxlength="200" placeholder="Keterangan foto" value="' + esc(it.ket) + '"' + kunci + '>' +
+        '<div class="fp-st ' + kelas + '">' + esc(keterangan) + '</div></div>' +
+        '<button class="o" data-rm="' + i + '" type="button"' + kunci + '>Hapus</button>' +
+        '</div>';
+    }).join("");
+    var belum = fpItems.filter(function (it) { return it.status !== "ok"; }).length;
+    $f("fp_go").textContent = belum ? "Unggah " + belum + " foto" : "Unggah Foto";
+    $f("fp_go").disabled = fpBusy || !belum;
+  }
+
+  function fpKirim(it, m) {
+    function set(st, msg) { it.status = st; it.msg = msg || ""; fpRenderItems(); }
+    set("busy", "Mengompres foto...");
+    return fpBaca(it.file).then(function (L) {
+      var k = fpKompres(L.img);
+      URL.revokeObjectURL(L.url);
+      set("busy", "Mengunggah ke Drive...");
+      var id = fpRnd(), judul = it.ket.trim();
+      var rec = {
+        id: id,
+        judul: judul,
+        tanggal: m.tgl,
+        kategori: m.kat,
+        lokasi: m.lok,
+        oleh: who(),
+        thumb: k.thumb,
+        name: (m.tgl || fpIso()) + "_" + fpSlug(judul) + ".jpg"
+      };
+      return api({
+        action: "fotoUpload",
+        id: id,
+        name: rec.name,
+        type: "image/jpeg",
+        data: k.full.slice(k.full.indexOf(",") + 1),
+        record: rec
+      }).then(function (j) {
+        FP.push(j.record || rec);
+        set("ok", "Tersimpan di Google Drive");
+        return true;
+      });
+    }).catch(function (x) {
+      set("err", fpPesan(x));
+      return false;
+    });
+  }
+
+  function fpUnggah() {
+    var note = $f("fp_upnote");
+    if (fpBusy) return;
+    if (!cfg().url) {
+      fpCatat(note, "Belum tersambung ke Google Drive. Atur URL dan token di menu Database.", true);
+      return;
+    }
+    var antrean = fpItems.filter(function (it) { return it.status !== "ok"; });
+    if (!antrean.length) { fpCatat(note, "Pilih foto terlebih dahulu.", true); return; }
+    var kosong = antrean.filter(function (it) { return !it.ket.trim(); });
+    if (kosong.length) { fpCatat(note, "Isi keterangan untuk semua foto yang akan diunggah.", true); return; }
+
+    var m = { tgl: $f("fp_tgl").value || fpIso(), kat: $f("fp_kat").value.trim(), lok: $f("fp_lok").value.trim() };
+    var ok = 0, gagal = 0;
+    fpBusy = true;
+    fpRenderItems();
+    fpCatat(note, "Mengunggah " + antrean.length + " foto satu per satu...");
+
+    antrean.reduce(function (p, it) {
+      return p.then(function () {
+        return fpKirim(it, m).then(function (berhasil) { if (berhasil) ok++; else gagal++; });
+      });
+    }, Promise.resolve()).then(function () {
+      fpBusy = false;
+      // Foto yang sudah tersimpan dikeluarkan dari antrean; sisanya (gagal) tetap ada.
+      fpItems = fpItems.filter(function (it) {
+        if (it.status === "ok") { URL.revokeObjectURL(it.url); return false; }
+        return true;
+      });
+      fpRenderItems();
+      fpIsiKategori();
+      fpRenderGrid();
+      fpCatat(note, ok + " foto tersimpan" +
+        (gagal ? ", " + gagal + " gagal. Foto yang gagal tetap ada di daftar, silakan unggah ulang." : "."), gagal > 0);
+    });
+  }
+
+  /* ---------- Muat daftar dari Spreadsheet ---------- */
+  function fpMuat() {
+    var note = $f("fp_note");
+    if (!cfg().url) {
+      FP = [];
+      fpIsiKategori();
+      fpRenderGrid();
+      fpCatat(note, "Belum tersambung ke Google Drive. Atur URL dan token di menu Database, lalu muat ulang.", true);
+      return Promise.resolve();
+    }
+    fpCatat(note, "Memuat daftar foto...");
+    return fetch(curl("&action=fotolist")).then(function (r) { return r.json(); }).then(function (j) {
+      if (j.error) throw new Error(j.error);
+      if (!Array.isArray(j.foto)) throw new Error("Google Apps Script belum diperbarui: tempel Code.gs terbaru, jalankan setup, lalu terapkan versi baru.");
+      FP = j.foto;
+      fpIsiKategori();
+      fpRenderGrid();
+      fpCatat(note, "");
+    }).catch(function (x) {
+      fpCatat(note, "Gagal memuat foto: " + fpPesan(x), true);
+    });
+  }
+
+  /* ---------- Pencarian dan tampilan ---------- */
+  function fpFilter() {
+    var kata = $f("fp_q").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    var kat = $f("fp_fkat").value.toLowerCase();
+    var dari = $f("fp_dari").value, sampai = $f("fp_sampai").value;
+    return FP.filter(function (r) {
+      var tg = r.tanggal || "";
+      if (kat && String(r.kategori || "").toLowerCase() !== kat) return false;
+      if (dari && tg < dari) return false;
+      if (sampai && tg > sampai) return false;
+      if (kata.length) {
+        var teks = [r.judul, r.kategori, r.lokasi, r.name, tg, fpTgl(tg)].join(" ").toLowerCase();
+        for (var i = 0; i < kata.length; i++) if (teks.indexOf(kata[i]) < 0) return false;
+      }
+      return true;
+    }).sort(function (a, b) {
+      var x = a.tanggal || "", y = b.tanggal || "";
+      if (x !== y) return x < y ? 1 : -1;
+      return (b.saved || 0) - (a.saved || 0);
+    });
+  }
+
+  function fpIsiKategori() {
+    var peta = {}, daftar = [];
+    FP.forEach(function (r) {
+      var k = String(r.kategori || "").trim();
+      if (k && !peta[k.toLowerCase()]) { peta[k.toLowerCase()] = true; daftar.push(k); }
+    });
+    daftar.sort(function (a, b) { return a.localeCompare(b, "id"); });
+    var sel = $f("fp_fkat"), nilai = sel.value, ada = false;
+    daftar.forEach(function (k) { if (k === nilai) ada = true; });
+    sel.innerHTML = '<option value="">Semua kategori</option>' + daftar.map(function (k) {
+      return '<option value="' + esc(k) + '">' + esc(k) + '</option>';
+    }).join("");
+    sel.value = ada ? nilai : "";
+    $f("fp_katlist").innerHTML = daftar.map(function (k) { return '<option value="' + esc(k) + '">'; }).join("");
+  }
+
+  function fpKartu(r) {
+    var meta = [fpTgl(r.tanggal), [r.kategori, r.lokasi].filter(Boolean).join(", "), r.size ? fpKB(r.size) : ""].filter(Boolean);
+    return '<div class="fp-card">' +
+      (r.thumb ? '<img alt="" loading="lazy" src="' + esc(r.thumb) + '">' : '<div class="fp-noimg">Tanpa pratinjau</div>') +
+      '<div class="fp-body"><b>' + esc(r.judul || r.name || "Foto") + '</b>' +
+      '<div class="fp-meta">' + meta.map(function (t) { return esc(t); }).join("<br>") + '</div>' +
+      '<div class="fp-acts">' +
+      '<button data-a="unduh" data-i="' + esc(r.id) + '" type="button">Unduh</button>' +
+      (canDel(r) ? '<button class="o" data-a="hapus" data-i="' + esc(r.id) + '" type="button">Hapus</button>' : '') +
+      '</div></div></div>';
+  }
+
+  function fpRenderGrid() {
+    var hasil = fpFilter(), grid = $f("fp_grid");
+    $f("fp_jumlah").textContent = FP.length ? hasil.length + " dari " + FP.length + " foto" : "";
+    var tampil = hasil.slice(0, fpShow);
+    if (!FP.length) grid.innerHTML = '<div class="fp-empty">Belum ada foto tersimpan. Unggah foto di atas.</div>';
+    else if (!hasil.length) grid.innerHTML = '<div class="fp-empty">Tidak ada foto yang cocok. Coba kata kunci lain atau atur ulang filter.</div>';
+    else grid.innerHTML = tampil.map(fpKartu).join("");
+    var sisa = hasil.length - tampil.length;
+    var more = $f("fp_more");
+    more.style.display = sisa > 0 ? "" : "none";
+    more.textContent = "Tampilkan " + Math.min(FP_PAGE, sisa) + " foto lagi";
+    $f("fp_dlall").disabled = !hasil.length;
+  }
+
+  /* ---------- Unduh ---------- */
+  function fpB64ToBlob(b64, type) {
+    var bin = atob(b64), n = bin.length, u = new Uint8Array(n);
+    for (var i = 0; i < n; i++) u[i] = bin.charCodeAt(i);
+    return new Blob([u], { type: type || "application/octet-stream" });
+  }
+  function fpSimpan(d) {
+    var url = URL.createObjectURL(fpB64ToBlob(d.data, d.type));
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = d.name || "foto.jpg";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 2000);
+  }
+  function fpAmbil(r) { return api({ action: "fotoGet", id: r.id }).then(fpSimpan); }
+
+  function fpUnduhSatu(r, btn) {
+    var note = $f("fp_note"), teks = btn.textContent;
+    if (!cfg().url) { fpCatat(note, "Belum tersambung ke Google Drive.", true); return; }
+    btn.disabled = true;
+    btn.textContent = "Mengunduh...";
+    fpAmbil(r).then(function () {
+      fpCatat(note, "Foto \"" + (r.judul || r.name) + "\" diunduh.");
+    }, function (x) {
+      fpCatat(note, "Gagal mengunduh: " + fpPesan(x), true);
+    }).then(function () {
+      btn.disabled = false;
+      btn.textContent = teks;
+    });
+  }
+
+  function fpUnduhSemua() {
+    var note = $f("fp_note"), btn = $f("fp_dlall");
+    var hasil = fpFilter(), batas = hasil.slice(0, FP_DL_MAX);
+    if (!batas.length) return;
+    if (!cfg().url) { fpCatat(note, "Belum tersambung ke Google Drive.", true); return; }
+    var pesan = "Unduh " + batas.length + " foto hasil pencarian satu per satu?";
+    if (hasil.length > FP_DL_MAX) pesan += "\n(Dibatasi " + FP_DL_MAX + " foto sekali unduh.)";
+    pesan += "\n\nJika browser meminta izin unduh berulang, pilih Izinkan.";
+    if (!confirm(pesan)) return;
+
+    var ok = 0, gagal = 0;
+    btn.disabled = true;
+    batas.reduce(function (p, r, i) {
+      return p.then(function () {
+        fpCatat(note, "Mengunduh " + (i + 1) + " dari " + batas.length + "...");
+        return fpAmbil(r).then(function () { ok++; }, function () { gagal++; })
+          .then(function () { return new Promise(function (res) { setTimeout(res, 800); }); });
+      });
+    }, Promise.resolve()).then(function () {
+      btn.disabled = false;
+      fpCatat(note, ok + " foto diunduh" + (gagal ? ", " + gagal + " gagal." : "."), gagal > 0);
+    });
+  }
+
+  /* ---------- Hapus ---------- */
+  function fpHapus(r) {
+    var note = $f("fp_note");
+    if (!confirm("Hapus foto \"" + (r.judul || r.name) + "\"?\nBerkas di Google Drive akan dipindah ke sampah.")) return;
+    FP = FP.filter(function (x) { return x.id !== r.id; });
+    fpIsiKategori();
+    fpRenderGrid();
+    api({ action: "fotoDelete", id: r.id, fileId: r.fileId }).then(function () {
+      fpCatat(note, "Foto dihapus.");
+    }, function (x) {
+      FP.push(r);
+      fpIsiKategori();
+      fpRenderGrid();
+      fpCatat(note, "Gagal menghapus: " + fpPesan(x), true);
+    });
+  }
+
+  /* ---------- Event ---------- */
+  var drop = $f("fp_drop");
+  ["dragenter", "dragover"].forEach(function (t) {
+    drop.addEventListener(t, function (ev) { ev.preventDefault(); drop.classList.add("on"); });
+  });
+  ["dragleave", "drop"].forEach(function (t) {
+    drop.addEventListener(t, function (ev) { ev.preventDefault(); drop.classList.remove("on"); });
+  });
+  drop.addEventListener("drop", function (ev) {
+    fpTambah(ev.dataTransfer && ev.dataTransfer.files);
+  });
+  $f("fp_pick").onclick = function () { $f("fp_file").click(); };
+  $f("fp_file").addEventListener("change", function () {
+    var arr = Array.prototype.slice.call(this.files || []);
+    this.value = "";
+    fpTambah(arr);
+  });
+
+  $f("fp_list").addEventListener("input", function (ev) {
+    if (ev.target.hasAttribute && ev.target.hasAttribute("data-k")) {
+      var it = fpItems[+ev.target.getAttribute("data-k")];
+      if (it) it.ket = ev.target.value;
+    }
+  });
+  $f("fp_list").addEventListener("click", function (ev) {
+    var b = ev.target.closest && ev.target.closest("[data-rm]");
+    if (!b || fpBusy) return;
+    var it = fpItems.splice(+b.getAttribute("data-rm"), 1)[0];
+    if (it) URL.revokeObjectURL(it.url);
+    fpRenderItems();
+  });
+
+  $f("fp_go").onclick = fpUnggah;
+  $f("fp_clear").onclick = function () {
+    if (fpBusy) return;
+    fpItems.forEach(function (it) { URL.revokeObjectURL(it.url); });
+    fpItems = [];
+    fpCatat($f("fp_upnote"), "");
+    fpRenderItems();
+  };
+  $f("fp_reload").onclick = fpMuat;
+
+  $f("fp_grid").addEventListener("click", function (ev) {
+    var b = ev.target.closest && ev.target.closest("[data-a]");
+    if (!b) return;
+    var id = b.getAttribute("data-i");
+    var r = FP.filter(function (x) { return String(x.id) === id; })[0];
+    if (!r) return;
+    if (b.getAttribute("data-a") === "unduh") fpUnduhSatu(r, b);
+    else fpHapus(r);
+  });
+
+  $f("fp_q").addEventListener("input", function () { fpShow = FP_PAGE; fpRenderGrid(); });
+  ["fp_dari", "fp_sampai"].forEach(function (id) {
+    $f(id).addEventListener("change", function () { fpShow = FP_PAGE; fpRenderGrid(); });
+  });
+  $f("fp_fkat").addEventListener("change", function () { fpShow = FP_PAGE; fpRenderGrid(); });
+  $f("fp_reset").onclick = function () {
+    $f("fp_q").value = ""; $f("fp_fkat").value = "";
+    $f("fp_dari").value = ""; $f("fp_sampai").value = "";
+    fpShow = FP_PAGE;
+    fpRenderGrid();
+  };
+  $f("fp_more").onclick = function () { fpShow += FP_PAGE; fpRenderGrid(); };
+  $f("fp_dlall").onclick = fpUnduhSemua;
+
+  /* ---------- Integrasi tab dan dashboard ---------- */
+  var ICON = '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>';
+  $f("qa").insertAdjacentHTML("beforeend",
+    '<div role="button" tabindex="0" data-go="foto"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true">' + ICON +
+    '</svg><b>Dokumentasi Foto</b><span>Unggah, cari, dan unduh foto</span></div>');
+
+  var tb = document.createElement("button");
+  tb.id = "tfoto";
+  tb.type = "button";
+  tb.innerHTML = '<svg class="ni" viewBox="0 0 24 24" aria-hidden="true">' + ICON + '</svg>Dokumentasi Foto';
+  $f("tuser").parentNode.insertBefore(tb, $f("tuser"));
+  tb.onclick = function () { show("foto"); };
+
+  var prevShow = window.show;
+  window.show = function (name) {
+    prevShow(name);
+    var on = name === "foto";
+    $f("vfoto").style.display = on ? "" : "none";
+    $f("tfoto").className = on ? "on" : "";
+    if (on) fpMuat();
+  };
+
+  $f("fp_tgl").value = fpIso();
+  fpRenderItems();
+  fpRenderGrid();
+})();
+</script>
+
 </body>
 </html>
