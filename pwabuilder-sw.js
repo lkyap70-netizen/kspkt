@@ -1,6 +1,6 @@
 // Service worker KSPKT Polsek Jatirogo: aplikasi tetap bisa dibuka tanpa internet.
 // Naikkan VERSION setiap kali Anda mengganti index.html agar cache lama dibuang.
-var VERSION = "kspkt-v1";
+var VERSION = "kspkt-v4";
 
 var CORE = ["./", "index.html"];
 var LIBS = [
@@ -50,6 +50,12 @@ self.addEventListener("fetch", function (event) {
   var cdn = url.hostname === "cdnjs.cloudflare.com";
   // Permintaan ke Google Apps Script (sinkronisasi Drive) dan situs lain tidak disentuh.
   if (!same && !cdn) return;
+
+  // Formulir tamu selalu diambil dari jaringan dan tidak boleh menimpa cache index.html.
+  if (req.mode === "navigate" && /\/tamu\.html$/.test(url.pathname)) {
+    event.respondWith(fetch(req));
+    return;
+  }
 
   // Buka halaman: pakai versi terbaru kalau online, versi tersimpan kalau offline.
   if (req.mode === "navigate") {

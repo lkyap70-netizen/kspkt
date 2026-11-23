@@ -3,7 +3,8 @@
  * Kompatibel dengan index.html KSPKT yang memakai aksi:
  * save/delete/pdf/claimNo, userSave/userDelete/userlist,
  * ohSave/ohDelete/ohlist, smSave/smDelete/smlist, smUpload/smTrash,
- * fotoUpload/fotoGet/fotoDelete/fotolist (dokumentasi foto).
+ * fotoUpload/fotoGet/fotoDelete/fotolist (dokumentasi foto),
+ * tamuSubmit (formulir publik tamu.html), tamulist/tamuStatus/tamuDelete (buku tamu).
  *
  * LANGKAH AWAL:
  * 1. Jika project ini sudah terhubung ke Spreadsheet lama, biarkan SPREADSHEET_ID kosong.
@@ -32,7 +33,7 @@ var KSPKT_CONFIG = {
   DRIVE_FOLDER_ID: ''
 };
 
-var KSPKT_VERSION = '2026.11.23-1';
+var KSPKT_VERSION = '2026.11.23-2';
 var KSPKT_PROP = PropertiesService.getScriptProperties();
 
 var KSPKT_COLLECTIONS = {
@@ -59,6 +60,10 @@ var KSPKT_COLLECTIONS = {
   foto: {
     preferred: 'Dokumentasi_Foto',
     aliases: ['Dokumentasi_Foto', 'Dokumentasi Foto', 'Dokumentasi', 'KSPKT_Dokumentasi_Foto']
+  },
+  tamu: {
+    preferred: 'Buku_Tamu',
+    aliases: ['Buku_Tamu', 'Buku Tamu', 'KSPKT_Buku_Tamu']
   }
 };
 
@@ -80,12 +85,15 @@ function setup() {
   ensureCollectionSheet_(ss, 'sm');
   ensureCollectionSheet_(ss, 'claims');
   ensureCollectionSheet_(ss, 'foto');
+  ensureCollectionSheet_(ss, 'tamu');
   ensureDriveFolders_();
+  var kunciTamu = getTamuKey_();
 
   Logger.log('KSPKT setup selesai.');
   Logger.log('Spreadsheet: ' + ss.getUrl());
   Logger.log('API TOKEN (samakan dengan menu Database aplikasi): ' + token);
   Logger.log('Versi backend: ' + KSPKT_VERSION);
+  Logger.log('KUNCI TAMU (salin ke TAMU_CONFIG di tamu.html): ' + kunciTamu);
   return { ok: true, spreadsheetUrl: ss.getUrl(), version: KSPKT_VERSION };
 }
 
@@ -99,6 +107,7 @@ function doGet(e) {
     if (action === 'ohlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, oh: readCollection_('oh') });
     if (action === 'smlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, sm: readCollection_('sm') });
     if (action === 'fotolist') return jsonOut_({ ok: true, version: KSPKT_VERSION, foto: readCollection_('foto') });
+    if (action === 'tamulist') return jsonOut_({ ok: true, version: KSPKT_VERSION, tamu: readCollection_('tamu') });
     if (action === 'news') return jsonOut_(getNews_());
     if (action === 'ping' || action === 'status') {
       return jsonOut_({ ok: true, version: KSPKT_VERSION, message: 'KSPKT Apps Script aktif.' });
@@ -115,9 +124,10 @@ function doPost(e) {
   try {
     if (!e || !e.postData || !e.postData.contents) throw new Error('Isi permintaan kosong.');
     var body = JSON.parse(e.postData.contents);
-    requireToken_(body.token);
     var action = String(body.action || '').trim();
     var result;
+    // Formulir tamu publik hanya boleh mengirim data baru dengan kunci tamu, tanpa token admin.
+    if (action !== 'tamuSubmit') requireToken_(body.token);
 
     switch (action) {
       case 'save':
@@ -164,6 +174,15 @@ function doPost(e) {
         break;
       case 'fotoDelete':
         result = fotoDelete_(body.id);
+        break;
+      case 'tamuSubmit':
+        result = tamuSubmit_(body);
+        break;
+      case 'tamuStatus':
+        result = tamuStatus_(body.id, body.status, body.oleh);
+        break;
+      case 'tamuDelete':
+        result = deleteRecord_('tamu', body.id);
         break;
       default:
         throw new Error('Aksi tidak dikenal: ' + action);
@@ -657,6 +676,114 @@ function findRecord_(key, id) {
     }
   }
   return null;
+}
+
+/* ========================= BUKU TAMU (FORMULIR PUBLIK) ========================= */
+// Tamu mengisi tamu.html dari HP. Data masuk ke tab Buku_Tamu dengan status "baru".
+// Kunci tamu hanya mengizinkan pengiriman data baru. Membaca dan mengubah data tetap memakai token admin.
+var KSPKT_TAMU_KEPERLUAN = [
+  'Lapor kehilangan (SKTLK)',
+  'Surat pernyataan / kuasa',
+  'Pengaduan masyarakat',
+  'Pengambilan surat',
+  'Permohonan informasi',
+  'Lainnya'
+];
+var KSPKT_TAMU_STATUS = ['baru', 'diproses', 'selesai'];
+var KSPKT_TAMU_BATAS = 60;            // total kiriman formulir per 10 menit (seluruh pengunjung)
+var KSPKT_TAMU_ZONA = 'Asia/Jakarta';
+
+/** Kunci untuk halaman tamu. Dibuat sekali, lalu disimpan di Script Properties. */
+function getTamuKey_() {
+  var k = KSPKT_PROP.getProperty('KSPKT_TAMU_KEY');
+  if (!k) {
+    k = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '').slice(0, 24);
+    KSPKT_PROP.setProperty('KSPKT_TAMU_KEY', k);
+  }
+  return k;
+}
+
+/** Pembatas laju sederhana untuk seluruh formulir. Tidak per alamat IP, karena Apps Script tidak menyediakannya. */
+function tamuBatasOk_() {
+  var cache = CacheService.getScriptCache();
+  var kunci = 'tamu_rl_' + Math.floor(Date.now() / 600000);
+  var n = parseInt(cache.get(kunci) || '0', 10) + 1;
+  cache.put(kunci, String(n), 1200);
+  return n <= KSPKT_TAMU_BATAS;
+}
+
+/** Nomor antrian: T + ddMMyyyy + "-" + urut 3 digit per hari. Dipanggil saat Lock sudah dipegang. */
+function tamuNomorBaru_(tgl) {
+  var prefix = 'T' + tgl.split('-').reverse().join('') + '-';
+  var maks = 0;
+  readCollection_('tamu').forEach(function (r) {
+    if (String(r.id || '').indexOf(prefix) === 0) {
+      var n = parseInt(String(r.id).slice(prefix.length), 10) || 0;
+      if (n > maks) maks = n;
+    }
+  });
+  var urut = maks + 1;
+  return prefix + (urut < 10 ? '00' : urut < 100 ? '0' : '') + urut;
+}
+
+/** Menerima pendaftaran dari formulir publik. Hanya kiriman yang lolos semua pemeriksaan yang disimpan. */
+function tamuSubmit_(body) {
+  if (String(body.key || '') !== getTamuKey_()) throw new Error('Kunci halaman tamu tidak sesuai.');
+  // Kolom 'website' disembunyikan di formulir. Kiriman yang mengisinya dianggap bot: dibalas sukses, tidak disimpan.
+  if (String(body.website || '').trim() !== '') return { ok: true, nomor: '', pesan: 'Terima kasih.' };
+  var d = body.data || {};
+  var rec = {
+    nama: fotoClean_(d.nama, 100),
+    nik: String(d.nik || '').replace(/\D/g, ''),
+    alamat: fotoClean_(d.alamat, 250),
+    hp: String(d.hp || '').replace(/[\s\-]/g, '').slice(0, 15),
+    keperluan: fotoClean_(d.keperluan, 60),
+    tujuan: fotoClean_(d.tujuan, 100),
+    keterangan: fotoClean_(d.keterangan, 300)
+  };
+  if (rec.nama.length < 2) throw new Error('Nama wajib diisi.');
+  if (!/^\d{16}$/.test(rec.nik)) throw new Error('NIK harus 16 digit angka.');
+  if (rec.alamat.length < 5) throw new Error('Alamat wajib diisi.');
+  if (rec.hp && !/^(\+?62|0)\d{8,13}$/.test(rec.hp)) throw new Error('Nomor HP tidak valid.');
+  if (KSPKT_TAMU_KEPERLUAN.indexOf(rec.keperluan) < 0) throw new Error('Pilih keperluan kunjungan dari daftar.');
+  // Kuota hanya dihitung untuk kiriman yang lolos validasi, agar kiriman tidak valid tidak menghabiskan jatah tamu sungguhan.
+  if (!tamuBatasOk_()) throw new Error('Terlalu banyak pendaftaran dalam waktu singkat. Silakan coba beberapa menit lagi.');
+
+  var tgl = Utilities.formatDate(new Date(), KSPKT_TAMU_ZONA, 'yyyy-MM-dd');
+  rec.tanggal = tgl;
+  rec.jam = Utilities.formatDate(new Date(), KSPKT_TAMU_ZONA, 'HH:mm');
+  rec.status = 'baru';
+  rec.sumber = 'formulir';
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    rec.id = tamuNomorBaru_(tgl);
+    rec.saved = Date.now();
+    saveRecordUnlocked_('tamu', rec);
+  } finally {
+    lock.releaseLock();
+  }
+  return { ok: true, nomor: rec.id, pesan: 'Pendaftaran berhasil. Tunjukkan nomor antrian ini kepada petugas.' };
+}
+
+/** Mengubah status tamu (baru / diproses / selesai). Hanya dipanggil dari aplikasi admin. */
+function tamuStatus_(id, status, oleh) {
+  status = String(status || '').trim();
+  if (KSPKT_TAMU_STATUS.indexOf(status) < 0) throw new Error('Status tamu tidak dikenal.');
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var rec = findRecord_('tamu', id);
+    if (!rec) throw new Error('Data tamu tidak ditemukan.');
+    rec.status = status;
+    rec.diubahOleh = fotoClean_(oleh, 100);
+    rec.saved = Date.now();
+    saveRecordUnlocked_('tamu', rec);
+    return { ok: true, id: String(id), status: status };
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 /* ========================= BERITA POLRESTA TUBAN (detik.com) ========================= */
