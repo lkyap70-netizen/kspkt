@@ -1061,7 +1061,7 @@ h+='<p style="text-indent:10mm">Pada hari ini '+H[w.getDay()]+' tanggal '+tgl(w)
 h+='<table class="d">';
 [["N a m a",$("nama").value.toUpperCase()],["N I K",$("nik").value],["Tempat/ Tanggal lahir",$("ttl").value],["Agama",$("agama").value],["Kewarganegaraan",$("wn").value],["Pekerjaan",$("kerja").value],["Alamat",ALM()],["No. telepon",$("tel").value]].forEach(function(r){h+='<tr><td style="width:150px">'+r[0]+'</td><td style="width:14px">:</td><td>'+e(r[1])+'</td></tr>'});
 h+='</table><p>Melaporkan kehilangan sebuah barang / surat berupa :</p><ul>'+items+'</ul>';
-h+='<p>'+kataBarang()+' tersebut diketahui hilang pada '+(hl?H[hl.getDay()]+' tanggal '+tgl(hl):'Hari ... tanggal ...')+' '+tempatTeks()+'</p>';
+h+='<p>Diketahui hilang pada '+(hl?H[hl.getDay()]+' tanggal '+tgl(hl):'Hari ... tanggal ...')+' '+tempatTeks()+'</p>';
 h+='<div class="ket"><p><b>KETERANGAN :</b></p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) ini bukan sebagai pengganti Surat/Dokumen yang hilang, melainkan sebagai syarat untuk mengurus surat-surat yang baru ke instansi yang berwenang.</p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) ini berlaku 14 ( Empat Belas) hari tanggal dikeluarkan.</p><p>- SKTLK (Surat Keterangan Tanda Lapor Kehilangan) tidak berlaku apabila laporan/palsu, sebagaimana dimaksud dalam pasal 242 ayat (1) KUHP (barang siapa memberikan, membuat laporan atau keterangan palsu atau bohong diancam penjara paling lama tujuh tahun).</p></div>';
 h+='<p>Demikian Surat Keterangan Tanda Laporan Kehilangan ini dibuat untuk dapat dipergunakan seperlunya</p>';
 h+='<p>&nbsp;</p>';
@@ -3657,13 +3657,6 @@ img, svg, video, canvas { max-width: 100%; }
 <div class="ohx-sec">Kelengkapan yang dibawa (1 baris = 1 item)</div>
 <textarea id="sl_k_items" rows="4" placeholder="1 LEMBAR SURAT BERHARGA KARTU ATM - ATM BRI an. ..."></textarea>
 </div>
-<div class="ohx-sec">Tanda Tangan</div>
-<div class="ohx-g">
-<div class="w2"><label>Nama petugas yang menerima</label><input id="sl_petugas"></div>
-<div><label>NRP petugas</label><input id="sl_petugas_nrp"></div>
-<div class="w2"><label>Nama pejabat yang mengetahui</label><input id="sl_kepala"></div>
-<div><label>NRP pejabat</label><input id="sl_kepala_nrp"></div>
-</div>
 <div class="ohx-bar" style="margin-top:12px"><button id="sl_cetak" type="button">Cetak / Simpan PDF</button></div>
 <label style="margin-top:14px">Pratinjau</label>
 <div class="wrap"><div id="sl_kertas"></div></div>
@@ -3978,7 +3971,7 @@ var CSS = ""
 + ".sxt{width:100%;border-collapse:collapse;margin-top:18px;page-break-inside:avoid}"
 + ".sxt td{width:50%;vertical-align:top;text-align:center;padding:0 6px}"
 + ".sxsp{height:70px}"
-+ ".sxmat{display:block;width:96px;height:52px;margin:4px auto;border:1px dashed #777;font:9pt/1.15 Arial,sans-serif;color:#666;padding-top:7px;box-sizing:border-box}"
++ ".sxmat{display:block;width:20mm;height:12mm;margin:4pt auto;position:relative;left:-15mm;border:1px dashed #777;font:6.5pt/1.1 Arial,sans-serif;color:#666;padding-top:2mm;box-sizing:border-box;text-align:center}"
 + ".sxmg{text-align:center;margin-top:14px;page-break-inside:avoid}"
 + ".sxpern{font-family:Arial,Helvetica,sans-serif;font-size:12pt;line-height:1.15;text-align:left}"
 + ".sxpern p{margin:0;text-align:left}"
@@ -4047,7 +4040,7 @@ function slHTML() {
     h += '<p class="dl" style="margin-top:6pt">ALAMAT YANG TERTERA DALAM DOKUMEN/SURAT/BARANG :</p>';
     h += '<p class="val"><b>' + dv("d_alamat") + "</b></p>";
     h += '<p class="pj" style="margin-top:14pt">Demikian surat pernyataan ini saya buat dengan sebenarnya bahwa barang/surat tersebut benar-benar hilang dan apabila ternyata saya telah memberikan informasi keterangan/data yang tidak benar, maka saya bersedia dituntut sesuai dengan Undang-undang dan dapat diproses sesuai dengan ketentuan hukum yang berlaku.</p>';
-    h += '<div class="sig">' + tempat + ", " + tg + "<br>YANG MEMBUAT PERNYATAAN<div class=\"sp\"></div><u>" + dv("p_nama") + "</u></div>";
+    h += '<div class="sig">' + tempat + ", " + tg + "<br>YANG MEMBUAT PERNYATAAN<div class=\"sxmat\">Tempel<br>Meterai<br>Rp10.000</div><div class=\"sp\" style=\"height:8mm\"></div><u>" + dv("p_nama") + "</u></div>";
     h += "</div>";
   } else {
     var items = $("sl_k_items").value.split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
@@ -4076,8 +4069,6 @@ function slHTML() {
       + '<td>' + tempat + ", " + tg + '<br>Pemberi Kuasa<div class="sxmat">Materai<br>Rp10.000,-</div><b><u>' + up("k1_nama", "..........................") + "</u></b></td></tr></table>";
   }
 
-  // Blok MENGETAHUI sama seperti surat laporan kehilangan
-  if (kuasa) h += '<div class="sxmg">MENGETAHUI<br>' + "KEPALA SENTRA PELAYANAN KEPOLISIAN TERPADU<br>SEKTOR JATIROGO" + kepala() + "</div>";
   return h;
 }
 
@@ -4087,14 +4078,20 @@ function slRender() {
 }
 
 function slPrint() {
-  var w = window.open("", "_blank");
-  if (!w) { alert("Pop-up diblokir. Izinkan pop-up untuk mencetak."); return; }
   var t = v("jenis") === "kuasa" ? "Surat Kuasa" : "Surat Pernyataan";
-  var h = "<!doctype html><html><head><meta charset='utf-8'><title>" + t + "</title><style>"
-    + CSS + " body{margin:0} @page{size:215.9mm 330mm;margin:25mm}</style></head><body>"
-    + "<div class='sxp'>" + slHTML() + "</div>"
-    + "<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>";
-  w.document.open(); w.document.write(h); w.document.close();
+  var html = "<!doctype html><html><head><meta charset='utf-8'><title> </title><style>"
+    + CSS + " @page{size:215.9mm 330mm;margin:0} html,body{margin:0;padding:0}"
+    + " .sxp{padding:25mm!important;margin:0!important;box-shadow:none!important;width:auto!important;min-height:0!important;max-width:none!important}"
+    + "</style></head><body><div class='sxp'>" + slHTML() + "</div></body></html>";
+  var f = document.createElement("iframe");
+  f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden";
+  document.body.appendChild(f);
+  var d = f.contentWindow.document;
+  d.open(); d.write(html); d.close();
+  setTimeout(function () {
+    try { f.contentWindow.focus(); f.contentWindow.print(); } catch (x) { alert("Gagal membuka dialog cetak."); }
+    setTimeout(function () { f.remove(); }, 1500);
+  }, 300);
 }
 
 var now = new Date();
