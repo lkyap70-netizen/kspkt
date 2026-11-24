@@ -4291,6 +4291,7 @@ slRender();
       var tombol = "";
       if (s === "baru") tombol += "<button data-a='proses' data-i='" + esc(r.id) + "' type='button'>Proses</button>";
       if (s !== "selesai") tombol += "<button data-a='selesai' data-i='" + esc(r.id) + "' type='button'>Selesai</button>";
+      if (/^Lapor kehilangan/.test(r.keperluan || "") && s !== "selesai") tombol += "<button data-a='buat' data-i='" + esc(r.id) + "' type='button'>Buat SKTLK</button>";
       tombol += "<button class='o' data-a='cetak' data-i='" + esc(r.id) + "' type='button'>Cetak</button>";
       if (typeof canDel === "function" && canDel(r)) tombol += "<button class='o' data-a='hapus' data-i='" + esc(r.id) + "' type='button' style='color:#b3261e'>Hapus</button>";
       return "<tr class='" + (s === "baru" ? "tm-baru" : "") + "'>" +
@@ -4298,7 +4299,8 @@ slRender();
         "<td>" + esc(tglIndo(r.tanggal)) + "<br><span class='tm-nik'>" + esc(r.jam || "") + "</span></td>" +
         "<td><b>" + esc(r.nama) + "</b><br><span class='tm-nik'>NIK " + esc(maskNik(r.nik)) + "</span>" +
         (r.hp ? "<br><span class='tm-nik'>" + esc(r.hp) + "</span>" : "") + "</td>" +
-        "<td>" + esc(r.keperluan || "-") + (r.tujuan ? "<br><span class='tm-nik'>Ingin bertemu: " + esc(r.tujuan) + "</span>" : "") + "</td>" +
+        "<td>" + esc(r.keperluan || "-") + (r.tujuan ? "<br><span class='tm-nik'>Ingin bertemu: " + esc(r.tujuan) + "</span>" : "") +
+        (r.barang ? "<br><span class='tm-nik'>Hilang: " + esc(String(r.barang).split("\n")[0]) + (String(r.barang).indexOf("\n") >= 0 ? " dst." : "") + "</span>" : "") + "</td>" +
         "<td><span class='tm-st " + esc(s) + "'>" + esc(TM_STATUS[s] || s) + "</span></td>" +
         "<td class='tm-acts'>" + tombol + "</td>" +
         "</tr>";
@@ -4385,6 +4387,33 @@ slRender();
       "<div class='ttd'>Petugas,<br><br><br><br>(..............................)</div>");
   }
 
+  /* ---------- Data tamu ke formulir SKTLK ---------- */
+  // Mengisi formulir pembuatan surat dari data yang diisi tamu, lalu menandai tamu "diproses".
+  // Petugas tetap wajib mencek NIK ke KTP asli / Dukcapil sebelum mencetak.
+  function bukaBuatSktlk(r) {
+    if ((r.status || "baru") === "baru") ubahStatus(r, "diproses");
+    var tombolBaru = document.getElementById("dnew");
+    if (tombolBaru) tombolBaru.click();
+    var isi = {
+      nama: r.nama, nik: r.nik, jk: r.jk, ttl: r.ttl, agama: r.agama, kerja: r.kerja,
+      tel: r.hp, dsn: r.dsn, desa: r.desa, rt: r.rt, rw: r.rw, kec: r.kec, kab: r.kab,
+      barang: r.barang, thilang: r.tglHilang, tempat: r.tempatHilang
+    };
+    Object.keys(isi).forEach(function (k) {
+      var f = document.getElementById(k);
+      if (f && isi[k] !== undefined && isi[k] !== null && String(isi[k]) !== "") f.value = isi[k];
+    });
+    // Tempat hilang dari tamu sudah lengkap, jangan ditambah alamat otomatis.
+    var talm = document.getElementById("talm");
+    if (talm && r.tempatHilang) talm.checked = false;
+    var tpl = document.getElementById("tpl");
+    if (tpl && r.tempatHilang) tpl.value = "lain";
+    if (typeof window.render === "function") window.render();
+    if (typeof window.toast === "function") {
+      window.toast("Data " + r.id + " sudah dimuat. Cek NIK, lalu cetak. Setelah selesai, tandai Selesai di Buku Tamu.", "ok", 5000);
+    }
+  }
+
   /* ---------- Event ---------- */
   $t("tm_body").addEventListener("click", function (ev) {
     var b = ev.target.closest && ev.target.closest("[data-a]");
@@ -4395,6 +4424,7 @@ slRender();
     if (a === "proses") ubahStatus(r, "diproses");
     else if (a === "selesai") ubahStatus(r, "selesai");
     else if (a === "cetak") cetakSlip(r);
+    else if (a === "buat") bukaBuatSktlk(r);
     else if (a === "hapus") hapus(r);
   });
   $t("tm_q").addEventListener("input", render);
