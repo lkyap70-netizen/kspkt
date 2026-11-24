@@ -30,7 +30,7 @@ var KSPKT_CONFIG = {
   DRIVE_FOLDER_ID: '1re2bXcZB3kL3XQDGimKNZm8w8Wq71eus'
 };
 
-var KSPKT_VERSION = '2026.11.23-2';
+var KSPKT_VERSION = '2026.11.24-1';
 var KSPKT_PROP = PropertiesService.getScriptProperties();
 
 var KSPKT_COLLECTIONS = {
@@ -593,6 +593,7 @@ var KSPKT_TAMU_KEPERLUAN = [
   'Permohonan informasi',
   'Lainnya'
 ];
+var KSPKT_TAMU_SKTLK = 'Lapor kehilangan (SKTLK)';
 var KSPKT_TAMU_STATUS = ['baru', 'diproses', 'selesai'];
 var KSPKT_TAMU_BATAS = 60;            // total kiriman formulir per 10 menit (seluruh pengunjung)
 var KSPKT_TAMU_ZONA = 'Asia/Jakarta';
@@ -630,6 +631,12 @@ function tamuNomorBaru_(tgl) {
   return prefix + (urut < 10 ? '00' : urut < 100 ? '0' : '') + urut;
 }
 
+/** Membersihkan teks yang boleh berisi beberapa baris (misal daftar barang). */
+function teksMulti_(v, max) {
+  return String(v == null ? '' : v).replace(/\r/g, '').replace(/[\u0000-\u0009\u000b-\u001f]/g, ' ')
+    .split('\n').map(function (s) { return s.trim(); }).filter(Boolean).join('\n').slice(0, max || 500);
+}
+
 /** Menerima pendaftaran dari formulir publik. Hanya kiriman yang lolos semua pemeriksaan yang disimpan. */
 function tamuSubmit_(body) {
   if (String(body.key || '') !== getTamuKey_()) throw new Error('Kunci halaman tamu tidak sesuai.');
@@ -639,17 +646,37 @@ function tamuSubmit_(body) {
   var rec = {
     nama: teksBersih_(d.nama, 100),
     nik: String(d.nik || '').replace(/\D/g, ''),
+    jk: teksBersih_(d.jk, 20),
+    ttl: teksBersih_(d.ttl, 120),
+    agama: teksBersih_(d.agama, 20),
+    kerja: teksBersih_(d.kerja, 60),
     alamat: teksBersih_(d.alamat, 250),
+    dsn: teksBersih_(d.dsn, 80),
+    desa: teksBersih_(d.desa, 80),
+    rt: String(d.rt || '').replace(/\D/g, '').slice(0, 3),
+    rw: String(d.rw || '').replace(/\D/g, '').slice(0, 3),
+    kec: teksBersih_(d.kec, 60),
+    kab: teksBersih_(d.kab, 60),
     hp: String(d.hp || '').replace(/[\s\-]/g, '').slice(0, 15),
     keperluan: teksBersih_(d.keperluan, 60),
     tujuan: teksBersih_(d.tujuan, 100),
-    keterangan: teksBersih_(d.keterangan, 300)
+    keterangan: teksBersih_(d.keterangan, 300),
+    barang: teksMulti_(d.barang, 1000),
+    tglHilang: /^\d{4}-\d{2}-\d{2}$/.test(String(d.tglHilang || '')) ? String(d.tglHilang) : '',
+    tempatHilang: teksBersih_(d.tempatHilang, 200)
   };
   if (rec.nama.length < 2) throw new Error('Nama wajib diisi.');
   if (!/^\d{16}$/.test(rec.nik)) throw new Error('NIK harus 16 digit angka.');
   if (rec.alamat.length < 5) throw new Error('Alamat wajib diisi.');
   if (rec.hp && !/^(\+?62|0)\d{8,13}$/.test(rec.hp)) throw new Error('Nomor HP tidak valid.');
   if (KSPKT_TAMU_KEPERLUAN.indexOf(rec.keperluan) < 0) throw new Error('Pilih keperluan kunjungan dari daftar.');
+  if (rec.keperluan === KSPKT_TAMU_SKTLK) {
+    if (['Laki laki', 'Perempuan'].indexOf(rec.jk) < 0) throw new Error('Pilih jenis kelamin.');
+    if (rec.desa.length < 2) throw new Error('Isi nama desa sesuai KTP.');
+    if (rec.barang.replace(/\s/g, '').length < 3) throw new Error('Isi daftar barang atau surat yang hilang.');
+    if (!rec.tglHilang) throw new Error('Isi tanggal kehilangan.');
+    if (rec.tempatHilang.length < 3) throw new Error('Isi tempat kehilangan.');
+  }
   // Kuota hanya dihitung untuk kiriman yang lolos validasi, agar kiriman tidak valid tidak menghabiskan jatah tamu sungguhan.
   if (!tamuBatasOk_()) throw new Error('Terlalu banyak pendaftaran dalam waktu singkat. Silakan coba beberapa menit lagi.');
 
