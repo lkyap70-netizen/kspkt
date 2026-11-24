@@ -30,7 +30,6 @@ var KSPKT_CONFIG = {
   DRIVE_FOLDER_ID: '1re2bXcZB3kL3XQDGimKNZm8w8Wq71eus'
 };
 
-
 var KSPKT_VERSION = '2026.11.23-2';
 var KSPKT_PROP = PropertiesService.getScriptProperties();
 
