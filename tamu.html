@@ -265,12 +265,6 @@ var TAMU_CONFIG = {
 
   function tampilkanPesan(t) { msg.textContent = t || ""; }
 
-  if (!terkonfigurasi) {
-    tampilkanPesan("Formulir belum dikonfigurasi. Hubungi petugas.");
-    kirim.disabled = true;
-    return;
-  }
-
   // Hitungan digit NIK agar tamu tahu kapan NIK sudah lengkap.
   $("nik").addEventListener("input", function () {
     var n = this.value.replace(/\D/g, "");
@@ -278,6 +272,12 @@ var TAMU_CONFIG = {
     nikHint.textContent = n.length + " / 16 digit";
     nikHint.style.color = n.length === 16 ? "#128a3d" : "";
   });
+
+  if (!terkonfigurasi) {
+    tampilkanPesan("Formulir belum dikonfigurasi. Hubungi petugas.");
+    kirim.disabled = true;
+    return;
+  }
 
   function ambilData() {
     return {
