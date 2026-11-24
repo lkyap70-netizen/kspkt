@@ -88,6 +88,15 @@ select{
 textarea{resize:vertical;min-height:72px}
 .hint{font-size:12px;color:var(--mut);margin-top:5px}
 .box-hilang{margin-top:6px;padding:4px 14px 14px;border-radius:14px;background:#f5f8ff;border:1px dashed #9db0dd}
+.doc-add{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:10px}
+.doc-item{background:#fff;border:1px solid #dbe3f2;border-radius:12px;padding:12px;margin-top:10px}
+.doc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;font-weight:800;color:var(--blue)}
+.remove-doc{border:0;background:#fff0ef;color:#b3261e;border-radius:8px;padding:6px 9px;font-weight:700;cursor:pointer}
+.upload-wrap{margin-top:16px;padding:14px;border:1px dashed #9db0dd;border-radius:14px;background:#f8faff}
+input[type=file]{padding:10px;background:#fff;font-size:13px}
+.file-list{font-size:12px;color:var(--mut);line-height:1.7;margin-top:8px}
+.btn.small{width:auto;display:inline-block;margin:0;padding:11px 13px;font-size:13px;white-space:nowrap}
+@media(max-width:420px){.row{grid-template-columns:1fr}.doc-add{grid-template-columns:1fr}.btn.small{width:100%}}
 .hp-trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 .msg{margin:14px 0 0;font-size:13.5px;font-weight:600;color:var(--err);border-radius:10px}
@@ -257,9 +266,30 @@ footer b{color:var(--blue)}
       <div id="bagianHilang" hidden class="box-hilang">
         <div class="sec" style="margin-top:14px">Data kehilangan</div>
 
-        <label for="barang">Barang / surat yang hilang <span class="req">*</span></label>
-        <textarea id="barang" rows="4" maxlength="1000" placeholder="1 baris = 1 barang/surat&#10;Contoh:&#10;KTP an. Budi Santoso, NIK 3523xxxxxxxxxxxx&#10;Kartu ATM BRI, nomor kartu 4xxx"></textarea>
-        <div class="hint">Tulis tiap barang di baris terpisah. Sebutkan nama pemilik dan nomor jika ada.</div>
+        <label>Dokumen / barang yang hilang <span class="req">*</span></label>
+        <div class="doc-add">
+          <div>
+            <select id="jenisDokumen">
+              <option value="">-- Pilih jenis kehilangan --</option>
+              <option>KTP</option><option>Kartu Keluarga (KK)</option><option>SIM A</option><option>SIM C</option>
+              <option>STNK</option><option>BPKB</option><option>ATM / Kartu Bank</option><option>Buku Tabungan</option>
+              <option>Ijazah</option><option>Akta Kelahiran</option><option>Paspor</option><option>Kartu BPJS</option>
+              <option>Sertifikat Tanah</option><option>Handphone</option><option>Dompet</option><option>Barang lainnya</option>
+            </select>
+          </div>
+          <button class="btn small" id="tambahDokumen" type="button">+ Tambah</button>
+        </div>
+        <div id="daftarDokumen"></div>
+        <label for="barang">Keterangan tambahan kehilangan <span class="opt">(opsional)</span></label>
+        <textarea id="barang" rows="2" maxlength="1000" placeholder="Ceritakan singkat barang/dokumen yang hilang, jika ada detail tambahan"></textarea>
+        <div class="hint">Setiap dokumen memiliki template nama pemilik, nomor dokumen, dan keterangan.</div>
+
+        <div class="upload-wrap">
+          <label for="lampiran" style="margin-top:0">Upload berkas pendukung <span class="opt">(opsional)</span></label>
+          <input id="lampiran" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+          <div class="hint">PDF, JPG, atau PNG. Maksimal 5 file, masing-masing 5 MB. Contoh: fotokopi KK untuk kehilangan KTP, foto dokumen, atau berkas pendukung lainnya.</div>
+          <div class="file-list" id="fileList">Belum ada file dipilih.</div>
+        </div>
 
         <div class="row">
           <div>
@@ -272,12 +302,6 @@ footer b{color:var(--blue)}
           </div>
         </div>
       </div>
-
-      <label for="tujuan">Unit tujuan <span class="opt">(opsional)</span></label>
-      <input id="tujuan" maxlength="100" placeholder="Contoh: SPKT / Kanit Reskrim">
-
-      <label for="keterangan">Keterangan tambahan <span class="opt">(opsional)</span></label>
-      <textarea id="keterangan" rows="2" maxlength="300" placeholder="Hal lain yang perlu diketahui petugas"></textarea>
 
       <div class="hp-trap" aria-hidden="true">
         <label for="website">Jangan diisi</label>
@@ -334,6 +358,40 @@ var TAMU_CONFIG = {
   var SKTLK = "Lapor kehilangan (SKTLK)";
   var kirim = $("kirim"), msg = $("msg"), nikHint = $("nikHint");
   var sedangKirim = false;
+  var dokumenHilang = [];
+  var lampiranTersimpan = [];
+
+  function renderDokumen() {
+    var host = $("daftarDokumen"); host.innerHTML = "";
+    dokumenHilang.forEach(function (d, i) {
+      var box = document.createElement("div"); box.className = "doc-item";
+      box.innerHTML = '<div class="doc-head"><span></span><button type="button" class="remove-doc">Hapus</button></div>' +
+        '<label>Atas nama <span class="req">*</span></label><input class="doc-owner" maxlength="100" placeholder="Nama sesuai dokumen" value="">' +
+        '<label>Nomor dokumen / nomor registrasi <span class="opt">(jika ada)</span></label><input class="doc-number" maxlength="40" placeholder="NIK / nomor SIM / nomor STNK / lainnya">' +
+        '<label>Keterangan <span class="opt">(opsional)</span></label><input class="doc-note" maxlength="200" placeholder="Contoh: KTP asli, SIM C, warna hitam">';
+      box.querySelector('.doc-head span').textContent = d.jenis;
+      box.querySelector('.remove-doc').addEventListener('click', function(){ dokumenHilang.splice(i,1); renderDokumen(); });
+      box.querySelector('.doc-owner').value = d.atasNama || '';
+      box.querySelector('.doc-number').value = d.nomor || '';
+      box.querySelector('.doc-note').value = d.keterangan || '';
+      box.querySelector('.doc-owner').addEventListener('input', function(){ d.atasNama=this.value; });
+      box.querySelector('.doc-number').addEventListener('input', function(){ d.nomor=this.value; });
+      box.querySelector('.doc-note').addEventListener('input', function(){ d.keterangan=this.value; });
+      host.appendChild(box);
+    });
+  }
+  $("tambahDokumen").addEventListener("click", function(){
+    var jenis = $("jenisDokumen").value;
+    if (!jenis) { tampilkanPesan("Pilih jenis dokumen atau barang yang hilang terlebih dahulu."); return; }
+    if (dokumenHilang.length >= 15) { tampilkanPesan("Maksimal 15 jenis kehilangan."); return; }
+    dokumenHilang.push({jenis:jenis, atasNama:"", nomor:"", keterangan:""});
+    $("jenisDokumen").value = ""; tampilkanPesan(""); renderDokumen();
+  });
+  $("lampiran").addEventListener("change", function(){
+    var files = Array.prototype.slice.call(this.files || []);
+    if (files.length > 5) { this.value = ""; $("fileList").textContent = "Maksimal 5 file."; return; }
+    $("fileList").textContent = files.length ? files.map(function(f){ return f.name + " (" + (f.size/1024/1024).toFixed(2) + " MB)"; }).join(" • ") : "Belum ada file dipilih.";
+  });
 
   var terkonfigurasi = TAMU_CONFIG.URL.indexOf("PASTE_") !== 0 &&
                        TAMU_CONFIG.KUNCI.indexOf("PASTE_") !== 0;
@@ -376,10 +434,10 @@ var TAMU_CONFIG = {
       hp: $("hp").value.replace(/[\s\-]/g, ""),
       keperluan: $("keperluan").value,
       barang: $("barang").value.trim(),
+      detailKehilangan: dokumenHilang,
+      lampiran: lampiranTersimpan,
       tglHilang: $("thilang").value,
-      tempatHilang: $("tempat").value.trim(),
-      tujuan: $("tujuan").value.trim(),
-      keterangan: $("keterangan").value.trim()
+      tempatHilang: $("tempat").value.trim()
     };
   }
 
@@ -391,7 +449,8 @@ var TAMU_CONFIG = {
     if (d.hp && !/^(\+?62|0)\d{8,13}$/.test(d.hp)) return "Nomor HP tidak valid. Contoh: 08xxxxxxxxxx.";
     if (!d.keperluan) return "Pilih keperluan kunjungan.";
     if (d.keperluan === SKTLK) {
-      if (d.barang.replace(/\s/g, "").length < 3) return "Isi barang atau surat yang hilang.";
+      if (d.barang.replace(/\s/g, "").length < 3 && !d.detailKehilangan.length) return "Tambahkan minimal satu dokumen atau barang yang hilang.";
+      if (d.detailKehilangan.some(function(x){ return !x.atasNama || x.atasNama.trim().length < 2; })) return "Isi nama atas nama pada setiap dokumen yang ditambahkan.";
       if (!d.tglHilang) return "Isi tanggal kehilangan.";
       if (d.tempatHilang.length < 3) return "Isi tempat kehilangan.";
     }
@@ -406,6 +465,26 @@ var TAMU_CONFIG = {
     return m || "Pengiriman gagal. Coba lagi.";
   }
 
+  function fileToDataUrl(file) {
+    return new Promise(function(resolve, reject){ var r = new FileReader(); r.onload=function(){resolve(r.result);}; r.onerror=reject; r.readAsDataURL(file); });
+  }
+  function unggahLampiran() {
+    var files = Array.prototype.slice.call($("lampiran").files || []);
+    if (!files.length) return Promise.resolve([]);
+    if (files.length > 5) return Promise.reject(new Error("Maksimal 5 file lampiran."));
+    return files.reduce(function(chain, file){
+      return chain.then(function(out){
+        var type = file.type || ( /\.pdf$/i.test(file.name) ? "application/pdf" : /\.png$/i.test(file.name) ? "image/png" : "image/jpeg");
+        if (["application/pdf","image/jpeg","image/png"].indexOf(type) < 0) throw new Error("Format " + file.name + " tidak didukung. Gunakan PDF, JPG, atau PNG.");
+        if (file.size > 5*1024*1024) throw new Error("File " + file.name + " lebih dari 5 MB.");
+        return fileToDataUrl(file).then(function(data){
+          return fetch(TAMU_CONFIG.URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({action:"tamuUpload",key:TAMU_CONFIG.KUNCI,website:$("website").value,filename:file.name,type:type,data:data})})
+            .then(function(r){return r.json();}).then(function(j){ if(j.error) throw new Error(j.error); if(j.fileId) out.push({name:j.name,fileId:j.fileId,url:j.url,type:j.type,size:j.size}); return out; });
+        });
+      });
+    }, Promise.resolve([]));
+  }
+
   $("frm").addEventListener("submit", function (ev) {
     ev.preventDefault();
     if (sedangKirim) return;
@@ -418,10 +497,13 @@ var TAMU_CONFIG = {
     kirim.textContent = "Mengirim...";
     tampilkanPesan("");
 
-    fetch(TAMU_CONFIG.URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "tamuSubmit", key: TAMU_CONFIG.KUNCI, website: $("website").value, data: d })
+    unggahLampiran().then(function(files){
+      d.lampiran = files;
+      return fetch(TAMU_CONFIG.URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "tamuSubmit", key: TAMU_CONFIG.KUNCI, website: $("website").value, data: d })
+      });
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (j.error) throw new Error(j.error);
       $("nomorOut").textContent = j.nomor || "-";
@@ -467,6 +549,8 @@ var TAMU_CONFIG = {
 
   $("baru").addEventListener("click", function () {
     $("frm").reset();
+    dokumenHilang = []; lampiranTersimpan = []; renderDokumen();
+    $("fileList").textContent = "Belum ada file dipilih.";
     $("kec").value = "Jatirogo";
     $("kab").value = "Tuban";
     atur();
