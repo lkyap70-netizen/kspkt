@@ -4124,45 +4124,6 @@ slRender();
 })();
 </script>
 
-<style id="segerocss">
-#vfoto .sg-card{text-align:center;padding:40px 24px}
-#vfoto .sg-ikon{width:64px;height:64px;margin:0 auto 14px;border-radius:18px;background:#e8f0fe;display:grid;place-items:center;color:var(--blue)}
-#vfoto .sg-ikon svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-#vfoto .sg-card h3{margin:0 0 8px;color:var(--blue);font-size:18px}
-#vfoto .sg-card p{margin:0 auto;max-width:420px;color:var(--mut);font-size:14px;line-height:1.5}
-#vfoto .sg-badge{display:inline-block;margin-top:16px;padding:5px 12px;border-radius:12px;background:var(--gold);color:var(--navy);font-size:12px;font-weight:700}
-</style>
-<div id="vfoto" class="dash" style="display:none">
-  <div class="card sg-card">
-    <div class="sg-ikon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
-    <h3>Dokumentasi Foto</h3>
-    <p>Fitur unggah, pencarian, dan unduh foto sedang disiapkan dan akan segera hadir.</p>
-    <span class="sg-badge">Coming soon</span>
-  </div>
-</div>
-<script id="fotojs">
-(function () {
-  "use strict";
-  var ICON = '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>';
-  document.getElementById("qa").insertAdjacentHTML("beforeend",
-    '<div role="button" tabindex="0" data-go="foto"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true">' + ICON +
-    '</svg><b>Dokumentasi Foto</b><span>Segera hadir</span></div>');
-  var tb = document.createElement("button");
-  tb.id = "tfoto";
-  tb.type = "button";
-  tb.innerHTML = '<svg class="ni" viewBox="0 0 24 24" aria-hidden="true">' + ICON + '</svg>Dokumentasi Foto';
-  document.getElementById("tuser").parentNode.insertBefore(tb, document.getElementById("tuser"));
-  tb.onclick = function () { show("foto"); };
-  var prevShow = window.show;
-  window.show = function (name) {
-    prevShow(name);
-    var on = name === "foto";
-    document.getElementById("vfoto").style.display = on ? "" : "none";
-    document.getElementById("tfoto").className = on ? "on" : "";
-  };
-})();
-</script>
-
 <style id="tamucss">
 #vtamu .tm-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
 #vtamu .tm-head h3,#vtamu .card>h3{margin:0 0 6px;color:var(--blue);font-size:16px}
