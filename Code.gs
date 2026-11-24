@@ -3,7 +3,6 @@
  * Kompatibel dengan index.html KSPKT yang memakai aksi:
  * save/delete/pdf/claimNo, userSave/userDelete/userlist,
  * ohSave/ohDelete/ohlist, smSave/smDelete/smlist, smUpload/smTrash,
- * fotoUpload/fotoGet/fotoDelete/fotolist (dokumentasi foto),
  * tamuSubmit (formulir publik tamu.html), tamulist/tamuStatus/tamuDelete (buku tamu).
  *
  * LANGKAH AWAL:
@@ -57,10 +56,6 @@ var KSPKT_COLLECTIONS = {
     preferred: 'Nomor',
     aliases: ['Nomor', 'Klaim_Nomor', 'KSPKT_Nomor']
   },
-  foto: {
-    preferred: 'Dokumentasi_Foto',
-    aliases: ['Dokumentasi_Foto', 'Dokumentasi Foto', 'Dokumentasi', 'KSPKT_Dokumentasi_Foto']
-  },
   tamu: {
     preferred: 'Buku_Tamu',
     aliases: ['Buku_Tamu', 'Buku Tamu', 'KSPKT_Buku_Tamu']
@@ -84,7 +79,6 @@ function setup() {
   ensureCollectionSheet_(ss, 'oh');
   ensureCollectionSheet_(ss, 'sm');
   ensureCollectionSheet_(ss, 'claims');
-  ensureCollectionSheet_(ss, 'foto');
   ensureCollectionSheet_(ss, 'tamu');
   ensureDriveFolders_();
   var kunciTamu = getTamuKey_();
@@ -106,7 +100,6 @@ function doGet(e) {
     if (action === 'userlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, users: readCollection_('users') });
     if (action === 'ohlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, oh: readCollection_('oh') });
     if (action === 'smlist') return jsonOut_({ ok: true, version: KSPKT_VERSION, sm: readCollection_('sm') });
-    if (action === 'fotolist') return jsonOut_({ ok: true, version: KSPKT_VERSION, foto: readCollection_('foto') });
     if (action === 'tamulist') return jsonOut_({ ok: true, version: KSPKT_VERSION, tamu: readCollection_('tamu') });
     if (action === 'news') return jsonOut_(getNews_());
     if (action === 'ping' || action === 'status') {
@@ -165,15 +158,6 @@ function doPost(e) {
         break;
       case 'smTrash':
         result = trashDriveFile_(body.fileId);
-        break;
-      case 'fotoUpload':
-        result = fotoUpload_(body);
-        break;
-      case 'fotoGet':
-        result = fotoGet_(body.id);
-        break;
-      case 'fotoDelete':
-        result = fotoDelete_(body.id);
         break;
       case 'tamuSubmit':
         result = tamuSubmit_(body);
@@ -500,7 +484,6 @@ function ensureDriveFolders_() {
   KSPKT_PROP.setProperty('KSPKT_DRIVE_FOLDER_ID', root.getId());
   getOrCreateChildFolder_(root, 'Arsip PDF Surat Kehilangan', 'KSPKT_PDF_FOLDER_ID');
   getOrCreateChildFolder_(root, 'Berkas Surat Masuk', 'KSPKT_SM_FOLDER_ID');
-  getOrCreateChildFolder_(root, 'Dokumentasi Foto', 'KSPKT_FT_FOLDER_ID');
 }
 
 function getOrCreateChildFolder_(root, name, propName) {
@@ -515,8 +498,7 @@ function getOrCreateChildFolder_(root, name, propName) {
 }
 
 function getDriveFolder_(kind) {
-  var prop = kind === 'sm' ? 'KSPKT_SM_FOLDER_ID' :
-             kind === 'ft' ? 'KSPKT_FT_FOLDER_ID' : 'KSPKT_PDF_FOLDER_ID';
+  var prop = kind === 'sm' ? 'KSPKT_SM_FOLDER_ID' : 'KSPKT_PDF_FOLDER_ID';
   var folderId = KSPKT_PROP.getProperty(prop);
   if (folderId) {
     try { return DriveApp.getFolderById(folderId); } catch (ignore) {}
@@ -581,87 +563,6 @@ function trashDriveFileQuietly_(fileId) {
   try { DriveApp.getFileById(fileId).setTrashed(true); } catch (ignore) {}
 }
 
-/* ========================= DOKUMENTASI FOTO ========================= */
-// Foto asli disimpan sebagai berkas di Google Drive (folder "Dokumentasi Foto").
-// Spreadsheet menyimpan metadata + thumbnail kecil agar daftar dan pencarian cepat.
-var KSPKT_FOTO_MAX_BYTES = 8 * 1024 * 1024; // ukuran berkas maksimum
-var KSPKT_FOTO_MAX_THUMB = 40000;           // batas karakter thumbnail (sel Spreadsheet maks. 50.000)
-
-function fotoClean_(v, max) {
-  return String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max || 200);
-}
-
-/** Menyimpan satu foto: berkas ke Drive, metadata + thumbnail ke Spreadsheet. */
-function fotoUpload_(body) {
-  var meta = body.record || {};
-  var id = fotoClean_(meta.id, 80);
-  if (!id) throw new Error('ID foto wajib ada.');
-
-  var type = String(body.type || 'image/jpeg').trim().toLowerCase();
-  if (!/^image\/(jpeg|png|webp|gif)$/.test(type)) {
-    throw new Error('Berkas harus berupa foto (JPG, PNG, WEBP, atau GIF).');
-  }
-
-  var thumb = String(meta.thumb || '');
-  if (thumb && (thumb.length > KSPKT_FOTO_MAX_THUMB || !/^data:image\/jpeg;base64,/.test(thumb))) {
-    throw new Error('Thumbnail foto tidak valid.');
-  }
-
-  var bytes = decodeBase64_(body.data);
-  if (bytes.length > KSPKT_FOTO_MAX_BYTES) throw new Error('Ukuran foto terlalu besar (maks. 8 MB).');
-
-  var name = safeFilename_(body.name || meta.name, 'Foto_KSPKT.jpg');
-  var file = getDriveFolder_('ft').createFile(Utilities.newBlob(bytes, type, name));
-  file.setDescription('Dokumentasi foto KSPKT Polsek Jatirogo. ID: ' + id);
-
-  var rec = {
-    id: id,
-    judul: fotoClean_(meta.judul, 200),
-    tanggal: fotoClean_(meta.tanggal, 10),
-    kategori: fotoClean_(meta.kategori, 60),
-    lokasi: fotoClean_(meta.lokasi, 150),
-    oleh: fotoClean_(meta.oleh, 100),
-    name: file.getName(),
-    type: type,
-    size: file.getSize(),
-    fileId: file.getId(),
-    thumb: thumb,
-    saved: Date.now()
-  };
-
-  try {
-    saveRecord_('foto', rec);
-  } catch (err) {
-    // Jangan biarkan berkas yatim di Drive jika metadata gagal disimpan.
-    trashDriveFileQuietly_(file.getId());
-    throw err;
-  }
-  return { ok: true, id: id, fileId: file.getId(), record: rec };
-}
-
-/** Mengembalikan isi foto (base64) agar bisa diunduh dari perangkat mana pun. */
-function fotoGet_(id) {
-  var rec = findRecord_('foto', id);
-  if (!rec || !rec.fileId) throw new Error('Foto tidak ditemukan di database.');
-  var file = DriveApp.getFileById(rec.fileId);
-  var blob = file.getBlob();
-  return {
-    ok: true,
-    id: String(id),
-    name: rec.name || file.getName(),
-    type: rec.type || blob.getContentType(),
-    data: Utilities.base64Encode(blob.getBytes())
-  };
-}
-
-/** Menghapus metadata foto dan memindahkan berkasnya ke sampah Drive. */
-function fotoDelete_(id) {
-  if (id === undefined || id === null || String(id) === '') throw new Error('ID foto untuk dihapus tidak valid.');
-  var rec = findRecord_('foto', id);
-  if (rec && rec.fileId) trashDriveFileQuietly_(rec.fileId);
-  return deleteRecord_('foto', id);
-}
-
 /** Mencari satu record berdasarkan id tanpa memuat seluruh koleksi. */
 function findRecord_(key, id) {
   var sheet = sheetFor_(key);
@@ -676,6 +577,11 @@ function findRecord_(key, id) {
     }
   }
   return null;
+}
+
+/* ========================= UTILITAS TEKS ========================= */
+function teksBersih_(v, max) {
+  return String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max || 200);
 }
 
 /* ========================= BUKU TAMU (FORMULIR PUBLIK) ========================= */
@@ -733,13 +639,13 @@ function tamuSubmit_(body) {
   if (String(body.website || '').trim() !== '') return { ok: true, nomor: '', pesan: 'Terima kasih.' };
   var d = body.data || {};
   var rec = {
-    nama: fotoClean_(d.nama, 100),
+    nama: teksBersih_(d.nama, 100),
     nik: String(d.nik || '').replace(/\D/g, ''),
-    alamat: fotoClean_(d.alamat, 250),
+    alamat: teksBersih_(d.alamat, 250),
     hp: String(d.hp || '').replace(/[\s\-]/g, '').slice(0, 15),
-    keperluan: fotoClean_(d.keperluan, 60),
-    tujuan: fotoClean_(d.tujuan, 100),
-    keterangan: fotoClean_(d.keterangan, 300)
+    keperluan: teksBersih_(d.keperluan, 60),
+    tujuan: teksBersih_(d.tujuan, 100),
+    keterangan: teksBersih_(d.keterangan, 300)
   };
   if (rec.nama.length < 2) throw new Error('Nama wajib diisi.');
   if (!/^\d{16}$/.test(rec.nik)) throw new Error('NIK harus 16 digit angka.');
@@ -777,7 +683,7 @@ function tamuStatus_(id, status, oleh) {
     var rec = findRecord_('tamu', id);
     if (!rec) throw new Error('Data tamu tidak ditemukan.');
     rec.status = status;
-    rec.diubahOleh = fotoClean_(oleh, 100);
+    rec.diubahOleh = teksBersih_(oleh, 100);
     rec.saved = Date.now();
     saveRecordUnlocked_('tamu', rec);
     return { ok: true, id: String(id), status: status };
