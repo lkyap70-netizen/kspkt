@@ -19,18 +19,17 @@
  */
 
 var KSPKT_CONFIG = {
-  // Kosongkan untuk mempertahankan token lama dari Script Properties.
-  // Untuk project baru boleh isi token rahasia sendiri, lalu jalankan setup().
-  API_TOKEN: '',
+  // Kode rahasia untuk aplikasi (menu Database). Ganti jika ingin lebih kuat.
+  API_TOKEN: 'jatirogo2026',
 
-  // Jika ingin memakai Spreadsheet tertentu, isi ID-nya di sini.
-  // ID adalah bagian di antara /d/ dan /edit pada URL Spreadsheet.
+  // Kosongkan: setup() akan membuat Spreadsheet baru.
+  // Isi hanya jika ingin memakai Spreadsheet lama yang sudah ada.
   SPREADSHEET_ID: '',
 
-  // Opsional: ID folder induk Google Drive yang sudah ada.
-  // Kosongkan untuk memakai folder KSPKT Polsek Jatirogo yang dibuat otomatis.
-  DRIVE_FOLDER_ID: ''
+  // Folder Google Drive: https://drive.google.com/drive/folders/1re2bXcZB3kL3XQDGimKNZm8w8Wq71eus
+  DRIVE_FOLDER_ID: '1re2bXcZB3kL3XQDGimKNZm8w8Wq71eus'
 };
+
 
 var KSPKT_VERSION = '2026.11.23-2';
 var KSPKT_PROP = PropertiesService.getScriptProperties();
