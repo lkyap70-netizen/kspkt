@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1f4d">
-<title>Buku Tamu Online - Polsek Jatirogo</title>
+<title>Pendaftaran Online - Polsek Jatirogo</title>
 <style>
 :root{
   --navy:#0b1f4d;--blue:#1d3a8a;--blue2:#2c52c4;--gold:#f2b705;
   --ink:#14213d;--mut:#6b7488;--line:#dbe3f2;--bg:#eef2fa;
   --ok:#128a3d;--ok-bg:#e3f6ea;--err:#b3261e;--err-bg:#fde8e6;
 }
+[hidden]{display:none!important}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
@@ -22,13 +23,10 @@ body{
     var(--bg);
   display:flex;flex-direction:column;
 }
-
-/* ---------- Header ---------- */
 header{
   position:relative;color:#fff;
   background:linear-gradient(120deg,var(--navy) 0%,var(--blue) 70%,var(--blue2) 100%);
-  padding:22px 20px 26px;
-  overflow:hidden;
+  padding:22px 20px 26px;overflow:hidden;
 }
 header::after{
   content:"";position:absolute;left:0;right:0;bottom:0;height:5px;
@@ -43,18 +41,16 @@ header::after{
 .b1{font-weight:800;letter-spacing:1.4px;font-size:17px}
 .b2{font-size:12px;opacity:.85;margin-top:3px;letter-spacing:.8px}
 
-/* ---------- Layout ---------- */
 main{width:100%;max-width:560px;margin:-18px auto 0;padding:0 14px 8px;flex:1}
 .card{
   background:#fff;border-radius:18px;padding:22px 20px;
   box-shadow:0 10px 30px -12px #0b1f4d40,0 2px 6px #0b1f4d0d;
   border:1px solid #e6ecf7;
 }
-.card[hidden]{display:none}
 h1{margin:0;font-size:20px;color:var(--blue);font-weight:800}
+h2{margin:0;font-size:20px;color:var(--ok);font-weight:800}
 .sub{margin:6px 0 0;font-size:13.5px;color:var(--mut);line-height:1.55}
 
-/* ---------- Steps ---------- */
 .steps{display:flex;gap:8px;margin:18px 0 6px}
 .step{flex:1;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mut);font-weight:600}
 .step i{
@@ -65,12 +61,12 @@ h1{margin:0;font-size:20px;color:var(--blue);font-weight:800}
 .step.on i{background:var(--blue);color:#fff}
 .step-line{flex:0 0 14px;height:2px;align-self:center;background:var(--line);border-radius:2px}
 
-/* ---------- Fields ---------- */
 .sec{
   margin:22px 0 4px;font-size:12px;font-weight:800;letter-spacing:1px;
   text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:8px;
 }
 .sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:14px 0 6px}
 label .req{color:var(--err)}
 label .opt{color:var(--mut);font-weight:500}
@@ -91,15 +87,12 @@ select{
 }
 textarea{resize:vertical;min-height:72px}
 .hint{font-size:12px;color:var(--mut);margin-top:5px}
+.box-hilang{margin-top:6px;padding:4px 14px 14px;border-radius:14px;background:#f5f8ff;border:1px dashed #9db0dd}
 .hp-trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
-/* ---------- Message ---------- */
-.msg{
-  margin:14px 0 0;font-size:13.5px;font-weight:600;color:var(--err);border-radius:10px;
-}
+.msg{margin:14px 0 0;font-size:13.5px;font-weight:600;color:var(--err);border-radius:10px}
 .msg:not(:empty){background:var(--err-bg);padding:10px 12px}
 
-/* ---------- Buttons ---------- */
 .btn{
   display:block;width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;cursor:pointer;
   font:inherit;font-size:16px;font-weight:800;letter-spacing:.3px;color:#fff;
@@ -116,15 +109,12 @@ textarea{resize:vertical;min-height:72px}
 }
 .btn.ghost:hover{background:#f5f8ff}
 
-/* ---------- Success ---------- */
 .done{text-align:center;padding:10px 6px 4px}
 .badge-ok{
   width:68px;height:68px;margin:6px auto 12px;border-radius:50%;
-  background:var(--ok-bg);display:grid;place-items:center;
-  box-shadow:0 0 0 8px #e3f6ea80;
+  background:var(--ok-bg);display:grid;place-items:center;box-shadow:0 0 0 8px #e3f6ea80;
 }
 .badge-ok svg{width:34px;height:34px;stroke:var(--ok);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-.done h2{margin:0;font-size:20px;color:var(--ok);font-weight:800}
 .ticket{
   margin:18px auto 6px;max-width:330px;padding:18px 14px;border-radius:16px;
   background:linear-gradient(180deg,#f5f8ff,#eef3fd);border:2px dashed #9db0dd;
@@ -132,12 +122,15 @@ textarea{resize:vertical;min-height:72px}
 .ticket small{display:block;font-size:11.5px;font-weight:700;color:var(--mut);letter-spacing:1.2px;text-transform:uppercase}
 .nomor{font-size:34px;font-weight:900;letter-spacing:3px;color:var(--navy);margin-top:6px;font-variant-numeric:tabular-nums}
 .done .sub{margin:8px auto 0;max-width:340px}
+.langkah{
+  text-align:left;max-width:360px;margin:16px auto 0;padding:14px 16px;border-radius:14px;
+  background:#fffbea;border:1px solid #f2d98a;font-size:13px;line-height:1.6;color:#4a3b00;
+}
+.langkah b{color:#7a5a00}
 
-/* ---------- Footer ---------- */
 footer{text-align:center;font-size:11.5px;color:var(--mut);padding:22px 16px 26px;line-height:1.6}
 footer b{color:var(--blue)}
 
-/* ---------- Toast ---------- */
 .toast{
   position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
   background:var(--navy);color:#fff;font-size:13px;font-weight:600;padding:10px 16px;border-radius:999px;
@@ -155,41 +148,100 @@ footer b{color:var(--blue)}
     </div>
     <div>
       <div class="b1">POLSEK JATIROGO</div>
-      <div class="b2">POLRESTA TUBAN &middot; BUKU TAMU ONLINE</div>
+      <div class="b2">POLRESTA TUBAN &middot; PENDAFTARAN ONLINE</div>
     </div>
   </div>
 </header>
 
 <main>
   <div class="card" id="cardForm">
-    <h1>Isi Data Kunjungan</h1>
-    <p class="sub">Isi data sesuai KTP. Setelah mengirim, tunjukkan nomor antrian kepada petugas di meja layanan.</p>
+    <h1>Isi Data Diri &amp; Keperluan</h1>
+    <p class="sub">Isi sesuai KTP asli. Setelah mengirim, Anda mendapat nomor antrian. Datanglah ke SPKT Polsek Jatirogo untuk diproses dan dicetak.</p>
 
     <div class="steps" aria-hidden="true">
-      <div class="step on"><i>1</i>Data diri</div>
+      <div class="step on"><i>1</i>Isi online</div>
       <div class="step-line"></div>
-      <div class="step on"><i>2</i>Kunjungan</div>
+      <div class="step"><i>2</i>Datang ke SPKT</div>
       <div class="step-line"></div>
-      <div class="step"><i>3</i>Selesai</div>
+      <div class="step"><i>3</i>Cetak surat</div>
     </div>
 
     <form id="frm" novalidate autocomplete="off">
       <div class="sec">Data diri</div>
 
       <label for="nama">Nama lengkap <span class="req">*</span></label>
-      <input id="nama" maxlength="100" autocomplete="name" placeholder="Sesuai KTP">
+      <input id="nama" maxlength="100" autocomplete="off" placeholder="Sesuai KTP">
 
       <label for="nik">NIK <span class="req">*</span></label>
       <input id="nik" inputmode="numeric" maxlength="16" placeholder="16 digit angka" autocomplete="off">
       <div class="hint" id="nikHint">0 / 16 digit</div>
 
-      <label for="alamat">Alamat sesuai KTP <span class="req">*</span></label>
-      <textarea id="alamat" rows="2" maxlength="250" placeholder="RT/RW, dusun, desa, kecamatan, kabupaten"></textarea>
+      <div class="row">
+        <div>
+          <label for="jk">Jenis kelamin <span class="req">*</span></label>
+          <select id="jk">
+            <option value="">-- Pilih --</option>
+            <option>Laki laki</option>
+            <option>Perempuan</option>
+          </select>
+        </div>
+        <div>
+          <label for="agama">Agama</label>
+          <select id="agama">
+            <option value="">-- Pilih --</option>
+            <option>Islam</option>
+            <option>Kristen</option>
+            <option>Katolik</option>
+            <option>Hindu</option>
+            <option>Buddha</option>
+            <option>Konghucu</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="ttl">Tempat, tanggal lahir</label>
+      <input id="ttl" maxlength="120" placeholder="Contoh: Tuban, 22-07-2000">
+
+      <label for="kerja">Pekerjaan</label>
+      <input id="kerja" maxlength="60" placeholder="Contoh: Wiraswasta">
+
+      <div class="sec">Alamat sesuai KTP</div>
+
+      <div class="row">
+        <div>
+          <label for="dsn">Dusun</label>
+          <input id="dsn" maxlength="80" placeholder="Nama dusun">
+        </div>
+        <div>
+          <label for="desa">Desa <span class="req">*</span></label>
+          <input id="desa" maxlength="80" placeholder="Nama desa">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="rt">RT</label>
+          <input id="rt" inputmode="numeric" maxlength="3" placeholder="02">
+        </div>
+        <div>
+          <label for="rw">RW</label>
+          <input id="rw" inputmode="numeric" maxlength="3" placeholder="01">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="kec">Kecamatan</label>
+          <input id="kec" maxlength="60" value="Jatirogo">
+        </div>
+        <div>
+          <label for="kab">Kabupaten</label>
+          <input id="kab" maxlength="60" value="Tuban">
+        </div>
+      </div>
 
       <label for="hp">Nomor HP <span class="opt">(opsional)</span></label>
       <input id="hp" type="tel" inputmode="tel" maxlength="18" placeholder="08xxxxxxxxxx">
 
-      <div class="sec">Kunjungan</div>
+      <div class="sec">Keperluan</div>
 
       <label for="keperluan">Keperluan <span class="req">*</span></label>
       <select id="keperluan">
@@ -202,11 +254,30 @@ footer b{color:var(--blue)}
         <option>Lainnya</option>
       </select>
 
-      <label for="tujuan">Ingin bertemu atau unit tujuan <span class="opt">(opsional)</span></label>
-      <input id="tujuan" maxlength="100" placeholder="Contoh: Kanit Reskrim">
+      <div id="bagianHilang" hidden class="box-hilang">
+        <div class="sec" style="margin-top:14px">Data kehilangan</div>
+
+        <label for="barang">Barang / surat yang hilang <span class="req">*</span></label>
+        <textarea id="barang" rows="4" maxlength="1000" placeholder="1 baris = 1 barang/surat&#10;Contoh:&#10;KTP an. Budi Santoso, NIK 3523xxxxxxxxxxxx&#10;Kartu ATM BRI, nomor kartu 4xxx"></textarea>
+        <div class="hint">Tulis tiap barang di baris terpisah. Sebutkan nama pemilik dan nomor jika ada.</div>
+
+        <div class="row">
+          <div>
+            <label for="thilang">Tanggal hilang <span class="req">*</span></label>
+            <input id="thilang" type="date">
+          </div>
+          <div>
+            <label for="tempat">Tempat hilang <span class="req">*</span></label>
+            <input id="tempat" maxlength="200" placeholder="Contoh: di pasar Jatirogo">
+          </div>
+        </div>
+      </div>
+
+      <label for="tujuan">Unit tujuan <span class="opt">(opsional)</span></label>
+      <input id="tujuan" maxlength="100" placeholder="Contoh: SPKT / Kanit Reskrim">
 
       <label for="keterangan">Keterangan tambahan <span class="opt">(opsional)</span></label>
-      <textarea id="keterangan" rows="2" maxlength="300" placeholder="Tulis jika ada hal yang perlu diketahui petugas"></textarea>
+      <textarea id="keterangan" rows="2" maxlength="300" placeholder="Hal lain yang perlu diketahui petugas"></textarea>
 
       <div class="hp-trap" aria-hidden="true">
         <label for="website">Jangan diisi</label>
@@ -223,12 +294,15 @@ footer b{color:var(--blue)}
       <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
     </div>
     <h2>Pendaftaran berhasil</h2>
-    <p class="sub">Tunjukkan nomor antrian ini kepada petugas.</p>
+    <p class="sub">Simpan nomor antrian ini.</p>
     <div class="ticket">
       <small>Nomor antrian</small>
       <div class="nomor" id="nomorOut">-</div>
     </div>
-    <button class="btn ghost" id="salin" type="button">Salin nomor</button>
+    <div class="langkah" id="langkahOut">
+      <b>Langkah berikutnya:</b> datang ke SPKT Polsek Jatirogo dengan <b>KTP asli</b> dan sebutkan nomor antrian di atas. Petugas akan memeriksa data Anda, lalu mencetak surat.
+    </div>
+    <button class="btn ghost" id="salin" type="button" style="margin-top:16px">Salin nomor</button>
     <button class="btn" id="baru" type="button">Isi formulir lagi</button>
   </div>
 </main>
@@ -257,6 +331,7 @@ var TAMU_CONFIG = {
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
+  var SKTLK = "Lapor kehilangan (SKTLK)";
   var kirim = $("kirim"), msg = $("msg"), nikHint = $("nikHint");
   var sedangKirim = false;
 
@@ -265,13 +340,16 @@ var TAMU_CONFIG = {
 
   function tampilkanPesan(t) { msg.textContent = t || ""; }
 
-  // Hitungan digit NIK agar tamu tahu kapan NIK sudah lengkap.
   $("nik").addEventListener("input", function () {
     var n = this.value.replace(/\D/g, "");
     this.value = n;
     nikHint.textContent = n.length + " / 16 digit";
     nikHint.style.color = n.length === 16 ? "#128a3d" : "";
   });
+
+  // Bagian data kehilangan hanya muncul untuk keperluan lapor kehilangan.
+  function atur() { $("bagianHilang").hidden = $("keperluan").value !== SKTLK; }
+  $("keperluan").addEventListener("change", atur);
 
   if (!terkonfigurasi) {
     tampilkanPesan("Formulir belum dikonfigurasi. Hubungi petugas.");
@@ -280,12 +358,26 @@ var TAMU_CONFIG = {
   }
 
   function ambilData() {
+    var rt = $("rt").value.replace(/\D/g, ""), rw = $("rw").value.replace(/\D/g, "");
+    var dsn = $("dsn").value.trim(), desa = $("desa").value.trim();
+    var kec = $("kec").value.trim(), kab = $("kab").value.trim();
+    var alamat = (dsn ? "Dusun " + dsn + ", " : "") + "Desa " + desa +
+                 (rt || rw ? ", RT " + (rt || "-") + "/RW " + (rw || "-") : "") +
+                 ", Kec. " + kec + ", " + kab;
     return {
       nama: $("nama").value.trim(),
       nik: $("nik").value.replace(/\D/g, ""),
-      alamat: $("alamat").value.trim(),
+      jk: $("jk").value,
+      ttl: $("ttl").value.trim(),
+      agama: $("agama").value,
+      kerja: $("kerja").value.trim(),
+      alamat: alamat,
+      dsn: dsn, desa: desa, rt: rt, rw: rw, kec: kec, kab: kab,
       hp: $("hp").value.replace(/[\s\-]/g, ""),
       keperluan: $("keperluan").value,
+      barang: $("barang").value.trim(),
+      tglHilang: $("thilang").value,
+      tempatHilang: $("tempat").value.trim(),
       tujuan: $("tujuan").value.trim(),
       keterangan: $("keterangan").value.trim()
     };
@@ -294,9 +386,15 @@ var TAMU_CONFIG = {
   function periksa(d) {
     if (d.nama.length < 2) return "Isi nama lengkap Anda.";
     if (!/^\d{16}$/.test(d.nik)) return "NIK harus 16 digit angka.";
-    if (d.alamat.length < 5) return "Isi alamat sesuai KTP.";
+    if (!d.jk) return "Pilih jenis kelamin.";
+    if (d.desa.length < 2) return "Isi nama desa sesuai KTP.";
     if (d.hp && !/^(\+?62|0)\d{8,13}$/.test(d.hp)) return "Nomor HP tidak valid. Contoh: 08xxxxxxxxxx.";
     if (!d.keperluan) return "Pilih keperluan kunjungan.";
+    if (d.keperluan === SKTLK) {
+      if (d.barang.replace(/\s/g, "").length < 3) return "Isi barang atau surat yang hilang.";
+      if (!d.tglHilang) return "Isi tanggal kehilangan.";
+      if (d.tempatHilang.length < 3) return "Isi tempat kehilangan.";
+    }
     return "";
   }
 
@@ -327,6 +425,7 @@ var TAMU_CONFIG = {
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (j.error) throw new Error(j.error);
       $("nomorOut").textContent = j.nomor || "-";
+      $("langkahOut").hidden = false;
       $("cardForm").hidden = true;
       $("cardDone").hidden = false;
       window.scrollTo(0, 0);
@@ -368,6 +467,9 @@ var TAMU_CONFIG = {
 
   $("baru").addEventListener("click", function () {
     $("frm").reset();
+    $("kec").value = "Jatirogo";
+    $("kab").value = "Tuban";
+    atur();
     nikHint.textContent = "0 / 16 digit";
     nikHint.style.color = "";
     $("nomorOut").textContent = "-";
