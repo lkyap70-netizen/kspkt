@@ -4390,27 +4390,55 @@ slRender();
   /* ---------- Data tamu ke formulir SKTLK ---------- */
   // Mengisi formulir pembuatan surat dari data yang diisi tamu, lalu menandai tamu "diproses".
   // Petugas tetap wajib mencek NIK ke KTP asli / Dukcapil sebelum mencetak.
+  // Data tamu lama hanya punya alamat gabungan, jadi alamat dipecah dulu agar tetap terisi.
+  function pecahAlamat(s) {
+    var o = {}, m;
+    s = String(s || "").replace(/\s+/g, " ").trim();
+    // Hanya format gabungan dari formulir baru yang dipecah. Alamat tulisan bebas dibiarkan agar tidak salah isi.
+    if (!/^(Dusun |Desa )/i.test(s)) return o;
+    if ((m = /Dusun\s+([^,]+)/i.exec(s))) o.dsn = m[1].trim();
+    if ((m = /Desa\s+([^,]+)/i.exec(s))) o.desa = m[1].trim();
+    if ((m = /RT\s+([^\/,]+?)\s*\/\s*RW\s+([^,]+)/i.exec(s))) { o.rt = m[1].trim(); o.rw = m[2].trim(); }
+    if ((m = /Kec\.?\s+([^,]+)/i.exec(s))) o.kec = m[1].trim();
+    if ((m = /,\s*(?:Kab\.?\s*)?([^,]+)$/i.exec(s))) o.kab = m[1].trim();
+    Object.keys(o).forEach(function (k) { if (o[k] === "-" || o[k] === "") delete o[k]; });
+    return o;
+  }
+
   function bukaBuatSktlk(r) {
     if ((r.status || "baru") === "baru") ubahStatus(r, "diproses");
     var tombolBaru = document.getElementById("dnew");
     if (tombolBaru) tombolBaru.click();
+    var pecah = pecahAlamat(r.alamat);
     var isi = {
       nama: r.nama, nik: r.nik, jk: r.jk, ttl: r.ttl, agama: r.agama, kerja: r.kerja,
-      tel: r.hp, dsn: r.dsn, desa: r.desa, rt: r.rt, rw: r.rw, kec: r.kec, kab: r.kab,
+      tel: r.hp,
+      dsn: r.dsn || pecah.dsn, desa: r.desa || pecah.desa,
+      rt: r.rt || pecah.rt, rw: r.rw || pecah.rw,
+      kec: r.kec || pecah.kec, kab: r.kab || pecah.kab,
       barang: r.barang, thilang: r.tglHilang, tempat: r.tempatHilang
     };
     Object.keys(isi).forEach(function (k) {
       var f = document.getElementById(k);
       if (f && isi[k] !== undefined && isi[k] !== null && String(isi[k]) !== "") f.value = isi[k];
     });
-    // Tempat hilang dari tamu sudah lengkap, jangan ditambah alamat otomatis.
     var talm = document.getElementById("talm");
     if (talm && r.tempatHilang) talm.checked = false;
     var tpl = document.getElementById("tpl");
     if (tpl && r.tempatHilang) tpl.value = "lain";
     if (typeof window.render === "function") window.render();
+
+    // Beri tahu petugas jika ada data yang tidak ikut tersimpan (umumnya data formulir lama).
+    var kosong = [];
+    if (!r.ttl) kosong.push("tempat/tanggal lahir");
+    if (!r.jk) kosong.push("jenis kelamin");
+    if (!isi.desa) kosong.push("desa");
     if (typeof window.toast === "function") {
-      window.toast("Data " + r.id + " sudah dimuat. Cek NIK, lalu cetak. Setelah selesai, tandai Selesai di Buku Tamu.", "ok", 5000);
+      if (kosong.length) {
+        window.toast("Data " + r.id + " belum lengkap: " + kosong.join(", ") + ". Lengkapi manual sebelum cetak.", "err", 7000);
+      } else {
+        window.toast("Data " + r.id + " sudah dimuat. Cek NIK, lalu cetak. Setelah selesai, tandai Selesai.", "ok", 5000);
+      }
     }
   }
 
