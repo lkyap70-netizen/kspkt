@@ -1282,7 +1282,7 @@ function setSy(c,t){var p=$("syncpill");p.className="sp0 "+c;p.textContent=c==="
 var Q=Promise.resolve(),lastSync=0;
 function enq(fn){Q=Q.then(fn,fn);return Q}
 function getRec(id){var r=null;DB.forEach(function(x){if(x.id===id)r=x});return r}
-function api(b){var c=cfg();b.token=c.token;return fetch(c.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(function(j){if(j.error)throw new Error(j.error);return j})}
+function api(b){var c=cfg();b.token=c.token;b.actor=(window.actorNrp?window.actorNrp():"");return fetch(c.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(function(j){if(j.error)throw new Error(j.error);return j})}
 function pushNow(id){var r=getRec(id);if(!r||!cfg().url)return Promise.resolve();if(!navigator.onLine){setSy("net","Offline, akan sinkron saat internet kembali");return Promise.resolve()}return api({action:"save",record:r}).then(function(){r.sy=true;saveDB();setSy("ok","Tersinkron")},function(x){setSy("err","Gagal sinkron: "+x.message)})}
 function pushRec(id){if(!cfg().url)return;enq(function(){return pushNow(id)})}
 function delRec(id){DB=DB.filter(function(x){return x.id!==id});saveDB();refreshArsip();if(!cfg().url)return;
@@ -1364,7 +1364,7 @@ XLSX.utils.book_append_sheet(wb,w1,"Daftar Surat");XLSX.utils.book_append_sheet(
 $("rpdf").onclick=function(){if(!window.html2pdf){alert("Pembuatan PDF butuh koneksi internet (pustaka PDF gagal dimuat).");return}var D=rkData();renderRekap();
 html2pdf().set({margin:8,filename:"Rekap_KSPKT_Jatirogo_"+D.y+"-"+pad(D.m+1)+".pdf",image:{type:"jpeg",quality:.98},html2canvas:{scale:2},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:"tr"}}).from($("rekapDoc")).save()};
 
-function curl(x){var c=cfg();return c.url+(c.url.indexOf("?")<0?"?":"&")+"token="+encodeURIComponent(c.token)+(x||"")}
+function curl(x){var c=cfg();return c.url+(c.url.indexOf("?")<0?"?":"&")+"token="+encodeURIComponent(c.token)+(x||"")+"&actor="+encodeURIComponent(window.actorNrp?window.actorNrp():"")}
 $("trekap").onclick=function(){show("rekap")};
 show("dash");
 render();
@@ -4506,8 +4506,38 @@ slRender();
 </script>
 
 <style id="maint-style">
-body.locked #maintModal.show{display:flex!important}
-#maintModal .modalcard{text-align:left}
+#maintModal.mtm{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,12,30,.66);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);overflow:auto}
+#maintModal.mtm.show{display:flex}
+body.locked #maintModal.mtm.show{display:flex!important}
+#maintModal.mtm[data-mode="lock"]{background:radial-gradient(900px 520px at 12% -12%,#2a57c2 0,transparent 60%),radial-gradient(760px 520px at 108% 118%,#f2b70524 0,transparent 60%),linear-gradient(160deg,#06122f,#0b1f4d 55%,#050e24)}
+.mtm-card{position:relative;width:min(540px,100%);margin:auto;border-radius:26px;padding:40px 30px 28px;text-align:center;color:#eef3ff;background:linear-gradient(165deg,#15316f 0,#0c2157 55%,#081739 100%);border:1px solid #f2b70555;box-shadow:0 40px 90px #000b,0 0 0 8px #f2b7050d,inset 0 1px 0 #ffffff26;overflow:hidden;animation:mtmIn .5s cubic-bezier(.2,.8,.2,1) both}
+.mtm-card:before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:repeating-linear-gradient(-45deg,#f2b705 0 14px,#0b1f4d 14px 28px)}
+.mtm-card:after{content:"";position:absolute;right:-80px;top:-80px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,#f2b70533,transparent 70%);pointer-events:none}
+.mtm-icon{position:relative;width:116px;height:116px;margin:6px auto 2px}
+.mtm-icon svg{width:100%;height:100%;display:block;overflow:visible}
+.mtm-ring{fill:none;stroke:#f2b705;stroke-width:2.5;stroke-dasharray:4 9;transform-box:fill-box;transform-origin:50% 50%;animation:mtmSpin 12s linear infinite;opacity:.9}
+.mtm-gear{fill:none;stroke:#ffd64a;stroke-width:9;stroke-dasharray:8 7;transform-box:fill-box;transform-origin:50% 50%;animation:mtmSpin 3.6s linear infinite reverse}
+.mtm-core{fill:#f2b705}
+.mtm-chip{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:6px 13px;border-radius:30px;background:#f2b70520;border:1px solid #f2b70577;color:#ffe08a;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
+.mtm-chip i{width:8px;height:8px;border-radius:50%;background:#f2b705;animation:mtmPulse 1.6s infinite}
+.mtm-title{margin:16px 0 10px;font-size:clamp(22px,4.2vw,28px);line-height:1.2;color:#fff;font-weight:800;letter-spacing:-.3px;font-family:Bahnschrift,"Arial Narrow",Arial,sans-serif}
+.mtm-text{margin:0 auto;max-width:430px;color:#c9d6f5;font-size:15px;line-height:1.65;white-space:pre-line}
+.mtm-bar{position:relative;height:6px;border-radius:6px;background:#ffffff1c;overflow:hidden;margin:24px auto 10px;max-width:360px}
+.mtm-bar span{position:absolute;top:0;bottom:0;width:38%;border-radius:6px;background:linear-gradient(90deg,#f2b705,#fff3b0,#f2b705);animation:mtmSlide 1.7s ease-in-out infinite}
+.mtm-meta{font-size:12px;color:#8fa3cf;margin:0}
+.mtm-note{font-size:12.5px;color:#8fa3cf;margin:8px 0 0}
+.mtm-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.mtm-actions button{min-width:160px;padding:13px 20px;border-radius:14px;border:0;font-weight:800;font-size:14px;cursor:pointer;background:linear-gradient(120deg,#f2b705,#ffd64a);color:#0b1f4d;box-shadow:0 10px 22px #f2b70540;transition:transform .15s,filter .15s}
+.mtm-actions button:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.mtm-actions button.mtm-out{background:transparent;color:#e6ecff;border:1px solid #ffffff55;box-shadow:none}
+.mtm-actions button[hidden]{display:none}
+@keyframes mtmIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes mtmSpin{to{transform:rotate(360deg)}}
+@keyframes mtmSlide{0%{left:-40%}100%{left:100%}}
+@keyframes mtmPulse{0%{box-shadow:0 0 0 0 #f2b70599}70%{box-shadow:0 0 0 9px #f2b70000}100%{box-shadow:0 0 0 0 #f2b70000}}
+@media (max-width:520px){.mtm-card{padding:34px 20px 22px;border-radius:22px}}
+@media (prefers-reduced-motion:reduce){.mtm-ring,.mtm-gear,.mtm-bar span,.mtm-chip i,.mtm-card{animation:none!important}}
+#maintCard textarea{min-height:64px;resize:vertical;font:inherit;font-size:13px}
 .mtsw{position:relative;display:inline-block;width:46px;height:26px;margin:0;flex:none;cursor:pointer}
 .mtsw input{position:absolute;opacity:0;width:0;height:0;margin:0;padding:0;border:0}
 .mtsw span{position:absolute;inset:0;background:#c9d1e3;border-radius:26px;transition:background .2s}
@@ -4517,23 +4547,34 @@ body.locked #maintModal.show{display:flex!important}
 .mtsw input:focus-visible+span{box-shadow:0 0 0 3px #1d3a8a44}
 .mtrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 0 10px}
 .mtsub{font-size:12px;color:#6b7488;margin-top:3px}
-#maintCard textarea{min-height:64px;resize:vertical;font:inherit;font-size:13px}
 @media print{#maintModal,#maintCard{display:none!important}}
 </style>
-<div id="maintModal" class="modalx" role="alertdialog" aria-modal="true" aria-labelledby="maintTitle" aria-describedby="maintText">
-  <div class="modalcard">
-    <div class="modalicon">⚙</div>
-    <h2 id="maintTitle">Website sedang dalam perbaikan</h2>
-    <p id="maintText"></p>
-    <p style="font-size:12.5px">Terima kasih atas pengertian Anda.</p>
-    <div class="modalactions"><button id="maintOk" type="button">Mengerti</button></div>
+<div id="maintModal" class="mtm" data-mode="info" role="alertdialog" aria-modal="true" aria-labelledby="maintTitle" aria-describedby="maintText">
+  <div class="mtm-card">
+    <div class="mtm-icon" aria-hidden="true">
+      <svg viewBox="0 0 120 120">
+        <circle class="mtm-ring" cx="60" cy="60" r="56"/>
+        <circle class="mtm-gear" cx="60" cy="60" r="30"/>
+        <circle class="mtm-core" cx="60" cy="60" r="11"/>
+      </svg>
+    </div>
+    <span class="mtm-chip"><i></i>Mode perbaikan</span>
+    <h2 class="mtm-title" id="maintTitle">Website sedang dalam perbaikan</h2>
+    <p class="mtm-text" id="maintText"></p>
+    <div class="mtm-bar" aria-hidden="true"><span></span></div>
+    <p class="mtm-meta" id="maintMeta"></p>
+    <p class="mtm-note" id="maintNote">Terima kasih atas kesabaran Anda.</p>
+    <div class="mtm-actions">
+      <button id="maintOk" type="button">Mengerti</button>
+      <button id="maintOut" type="button" class="mtm-out" hidden>Keluar</button>
+    </div>
   </div>
 </div>
 <div class="card" id="maintCard" style="display:none">
-  <h3>Status Perbaikan Website</h3>
+  <h3>Mode Perbaikan Website</h3>
   <div class="mtrow">
-    <div><b id="mtState">Nonaktif</b><div class="mtsub">Jika diaktifkan, pop-up perbaikan tampil ke semua pengguna saat membuka website.</div></div>
-    <label class="mtsw" title="Aktifkan atau matikan pop-up perbaikan"><input type="checkbox" id="mtOn"><span></span></label>
+    <div><b id="mtState">Nonaktif</b><div class="mtsub">Jika diaktifkan, pop-up perbaikan tampil dan pengguna lain tidak dapat memakai aplikasi.</div></div>
+    <label class="mtsw" title="Aktifkan atau matikan mode perbaikan"><input type="checkbox" id="mtOn"><span></span></label>
   </div>
   <label for="mtMsg">Pesan untuk pengguna</label>
   <textarea id="mtMsg" rows="3"></textarea>
@@ -4543,47 +4584,80 @@ body.locked #maintModal.show{display:flex!important}
 <script id="maint-logic">
 (function () {
   "use strict";
-  var MAINT_OPERATOR = "1590";
-  var DEFAULT_MSG = "Mohon maaf, website ini sedang dalam perbaikan. Beberapa fitur mungkin belum dapat digunakan sementara waktu. Silakan coba beberapa saat lagi.";
+  var OP = "1590";
+  var DEFAULT_MSG = "Mohon maaf, website ini sedang dalam perbaikan. Beberapa fitur belum dapat digunakan sementara waktu. Silakan coba beberapa saat lagi.";
   var CACHE_KEY = "kspkt_maint_cache";
   var state = { active: false, message: DEFAULT_MSG, upd: 0, by: "" };
   var dismissedUpd = null;
+  var blockedLogin = false;
 
   function el(id) { return document.getElementById(id); }
+  function valOf(id) { var f = el(id); return f ? String(f.value || "").trim() : ""; }
   function readCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "null"); } catch (e) { return null; } }
   function writeCache(m) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(m)); } catch (e) {} }
-  function canManage() {
-    var u = curU();
-    return !!u && (u.user === MAINT_OPERATOR || isAdmin());
+  function fmt(t) {
+    try { return new Date(t).toLocaleString("id-ID", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }); }
+    catch (e) { return ""; }
   }
+  function loggedIn() { return !!curU(); }
+  function isOp() { var u = curU(); return !!u && u.user === OP; }
+  function lockedForUser() { return state.active && loggedIn() && !isOp(); }
+
+  // NRP pelaku permintaan. Dipakai server untuk menolak data dari selain operator saat perbaikan aktif.
+  window.actorNrp = function () {
+    var u = curU();
+    if (u) return String(u.user || "");
+    return valOf("lu") || valOf("ru");
+  };
 
   function refreshCard() {
-    var card = el("maintCard");
-    if (!card) return;
-    var ok = canManage();
+    var card = el("maintCard"); if (!card) return;
+    var ok = isOp();
     card.style.display = ok ? "" : "none";
     if (!ok) return;
     el("mtOn").checked = state.active;
-    el("mtState").textContent = state.active ? "Aktif: pop-up tampil ke semua pengguna" : "Nonaktif";
+    el("mtState").textContent = state.active ? "Aktif: pengguna lain tidak dapat memakai aplikasi" : "Nonaktif";
     if (document.activeElement !== el("mtMsg")) el("mtMsg").value = state.message;
+  }
+
+  var seenFor = null;
+  function render() {
+    var modal = el("maintModal"); if (!modal) return;
+    var who = (curU() || {}).user || "";
+    if (who !== seenFor) { seenFor = who; if (isOp()) dismissedUpd = null; }
+    var mode = "info", show = false, okBtn = true, outBtn = false, note = "Terima kasih atas kesabaran Anda.";
+    if (lockedForUser()) {
+      mode = "lock"; show = true; okBtn = false; outBtn = true;
+      note = "Akses aplikasi dinonaktifkan sementara. Silakan keluar dan coba lagi nanti.";
+    } else if (blockedLogin && state.active) {
+      mode = "lock"; show = true; okBtn = false; outBtn = true;
+      note = "Hanya operator yang dapat masuk selama perbaikan berlangsung.";
+    } else if (state.active && (!loggedIn() || isOp()) && state.upd !== dismissedUpd) {
+      show = true;
+    }
+    el("maintText").textContent = state.message;
+    el("maintMeta").textContent = state.upd ? "Diperbarui " + fmt(state.upd) : "";
+    el("maintNote").textContent = note;
+    el("maintOut").textContent = lockedForUser() ? "Keluar" : "Kembali";
+    modal.setAttribute("data-mode", mode);
+    modal.classList.toggle("show", show);
+    el("maintOk").hidden = !okBtn;
+    el("maintOut").hidden = !outBtn;
+    refreshCard();
   }
 
   function applyMaint(m) {
     if (!m) return;
     state = { active: !!m.active, message: m.message || DEFAULT_MSG, upd: m.upd || 0, by: m.by || "" };
-    var modal = el("maintModal");
-    if (modal) {
-      el("maintText").textContent = state.message;
-      if (state.active && state.upd !== dismissedUpd) modal.classList.add("show");
-      else modal.classList.remove("show");
-    }
-    refreshCard();
+    if (!state.active) blockedLogin = false;
+    render();
   }
 
   function fetchServer() {
     var c = cfg();
     if (!c.url || !navigator.onLine) return Promise.resolve(null);
-    var url = c.url + (c.url.indexOf("?") < 0 ? "?" : "&") + "action=maint&token=" + encodeURIComponent(c.token || "");
+    var url = c.url + (c.url.indexOf("?") < 0 ? "?" : "&") + "action=maint&token=" +
+      encodeURIComponent(c.token || "") + "&actor=" + encodeURIComponent(window.actorNrp());
     return fetch(url, { cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (j) { return (j && j.ok && j.maint) ? j.maint : null; });
@@ -4610,27 +4684,46 @@ body.locked #maintModal.show{display:flex!important}
     applyMaint(rec);
     var c = cfg();
     if (!c.url) {
-      toast("Tersimpan di browser ini saja. Hubungkan Google Drive di menu Database agar pop-up tampil ke semua pengguna.", "err", 8000);
+      toast("Tersimpan di browser ini saja. Hubungkan Google Drive di menu Database agar perbaikan berlaku untuk semua pengguna.", "err", 8000);
       return;
     }
     api({ action: "maintSave", record: rec }).then(function () {
-      toast(rec.active ? "Pop-up perbaikan aktif untuk semua pengguna." : "Pop-up perbaikan dinonaktifkan.", "ok", 4000);
+      toast(rec.active ? "Mode perbaikan aktif. Pengguna lain tidak dapat memakai aplikasi." : "Mode perbaikan dinonaktifkan.", "ok", 4500);
     }).catch(function (err) {
       toast("Tersimpan di browser ini, tetapi server belum menerima: " + ((err && err.message) || "gagal") + ". Perbarui Code.gs.", "err", 9000);
     });
   }
 
-  var vd = el("vdash");
-  var card = el("maintCard");
+  // Penjagaan login: NRP selain operator tidak bisa masuk saat perbaikan aktif
+  function guard(ev, nrp) {
+    if (!state.active || nrp === OP) return;
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    blockedLogin = true;
+    render();
+  }
+  document.addEventListener("click", function (ev) {
+    var t = ev.target; if (!t || !t.closest) return;
+    if (t.closest("#lgo")) guard(ev, valOf("lu"));
+    else if (t.closest("#rgo")) guard(ev, valOf("ru"));
+  }, true);
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Enter" || !ev.target) return;
+    if (ev.target.id === "lu") guard(ev, valOf("lu"));
+    else if (ev.target.id === "ru") guard(ev, valOf("ru"));
+  }, true);
+
+  // Susun kartu (hanya operator) dan tombol
+  var vd = el("vdash"), card = el("maintCard");
   if (vd && card) {
     var hero = vd.querySelector(".hero");
-    if (hero && hero.nextSibling) vd.insertBefore(card, hero.nextSibling);
-    else if (hero) vd.appendChild(card);
+    if (hero) vd.insertBefore(card, hero.nextSibling); else vd.appendChild(card);
   }
 
-  el("maintOk").onclick = function () {
-    dismissedUpd = state.upd;
-    el("maintModal").classList.remove("show");
+  el("maintOk").onclick = function () { dismissedUpd = state.upd; render(); };
+  el("maintOut").onclick = function () {
+    if (lockedForUser()) { try { localStorage.setItem("stpl_ses", ""); } catch (e) {} location.reload(); }
+    else { blockedLogin = false; render(); }
   };
   el("mtOn").onchange = function () { save({ active: this.checked, message: el("mtMsg").value }); };
   el("mtSave").onclick = function () { save({ active: el("mtOn").checked, message: el("mtMsg").value }); };
@@ -4638,13 +4731,12 @@ body.locked #maintModal.show{display:flex!important}
   var prevShow = window.show;
   window.show = function () {
     var r = prevShow.apply(this, arguments);
-    refreshCard();
+    render();
     return r;
   };
 
   var c0 = readCache();
-  if (c0) applyMaint(c0);
-  refreshCard();
+  if (c0) applyMaint(c0); else render();
   setTimeout(load, 800);
   setInterval(function () { if (!document.hidden) load(); }, 60000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) load(); });
