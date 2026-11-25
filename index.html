@@ -225,8 +225,8 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 #kertas.e2 .sp{height:98px}
 #kertas.e2 .sa{height:30mm}
 #kertas.e2 .mg{margin-top:20px}
-@page{size:215.9mm 330mm;margin:0}
-@media print{body{background:#fff}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0}.wrap{overflow:visible}#kertas{box-shadow:none;margin:0}}
+@page{size:8.5in 13in;margin:0}
+@media print{body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.panel,.nav,#varsip,.top,#vdash,#vrekap,#vuser,#vreg,#offbar,#devfoot{display:none!important}.app{display:block;padding:0;margin:0;gap:0}.wrap{overflow:visible;padding:0;margin:0}#kertas{box-shadow:none;margin:0;width:8.5in;max-width:8.5in;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 
 /* ===== LOGIN REFRESH: MODERN, RESPONSIF, TANPA MENGUBAH ALUR LOGIN ===== */
 #login{padding:clamp(14px,3vw,38px);background:radial-gradient(ellipse at 12% 8%,#23479c 0,transparent 34%),radial-gradient(ellipse at 88% 94%,#12327b 0,transparent 35%),linear-gradient(135deg,#06122f 0%,#0c2050 54%,#102b69 100%);isolation:isolate}
@@ -293,7 +293,7 @@ button:hover{filter:brightness(1.12)}button:active{transform:translateY(2px)}
 @media(prefers-reduced-motion:reduce){.login-shell{animation:none}}
 
 .sstb{position:absolute;left:50%;top:50%;width:29mm;height:auto;max-width:none;transform:translate(-105%,-55%);opacity:.92;mix-blend-mode:multiply;pointer-events:none}
-@media print{#kertas{min-height:0!important;height:auto!important;padding-bottom:12mm!important}}
+@media print{#kertas{min-height:0!important;height:auto!important;max-height:13in!important;padding-bottom:12mm!important;break-inside:avoid;page-break-inside:avoid}}
 .mg .sa{height:27mm!important}
 .mg .sa .kap{height:27mm!important;max-height:27mm!important;max-width:70mm!important;width:auto!important}
 .sstb{width:19mm!important;transform:translate(-120%,-50%)!important}
