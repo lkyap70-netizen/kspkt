@@ -4505,5 +4505,152 @@ slRender();
 })();
 </script>
 
+<style id="maint-style">
+body.locked #maintModal.show{display:flex!important}
+#maintModal .modalcard{text-align:left}
+.mtsw{position:relative;display:inline-block;width:46px;height:26px;margin:0;flex:none;cursor:pointer}
+.mtsw input{position:absolute;opacity:0;width:0;height:0;margin:0;padding:0;border:0}
+.mtsw span{position:absolute;inset:0;background:#c9d1e3;border-radius:26px;transition:background .2s}
+.mtsw span:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px #0003}
+.mtsw input:checked+span{background:#1a9a4b}
+.mtsw input:checked+span:before{transform:translateX(20px)}
+.mtsw input:focus-visible+span{box-shadow:0 0 0 3px #1d3a8a44}
+.mtrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 0 10px}
+.mtsub{font-size:12px;color:#6b7488;margin-top:3px}
+#maintCard textarea{min-height:64px;resize:vertical;font:inherit;font-size:13px}
+@media print{#maintModal,#maintCard{display:none!important}}
+</style>
+<div id="maintModal" class="modalx" role="alertdialog" aria-modal="true" aria-labelledby="maintTitle" aria-describedby="maintText">
+  <div class="modalcard">
+    <div class="modalicon">⚙</div>
+    <h2 id="maintTitle">Website sedang dalam perbaikan</h2>
+    <p id="maintText"></p>
+    <p style="font-size:12.5px">Terima kasih atas pengertian Anda.</p>
+    <div class="modalactions"><button id="maintOk" type="button">Mengerti</button></div>
+  </div>
+</div>
+<div class="card" id="maintCard" style="display:none">
+  <h3>Status Perbaikan Website</h3>
+  <div class="mtrow">
+    <div><b id="mtState">Nonaktif</b><div class="mtsub">Jika diaktifkan, pop-up perbaikan tampil ke semua pengguna saat membuka website.</div></div>
+    <label class="mtsw" title="Aktifkan atau matikan pop-up perbaikan"><input type="checkbox" id="mtOn"><span></span></label>
+  </div>
+  <label for="mtMsg">Pesan untuk pengguna</label>
+  <textarea id="mtMsg" rows="3"></textarea>
+  <button id="mtSave" type="button">Simpan pesan</button>
+  <div class="mtsub" id="mtInfo"></div>
+</div>
+<script id="maint-logic">
+(function () {
+  "use strict";
+  var MAINT_OPERATOR = "1590";
+  var DEFAULT_MSG = "Mohon maaf, website ini sedang dalam perbaikan. Beberapa fitur mungkin belum dapat digunakan sementara waktu. Silakan coba beberapa saat lagi.";
+  var CACHE_KEY = "kspkt_maint_cache";
+  var state = { active: false, message: DEFAULT_MSG, upd: 0, by: "" };
+  var dismissedUpd = null;
+
+  function el(id) { return document.getElementById(id); }
+  function readCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "null"); } catch (e) { return null; } }
+  function writeCache(m) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(m)); } catch (e) {} }
+  function canManage() {
+    var u = curU();
+    return !!u && (u.user === MAINT_OPERATOR || isAdmin());
+  }
+
+  function refreshCard() {
+    var card = el("maintCard");
+    if (!card) return;
+    var ok = canManage();
+    card.style.display = ok ? "" : "none";
+    if (!ok) return;
+    el("mtOn").checked = state.active;
+    el("mtState").textContent = state.active ? "Aktif: pop-up tampil ke semua pengguna" : "Nonaktif";
+    if (document.activeElement !== el("mtMsg")) el("mtMsg").value = state.message;
+  }
+
+  function applyMaint(m) {
+    if (!m) return;
+    state = { active: !!m.active, message: m.message || DEFAULT_MSG, upd: m.upd || 0, by: m.by || "" };
+    var modal = el("maintModal");
+    if (modal) {
+      el("maintText").textContent = state.message;
+      if (state.active && state.upd !== dismissedUpd) modal.classList.add("show");
+      else modal.classList.remove("show");
+    }
+    refreshCard();
+  }
+
+  function fetchServer() {
+    var c = cfg();
+    if (!c.url || !navigator.onLine) return Promise.resolve(null);
+    var url = c.url + (c.url.indexOf("?") < 0 ? "?" : "&") + "action=maint&token=" + encodeURIComponent(c.token || "");
+    return fetch(url, { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { return (j && j.ok && j.maint) ? j.maint : null; });
+  }
+
+  function load() {
+    fetchServer().then(function (m) {
+      if (m) { writeCache(m); applyMaint(m); }
+      else { var c = readCache(); if (c) applyMaint(c); }
+    }).catch(function () {
+      var c = readCache(); if (c) applyMaint(c);
+    });
+  }
+
+  function save(next) {
+    var u = curU();
+    var rec = {
+      active: !!next.active,
+      message: (next.message || "").trim() || DEFAULT_MSG,
+      upd: Date.now(),
+      by: u ? u.user : ""
+    };
+    writeCache(rec);
+    applyMaint(rec);
+    var c = cfg();
+    if (!c.url) {
+      toast("Tersimpan di browser ini saja. Hubungkan Google Drive di menu Database agar pop-up tampil ke semua pengguna.", "err", 8000);
+      return;
+    }
+    api({ action: "maintSave", record: rec }).then(function () {
+      toast(rec.active ? "Pop-up perbaikan aktif untuk semua pengguna." : "Pop-up perbaikan dinonaktifkan.", "ok", 4000);
+    }).catch(function (err) {
+      toast("Tersimpan di browser ini, tetapi server belum menerima: " + ((err && err.message) || "gagal") + ". Perbarui Code.gs.", "err", 9000);
+    });
+  }
+
+  var vd = el("vdash");
+  var card = el("maintCard");
+  if (vd && card) {
+    var hero = vd.querySelector(".hero");
+    if (hero && hero.nextSibling) vd.insertBefore(card, hero.nextSibling);
+    else if (hero) vd.appendChild(card);
+  }
+
+  el("maintOk").onclick = function () {
+    dismissedUpd = state.upd;
+    el("maintModal").classList.remove("show");
+  };
+  el("mtOn").onchange = function () { save({ active: this.checked, message: el("mtMsg").value }); };
+  el("mtSave").onclick = function () { save({ active: el("mtOn").checked, message: el("mtMsg").value }); };
+
+  var prevShow = window.show;
+  window.show = function () {
+    var r = prevShow.apply(this, arguments);
+    refreshCard();
+    return r;
+  };
+
+  var c0 = readCache();
+  if (c0) applyMaint(c0);
+  refreshCard();
+  setTimeout(load, 800);
+  setInterval(function () { if (!document.hidden) load(); }, 60000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) load(); });
+  window.addEventListener("online", load);
+})();
+</script>
+
 </body>
 </html>
